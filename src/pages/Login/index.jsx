@@ -12,13 +12,11 @@ import {
 import React from "react";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import { styles } from "./styles";
 
 function Login() {
   const [values, setValues] = React.useState({
-    amount: "",
     password: "",
-    weight: "",
-    weightRange: "",
     showPassword: false,
   });
 
@@ -37,33 +35,16 @@ function Login() {
     event.preventDefault();
   };
   return (
-    <Box
-      sx={{
-        marginX: "auto",
-        height: "700px",
-        maxWidth: "575px",
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        flexDirection: "column",
-        marginTop: "100px",
-        borderRadius: "5px",
-        boxShadow: "0px 4px 100px rgba(0, 0, 0, 0.25)",
-        padding: "20px",
-      }}
-    >
+    <Box sx={styles.loginBox}>
       <Box
         component="img"
         src="/images/logo-infoclinica.png"
-        sx={{ mt: "30px" }}
+        sx={styles.logo}
       />
 
-      <Box sx={{ width: "75%", display: "flex", flexDirection: "column" }}>
+      <Box sx={styles.inputBox}>
         <TextField
-          sx={{
-            width: "100%",
-            marginBottom: "30px",
-          }}
+          sx={styles.inputUsername}
           label="username"
           variant="outlined"
         />
@@ -92,18 +73,11 @@ function Login() {
           />
         </FormControl>
       </Box>
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-        }}
-      >
-        <Button variant="contained" sx={{ paddingX: "20px", mb: "30px" }}>
+      <Box sx={styles.buttonBox}>
+        <Button variant="contained" sx={styles.buttonLogin}>
           Entrar
         </Button>
-        <Link sx={{ mb: "30px", cursor: "pointer", fontSize: "20px" }}>
-          Esqueci a minha senha
-        </Link>
+        <Link sx={styles.forgetPassword}>Esqueci a minha senha</Link>
       </Box>
     </Box>
   );
