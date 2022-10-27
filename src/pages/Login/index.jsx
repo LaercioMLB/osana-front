@@ -1,24 +1,36 @@
 import {
-  Box,
-  Button,
+  Container,
   FormControl,
   IconButton,
   InputAdornment,
   InputLabel,
-  Link,
   OutlinedInput,
-  TextField,
 } from "@mui/material";
 import React from "react";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import { styles } from "./styles";
+import { useNavigate } from "react-router-dom";
+import {
+  LoginBox,
+  Logo,
+  InputBox,
+  InputUsername,
+  ButtonBox,
+  ButtonLogin,
+  ForgetPassword,
+} from "./styles";
 
 function Login() {
+  const navigate = useNavigate();
   const [values, setValues] = React.useState({
     password: "",
     showPassword: false,
   });
+
+  const handleLogin = async () => {
+    navigate("/home");
+    //TODO colocar validação de email e preparar um componente de tela de carregamento
+  };
 
   const handleChange = (prop) => (event) => {
     setValues({ ...values, [prop]: event.target.value });
@@ -35,51 +47,44 @@ function Login() {
     event.preventDefault();
   };
   return (
-    <Box sx={styles.loginBox}>
-      <Box
-        component="img"
-        src="/images/logo-infoclinica.png"
-        sx={styles.logo}
-      />
-
-      <Box sx={styles.inputBox}>
-        <TextField
-          sx={styles.inputUsername}
-          label="username"
-          variant="outlined"
-        />
-        <FormControl sx={{ width: "100%" }} variant="outlined">
-          <InputLabel htmlFor="outlined-adornment-password">
-            Password
-          </InputLabel>
-          <OutlinedInput
-            id="outlined-adornment-password"
-            type={values.showPassword ? "text" : "password"}
-            value={values.password}
-            onChange={handleChange("password")}
-            endAdornment={
-              <InputAdornment position="end">
-                <IconButton
-                  aria-label="toggle password visibility"
-                  onClick={handleClickShowPassword}
-                  onMouseDown={handleMouseDownPassword}
-                  edge="end"
-                >
-                  {values.showPassword ? <Visibility /> : <VisibilityOff />}
-                </IconButton>
-              </InputAdornment>
-            }
-            label="Password"
-          />
-        </FormControl>
-      </Box>
-      <Box sx={styles.buttonBox}>
-        <Button variant="contained" sx={styles.buttonLogin}>
-          Entrar
-        </Button>
-        <Link sx={styles.forgetPassword}>Esqueci a minha senha</Link>
-      </Box>
-    </Box>
+    <Container maxWidth={false}>
+      <LoginBox>
+        <Logo component="img" src="/images/logo-infoclinica.png" />
+        <InputBox>
+          <InputUsername label="username" variant="outlined" />
+          <FormControl sx={{ width: "100%" }} variant="outlined">
+            <InputLabel htmlFor="outlined-adornment-password">
+              Password
+            </InputLabel>
+            <OutlinedInput
+              id="outlined-adornment-password"
+              type={values.showPassword ? "text" : "password"}
+              value={values.password}
+              onChange={handleChange("password")}
+              endAdornment={
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label="toggle password visibility"
+                    onClick={handleClickShowPassword}
+                    onMouseDown={handleMouseDownPassword}
+                    edge="end"
+                  >
+                    {values.showPassword ? <Visibility /> : <VisibilityOff />}
+                  </IconButton>
+                </InputAdornment>
+              }
+              label="Password"
+            />
+          </FormControl>
+        </InputBox>
+        <ButtonBox>
+          <ButtonLogin variant="contained" onClick={handleLogin}>
+            Entrar
+          </ButtonLogin>
+          <ForgetPassword>Esqueci a minha senha</ForgetPassword>
+        </ButtonBox>
+      </LoginBox>
+    </Container>
   );
 }
 
