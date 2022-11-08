@@ -12,41 +12,41 @@ const style = {
 const nav = [
   {
     name: "Clientes",
-    path: "/client",
+    path: "/clientes",
     icon: <AccountCircleIcon sx={style} />,
   },
   {
     name: "Atendimento",
-    path: "/atendimento",
+    path: "/atendimentos",
     icon: <ListAltIcon sx={style} />,
     subItem: [
       {
         name: "Todos",
-        path: "/todos",
+        filter: "todos",
       },
       {
         name: "Abertos",
-        path: "/abertos",
+        filter: "abertos",
       },
       {
         name: "Finalizados",
-        path: "/finalizados",
+        filter: "finalizados",
       },
       {
         name: "Cancelados",
-        path: "/cancelados",
+        filter: "cancelados",
       },
       {
         name: "Urgente",
-        path: "/urgente",
+        filter: "urgente",
       },
       {
         name: "Alta",
-        path: "/alta",
+        filter: "alta",
       },
       {
         name: "Normal",
-        path: "/normal",
+        filter: "normal",
       },
     ],
   },
@@ -57,19 +57,19 @@ const nav = [
     subItem: [
       {
         name: "Todos",
-        path: "/todos",
+        filter: "todos",
       },
       {
         name: "Em andamento",
-        path: "/andamentos",
+        filter: "andamentos",
       },
       {
         name: "Finalizado",
-        path: "/finalizado",
+        filter: "finalizado",
       },
       {
         name: "Cancelado",
-        path: "/cancelado",
+        filter: "cancelado",
       },
     ],
   },

@@ -28,7 +28,7 @@ function Login() {
   });
 
   const handleLogin = async () => {
-    navigate("/home");
+    navigate("/");
     //TODO colocar validação de email e preparar um componente de tela de carregamento
   };
 

@@ -5,6 +5,7 @@ export const UserContext = createContext([{}, () => {}]);
 export function UserContextProvider(props) {
   const [userData, setUserData] = useState({
     openDrawer: false,
+    filter: "",
   });
 
   return (

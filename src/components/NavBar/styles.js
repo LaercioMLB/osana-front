@@ -24,7 +24,7 @@ const SubItemNavBar = styled(Box)(({ theme }) => ({
   color: "#757575",
   cursor: "pointer",
   padding: "5px",
-  marginLeft: "55px",
+  paddingLeft: "55px",
 }));
 
 export { NavBarBox, ItemNavBar, SubItemNavBar };
