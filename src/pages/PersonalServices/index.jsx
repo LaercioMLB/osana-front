@@ -1,6 +1,7 @@
 import React from "react";
 import {
   Box,
+  Button,
   Paper,
   Table,
   TableBody,
@@ -11,6 +12,7 @@ import {
 } from "@mui/material";
 import { H1 } from "../../components/Text";
 import { TableCellHeader } from "./styles";
+import AddIcon from "@mui/icons-material/Add";
 
 function createData(name, email, cpfcnpj, phone, options) {
   return { name, email, cpfcnpj, phone, options };
@@ -64,7 +66,24 @@ const rows = [
 function PersonalServices() {
   return (
     <Box>
-      <H1>Clientes</H1>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          width: "100%",
+          flexDirection: "row",
+        }}
+      >
+        <H1>Minhas OS</H1>
+        <Button
+          sx={{ height: "40px" }}
+          variant="contained"
+          startIcon={<AddIcon />}
+        >
+          Nova OS
+        </Button>
+      </Box>
+
       <TableContainer>
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
           <TableHead>

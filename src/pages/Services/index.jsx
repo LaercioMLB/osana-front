@@ -64,7 +64,7 @@ const rows = [
 function Services() {
   return (
     <Box>
-      <H1>Clientes</H1>
+      <H1>Todas OS</H1>
       <TableContainer>
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
           <TableHead>
