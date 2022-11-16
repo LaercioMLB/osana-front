@@ -11,13 +11,15 @@ import {
 } from "@mui/material";
 import { H1 } from "../../components/Text";
 import { TableCellHeader } from "./styles";
+import { MoreIcon } from "../../components/Buttons";
 
-function createData(name, email, cpfcnpj, phone, options) {
-  return { name, email, cpfcnpj, phone, options };
+function createData(id, name, email, cpfcnpj, phone, options) {
+  return { id, name, email, cpfcnpj, phone, options };
 }
 
 const rows = [
   createData(
+    "1",
     "Ana Luiza França dos Santos",
     "A.francaxavier@gmail.com",
     "755.708.970-70",
@@ -25,6 +27,7 @@ const rows = [
     "mudar"
   ),
   createData(
+    "1",
     "Ana Luiza França dos Santos",
     "A.francaxavier@gmail.com",
     "755.708.970-70",
@@ -32,6 +35,7 @@ const rows = [
     "mudar"
   ),
   createData(
+    "1",
     "Ana Luiza França dos Santos",
     "A.francaxavier@gmail.com",
     "755.708.970-70",
@@ -39,6 +43,7 @@ const rows = [
     "mudar"
   ),
   createData(
+    "1",
     "Ana Luiza França dos Santos",
     "A.francaxavier@gmail.com",
     "755.708.970-70",
@@ -46,6 +51,7 @@ const rows = [
     "mudar"
   ),
   createData(
+    "1",
     "Ana Luiza França dos Santos",
     "A.francaxavier@gmail.com",
     "755.708.970-70",
@@ -53,6 +59,7 @@ const rows = [
     "mudar"
   ),
   createData(
+    "1",
     "Ana Luiza França dos Santos",
     "A.francaxavier@gmail.com",
     "755.708.970-70",
@@ -69,26 +76,30 @@ function Client() {
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
           <TableHead>
             <TableRow>
+              <TableCellHeader align="left">Id</TableCellHeader>
               <TableCellHeader>Nome</TableCellHeader>
-              <TableCellHeader align="right">Email</TableCellHeader>
-              <TableCellHeader align="right">CNPJ/CPF</TableCellHeader>
-              <TableCellHeader align="right">Telefone</TableCellHeader>
-              <TableCellHeader align="right">Opções</TableCellHeader>
+              <TableCellHeader align="left">Email</TableCellHeader>
+              <TableCellHeader align="left">CNPJ/CPF</TableCellHeader>
+              <TableCellHeader align="left">Telefone</TableCellHeader>
+              <TableCellHeader align="left">Opções</TableCellHeader>
             </TableRow>
           </TableHead>
           <TableBody>
             {rows.map((row) => (
               <TableRow
-                key={row.name}
+                key={row.id}
                 sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
               >
+                <TableCell align="left">{row.id}</TableCell>
                 <TableCell component="th" scope="row">
                   {row.name}
                 </TableCell>
-                <TableCell align="right">{row.email}</TableCell>
-                <TableCell align="right">{row.cpfcnpj}</TableCell>
-                <TableCell align="right">{row.phone}</TableCell>
-                <TableCell align="right">{row.options}</TableCell>
+                <TableCell align="left">{row.email}</TableCell>
+                <TableCell align="left">{row.cpfcnpj}</TableCell>
+                <TableCell align="left">{row.phone}</TableCell>
+                <TableCell align="left">
+                  <MoreIcon />
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
