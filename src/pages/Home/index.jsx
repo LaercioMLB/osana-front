@@ -7,7 +7,7 @@ import Box from "@mui/material/Box";
 import Client from "../Client";
 import PersonalServices from "../PersonalServices";
 import Services from "../Services";
-import AccountButton from "../../components/AccountButton";
+import { AccountButton } from "../../components/Buttons";
 import Filter from "../../components/Filter";
 import FilterContext from "../../context/FilterContext";
 import { useContext } from "react";
