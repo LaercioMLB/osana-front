@@ -12,6 +12,7 @@ import {
 import { H1 } from "../../components/Text";
 import { TableCellHeader, StatusCell, PrioridadeCell } from "./styles";
 import { MoreIcon } from "../../components/Buttons";
+import ButtonNewService from "./ButtonNewService";
 
 function createData(
   id,
@@ -120,7 +121,17 @@ function ColorPrioridade(prioridade) {
 function PersonalServices() {
   return (
     <Box>
-      <H1>Clientes</H1>
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <H1>Minhas OS</H1>
+        <ButtonNewService />
+      </Box>
       <TableContainer>
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
           <TableHead>

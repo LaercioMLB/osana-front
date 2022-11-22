@@ -11,6 +11,7 @@ import { AccountButton } from "../../components/Buttons";
 import Filter from "../../components/Filter";
 import FilterContext from "../../context/FilterContext";
 import { useContext } from "react";
+import Gestao from "../Gestao";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -75,6 +76,7 @@ export default function Home() {
             <Tab label="Clientes" {...a11yProps(0)} />
             <Tab label="Minhas OS" {...a11yProps(1)} />
             <Tab label="Todas OS" {...a11yProps(2)} />
+            <Tab label="Gestão" {...a11yProps(3)} />
           </Tabs>
           <AccountButton />
         </Box>
@@ -86,6 +88,9 @@ export default function Home() {
         </TabPanel>
         <TabPanel value={filterData.tabSelected} index={2}>
           <Services />
+        </TabPanel>
+        <TabPanel value={filterData.tabSelected} index={3}>
+          <Gestao />
         </TabPanel>
       </Box>
     </Box>

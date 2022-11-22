@@ -12,6 +12,7 @@ import {
 import { H1 } from "../../components/Text";
 import { TableCellHeader } from "./styles";
 import { MoreIcon } from "../../components/Buttons";
+import ButtonNewClient from "./ButtonNewClient";
 
 function createData(id, name, email, cpfcnpj, phone, options) {
   return { id, name, email, cpfcnpj, phone, options };
@@ -71,7 +72,18 @@ const rows = [
 function Client() {
   return (
     <Box>
-      <H1>Clientes</H1>
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <H1>Clientes</H1>
+        <ButtonNewClient />
+      </Box>
+
       <TableContainer>
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
           <TableHead>
