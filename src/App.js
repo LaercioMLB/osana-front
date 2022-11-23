@@ -15,7 +15,7 @@ export default function App() {
             !localStorage.getItem('token') ? (
               <Navigate to="/login" />
             ) : (
-              <Navigate to="/" />
+              <Home />
             )
           } path="/" />
         </Routes>
