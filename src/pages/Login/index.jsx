@@ -9,21 +9,17 @@ import {
   OutlinedInput,
   TextField,
 } from "@mui/material";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { useNavigate } from "react-router-dom";
+import UserContext from "../../context/UserContext";
+import { ToastContainer, toast } from 'react-toastify';
 
 import api from "../../services/api";
-import Alert from "../../components/Alert/Alert";
 
 function Login() {
-  const [alert, setAlert] = useState({
-    type: "",
-    title: "",
-    description: "",
-    showAlert: false
-  })
+  const [userData, setUserData] = useContext(UserContext);
 
   const [values, setValues] = useState({
     amount: "",
@@ -43,29 +39,17 @@ function Login() {
 
     await api.post('/auth', {username, password})
       .then(response => {
-        localStorage.setItem('token', response.token)
-        localStorage.setItem('isGestor', response.user.roles[0].authority === "ROLE_GESTOR")
-        localStorage.setItem('user', JSON.stringify(response.user))
+        localStorage.setItem('token', response.data.token)
+        localStorage.setItem('username', response.data.user.username)
+        setUserData({
+          isGestor: response.data.user.roles[0].authority === 'ROLE_GESTOR',
+          user: response.data.user
+        })
         navigate("/")
+        toast.success(`Logado com Sucesso, Bem Vindo ${response.data.user.name}`);
       })
       .catch(error => {
-
-        setAlert({
-          type: "error",
-          title: "Error",
-          description: error.response.data,
-          showAlert: true
-        })
-
-        setTimeout(() => {
-          setAlert({
-            type: "",
-            title: "",
-            description: "",
-            showAlert: false
-          })
-        }, 3000)
-
+        toast.error(error.response.data);
       })
   }
 
@@ -93,7 +77,7 @@ function Login() {
 
   return (
     <>
-      {alert.showAlert ? <Alert typeAlert={alert.type} titleAlert={alert.title} descriptionAlert={alert.description} /> : ""}
+      <ToastContainer />
       <Box
         sx={{
           marginX: "auto",

@@ -8,8 +8,6 @@ export function FilterContextProvider(props) {
     filters: [],
   });
 
-  console.log(filterData)
-
   return (
     <FilterContext.Provider value={[filterData, setFilterData]}>
       {props.children}

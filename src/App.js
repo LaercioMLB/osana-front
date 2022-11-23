@@ -4,6 +4,7 @@ import Login from "./pages/Login";
 import Home from "./pages/Home";
 import { UserContextProvider } from "./context/UserContext";
 import { FilterContextProvider } from "./context/FilterContext";
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function App() {
   return (
@@ -11,13 +12,7 @@ export default function App() {
       <FilterContextProvider>
         <Routes>
           <Route element={<Login />} path="/login" />
-          <Route element={            
-            !localStorage.getItem('token') ? (
-              <Navigate to="/login" />
-            ) : (
-              <Home />
-            )
-          } path="/" />
+          <Route element={<Home />} path="/*" />
         </Routes>
       </FilterContextProvider>
     </UserContextProvider>
