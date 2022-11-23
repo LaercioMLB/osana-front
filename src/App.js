@@ -1,5 +1,5 @@
 import React from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import Login from "./pages/Login";
 import Home from "./pages/Home";
 import { UserContextProvider } from "./context/UserContext";
@@ -10,8 +10,14 @@ export default function App() {
     <UserContextProvider>
       <FilterContextProvider>
         <Routes>
-          <Route element={<Login />} path="/entrar" />
-          <Route element={<Home />} path="/*" />
+          <Route element={<Login />} path="/login" />
+          <Route element={            
+            !localStorage.getItem('token') ? (
+              <Navigate to="/login" />
+            ) : (
+              <Navigate to="/" />
+            )
+          } path="/" />
         </Routes>
       </FilterContextProvider>
     </UserContextProvider>

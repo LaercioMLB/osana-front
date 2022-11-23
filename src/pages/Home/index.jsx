@@ -12,6 +12,7 @@ import Filter from "../../components/Filter";
 import FilterContext from "../../context/FilterContext";
 import { useContext } from "react";
 import Gestao from "../Gestao";
+import { useNavigate } from "react-router-dom";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -47,11 +48,19 @@ function a11yProps(index) {
 }
 
 export default function Home() {
+  const navigate = useNavigate();
   const [filterData, setFilterData] = useContext(FilterContext);
 
   const handleChange = (event, newValue) => {
     setFilterData({ ...filterData, tabSelected: newValue, filters: [] });
   };
+
+  React.useEffect(() => {
+    if (!localStorage.getItem('token')){
+      navigate("/login")
+    }
+    // eslint-disable-next-line
+  },[])
 
   return (
     <Box sx={{ width: "100%", display: "flex", flexDirection: "row" }}>
