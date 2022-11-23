@@ -1,7 +1,6 @@
 import React from "react";
 import {
   Box,
-  Paper,
   Table,
   TableBody,
   TableCell,
@@ -12,12 +11,13 @@ import {
 import { H1 } from "../../components/Text";
 import { TableCellHeader } from "./styles";
 
-function createData(name, email, cpfcnpj, phone, options) {
-  return { name, email, cpfcnpj, phone, options };
+function createData(id, name, email, cpfcnpj, phone, options) {
+  return { id, name, email, cpfcnpj, phone, options };
 }
 
 const rows = [
   createData(
+    "1",
     "Ana Luiza França dos Santos",
     "A.francaxavier@gmail.com",
     "755.708.970-70",
@@ -25,6 +25,7 @@ const rows = [
     "mudar"
   ),
   createData(
+    "2",
     "Ana Luiza França dos Santos",
     "A.francaxavier@gmail.com",
     "755.708.970-70",
@@ -32,6 +33,7 @@ const rows = [
     "mudar"
   ),
   createData(
+    "3",
     "Ana Luiza França dos Santos",
     "A.francaxavier@gmail.com",
     "755.708.970-70",
@@ -39,6 +41,7 @@ const rows = [
     "mudar"
   ),
   createData(
+    "4",
     "Ana Luiza França dos Santos",
     "A.francaxavier@gmail.com",
     "755.708.970-70",
@@ -46,6 +49,7 @@ const rows = [
     "mudar"
   ),
   createData(
+    "5",
     "Ana Luiza França dos Santos",
     "A.francaxavier@gmail.com",
     "755.708.970-70",
@@ -53,6 +57,7 @@ const rows = [
     "mudar"
   ),
   createData(
+    "6",
     "Ana Luiza França dos Santos",
     "A.francaxavier@gmail.com",
     "755.708.970-70",
@@ -79,7 +84,7 @@ function Services() {
           <TableBody>
             {rows.map((row) => (
               <TableRow
-                key={row.name}
+                key={row.id}
                 sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
               >
                 <TableCell component="th" scope="row">

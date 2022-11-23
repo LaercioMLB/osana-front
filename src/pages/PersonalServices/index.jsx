@@ -1,7 +1,6 @@
 import React from "react";
 import {
   Box,
-  Paper,
   Table,
   TableBody,
   TableCell,
@@ -39,7 +38,7 @@ const rows = [
     "Alta"
   ),
   createData(
-    "1",
+    "2",
     "Formatação",
     "Uniamérica",
     "Computador",
@@ -49,7 +48,7 @@ const rows = [
     "Alta"
   ),
   createData(
-    "1",
+    "3",
     "Formatação",
     "Uniamérica",
     "Computador",
@@ -59,7 +58,7 @@ const rows = [
     "Alta"
   ),
   createData(
-    "1",
+    "4",
     "Formatação",
     "Uniamérica",
     "Computador",
@@ -69,7 +68,7 @@ const rows = [
     "Alta"
   ),
   createData(
-    "1",
+    "5",
     "Formatação",
     "Uniamérica",
     "Computador",
@@ -79,7 +78,7 @@ const rows = [
     "Alta"
   ),
   createData(
-    "1",
+    "6",
     "Formatação",
     "Uniamérica",
     "Computador",

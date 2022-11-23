@@ -5,7 +5,10 @@ export const FilterContext = createContext([{}, () => {}]);
 export function FilterContextProvider(props) {
   const [filterData, setFilterData] = useState({
     tabSelected: 0,
+    filters: [],
   });
+
+  console.log(filterData)
 
   return (
     <FilterContext.Provider value={[filterData, setFilterData]}>

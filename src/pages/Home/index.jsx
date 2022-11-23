@@ -50,8 +50,7 @@ export default function Home() {
   const [filterData, setFilterData] = useContext(FilterContext);
 
   const handleChange = (event, newValue) => {
-    console.log(newValue);
-    setFilterData({ ...filterData, tabSelected: newValue });
+    setFilterData({ ...filterData, tabSelected: newValue, filters: [] });
   };
 
   return (
