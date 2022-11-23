@@ -1,7 +1,6 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
-  Paper,
   Table,
   TableBody,
   TableCell,
@@ -13,65 +12,43 @@ import { H1 } from "../../components/Text";
 import { TableCellHeader } from "./styles";
 import { MoreIcon } from "../../components/Buttons";
 import ButtonNewClient from "./ButtonNewClient";
-
-function createData(id, name, email, cpfcnpj, phone, options) {
-  return { id, name, email, cpfcnpj, phone, options };
-}
-
-const rows = [
-  createData(
-    "1",
-    "Ana Luiza França dos Santos",
-    "A.francaxavier@gmail.com",
-    "755.708.970-70",
-    "45 91234-5678",
-    "mudar"
-  ),
-  createData(
-    "1",
-    "Ana Luiza França dos Santos",
-    "A.francaxavier@gmail.com",
-    "755.708.970-70",
-    "45 91234-5678",
-    "mudar"
-  ),
-  createData(
-    "1",
-    "Ana Luiza França dos Santos",
-    "A.francaxavier@gmail.com",
-    "755.708.970-70",
-    "45 91234-5678",
-    "mudar"
-  ),
-  createData(
-    "1",
-    "Ana Luiza França dos Santos",
-    "A.francaxavier@gmail.com",
-    "755.708.970-70",
-    "45 91234-5678",
-    "mudar"
-  ),
-  createData(
-    "1",
-    "Ana Luiza França dos Santos",
-    "A.francaxavier@gmail.com",
-    "755.708.970-70",
-    "45 91234-5678",
-    "mudar"
-  ),
-  createData(
-    "1",
-    "Ana Luiza França dos Santos",
-    "A.francaxavier@gmail.com",
-    "755.708.970-70",
-    "45 91234-5678",
-    "mudar"
-  ),
-];
+import api from "../../services/api";
+import { useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from 'react-toastify';
 
 function Client() {
+  const navigate = useNavigate();
+  const [ listClients, setListClients ] = useState([]);
+
+  const config = {
+    headers: {
+      "Authorization": `Bearer ${localStorage.getItem('token')}`,
+    },
+  };
+
+  async function getClients(){
+    await api.get('/client', config)
+      .then((response) => setListClients(response.data))
+      .catch((error) => {
+          if (error.response.status === 403){
+            localStorage.clear()
+            navigate("/login")
+          }else{
+            toast.error("Algo deu errado !")
+          }
+        }
+      );
+  }
+
+  useEffect(() => {
+    if (localStorage.getItem('token')){
+      getClients();
+    }
+  }, [])
+
   return (
     <Box>
+      <ToastContainer />
       <Box
         sx={{
           display: "flex",
@@ -88,27 +65,23 @@ function Client() {
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
           <TableHead>
             <TableRow>
-              <TableCellHeader align="left">Id</TableCellHeader>
               <TableCellHeader>Nome</TableCellHeader>
-              <TableCellHeader align="left">Email</TableCellHeader>
               <TableCellHeader align="left">CNPJ/CPF</TableCellHeader>
-              <TableCellHeader align="left">Telefone</TableCellHeader>
+              <TableCellHeader align="left">Contrato</TableCellHeader>
               <TableCellHeader align="left">Opções</TableCellHeader>
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.map((row) => (
+            {listClients.map((client) => (
               <TableRow
-                key={row.id}
+                key={client.id}
                 sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
               >
-                <TableCell align="left">{row.id}</TableCell>
                 <TableCell component="th" scope="row">
-                  {row.name}
+                  {client.name}
                 </TableCell>
-                <TableCell align="left">{row.email}</TableCell>
-                <TableCell align="left">{row.cpfcnpj}</TableCell>
-                <TableCell align="left">{row.phone}</TableCell>
+                <TableCell align="left">{client.cnpj}</TableCell>
+                <TableCell align="left">{client.contract}</TableCell>
                 <TableCell align="left">
                   <MoreIcon />
                 </TableCell>
