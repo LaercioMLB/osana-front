@@ -1,106 +1,267 @@
-import React from "react";
-import {
-  Box,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-} from "@mui/material";
-import { H1 } from "../../components/Text";
-import { TableCellHeader } from "./styles";
+import * as React from 'react';
+import PropTypes from 'prop-types';
+import Box from '@mui/material/Box';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TablePagination from '@mui/material/TablePagination';
+import TableRow from '@mui/material/TableRow';
+import TableSortLabel from '@mui/material/TableSortLabel';
+import Paper from '@mui/material/Paper';
+import { visuallyHidden } from '@mui/utils';
+import api from "../../services/api";
+import { useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from 'react-toastify';
 
-function createData(id, name, email, cpfcnpj, phone, options) {
-  return { id, name, email, cpfcnpj, phone, options };
+function descendingComparator(a, b, orderBy) {
+  if (b[orderBy] < a[orderBy]) {
+    return -1;
+  }
+  if (b[orderBy] > a[orderBy]) {
+    return 1;
+  }
+  return 0;
 }
 
-const rows = [
-  createData(
-    "1",
-    "Ana Luiza França dos Santos",
-    "A.francaxavier@gmail.com",
-    "755.708.970-70",
-    "45 91234-5678",
-    "mudar"
-  ),
-  createData(
-    "2",
-    "Ana Luiza França dos Santos",
-    "A.francaxavier@gmail.com",
-    "755.708.970-70",
-    "45 91234-5678",
-    "mudar"
-  ),
-  createData(
-    "3",
-    "Ana Luiza França dos Santos",
-    "A.francaxavier@gmail.com",
-    "755.708.970-70",
-    "45 91234-5678",
-    "mudar"
-  ),
-  createData(
-    "4",
-    "Ana Luiza França dos Santos",
-    "A.francaxavier@gmail.com",
-    "755.708.970-70",
-    "45 91234-5678",
-    "mudar"
-  ),
-  createData(
-    "5",
-    "Ana Luiza França dos Santos",
-    "A.francaxavier@gmail.com",
-    "755.708.970-70",
-    "45 91234-5678",
-    "mudar"
-  ),
-  createData(
-    "6",
-    "Ana Luiza França dos Santos",
-    "A.francaxavier@gmail.com",
-    "755.708.970-70",
-    "45 91234-5678",
-    "mudar"
-  ),
+function getComparator(order, orderBy) {
+  return order === 'desc'
+    ? (a, b) => descendingComparator(a, b, orderBy)
+    : (a, b) => -descendingComparator(a, b, orderBy);
+}
+
+// This method is created for cross-browser compatibility, if you don't
+// need to support IE11, you can use Array.prototype.sort() directly
+function stableSort(array, comparator) {
+  const stabilizedThis = array.map((el, index) => [el, index]);
+  stabilizedThis.sort((a, b) => {
+    const order = comparator(a[0], b[0]);
+    if (order !== 0) {
+      return order;
+    }
+    return a[1] - b[1];
+  });
+  return stabilizedThis.map((el) => el[0]);
+}
+
+const headCells = [
+  {
+    id: 'motive',
+    numeric: false,
+    disablePadding: false,
+    label: 'Motivo',
+  },
+  {
+    id: 'dateOS',
+    numeric: false,
+    disablePadding: false,
+    label: 'Data de Abertura',
+  },
+  {
+    id: 'usuario',
+    numeric: false,
+    disablePadding: false,
+    label: 'Aberto Por:',
+  },
+  {
+    id: 'status',
+    numeric: false,
+    disablePadding: false,
+    label: 'Status',
+  },
+  {
+    id: 'priority',
+    numeric: false,
+    disablePadding: false,
+    label: 'Prioridade',
+  },
+  {
+    id: 'typeServices',
+    numeric: false,
+    disablePadding: false,
+    label: 'Tipo do Serviço',
+  },
+  {
+    id: 'client',
+    numeric: false,
+    disablePadding: false,
+    label: 'Cliente',
+  },
 ];
 
-function Services() {
+function EnhancedTableHead(props) {
+  const { order, orderBy, onRequestSort } =
+    props;
+  const createSortHandler = (property) => (event) => {
+    onRequestSort(event, property);
+  };
+
   return (
-    <Box>
-      <H1>Todas OS</H1>
-      <TableContainer>
-        <Table sx={{ minWidth: 650 }} aria-label="simple table">
-          <TableHead>
-            <TableRow>
-              <TableCellHeader>Nome</TableCellHeader>
-              <TableCellHeader align="right">Email</TableCellHeader>
-              <TableCellHeader align="right">CNPJ/CPF</TableCellHeader>
-              <TableCellHeader align="right">Telefone</TableCellHeader>
-              <TableCellHeader align="right">Opções</TableCellHeader>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {rows.map((row) => (
-              <TableRow
-                key={row.id}
-                sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-              >
-                <TableCell component="th" scope="row">
-                  {row.name}
-                </TableCell>
-                <TableCell align="right">{row.email}</TableCell>
-                <TableCell align="right">{row.cpfcnpj}</TableCell>
-                <TableCell align="right">{row.phone}</TableCell>
-                <TableCell align="right">{row.options}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </Box>
+    <TableHead>
+      <TableRow>
+        {headCells.map((headCell) => (
+          <TableCell
+            key={headCell.id}
+            align={headCell.numeric ? 'right' : 'left'}
+            padding={headCell.disablePadding ? 'none' : 'normal'}
+            sortDirection={orderBy === headCell.id ? order : false}
+          >
+            <TableSortLabel
+              active={orderBy === headCell.id}
+              direction={orderBy === headCell.id ? order : 'asc'}
+              onClick={createSortHandler(headCell.id)}
+            >
+              {headCell.label}
+              {orderBy === headCell.id ? (
+                <Box component="span" sx={visuallyHidden}>
+                  {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+                </Box>
+              ) : null}
+            </TableSortLabel>
+          </TableCell>
+        ))}
+      </TableRow>
+    </TableHead>
   );
 }
 
-export default Services;
+EnhancedTableHead.propTypes = {
+  onRequestSort: PropTypes.func.isRequired,
+  order: PropTypes.oneOf(['asc', 'desc']).isRequired,
+  orderBy: PropTypes.string.isRequired,
+};
+
+export default function Services() {
+  const navigate = useNavigate();
+  const [order, setOrder] = React.useState('asc');
+  const [orderBy, setOrderBy] = React.useState('dateOS');
+  const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [numberOfElements, setNumberOfElements] = React.useState(0);
+  const [rows, setRows] = React.useState([]);
+
+  const config = {
+    headers: {
+      "Authorization": `Bearer ${localStorage.getItem('token')}`,
+    },
+  };
+
+  async function getListOs({ size, page }){
+    await api.get(`/os?size=${size}&page=${page}`, config)
+      .then((response) => {
+        setRows(response.data.content)
+        setNumberOfElements(response.data.totalElements)
+        setPage(response.data.number)
+        setRowsPerPage(response.data.size)
+      })
+      .catch((error) => {
+          if (error.response.status === 403){
+            localStorage.clear()
+            navigate("/login")
+          }else{
+            toast.error("Algo deu errado !")
+          }
+        }
+      );
+  }
+
+  React.useEffect(() => {
+    if (localStorage.getItem('token')){
+      getListOs({ size: 5, page: 0 });
+    }
+  }, [])
+
+  // React.useEffect(() => {
+  //   if (localStorage.getItem('token')){
+  //     getListOs({ size: 10, page: 0 });
+  //   }
+  // }, [])
+
+  const handleRequestSort = (event, property) => {
+    const isAsc = orderBy === property && order === 'asc';
+    setOrder(isAsc ? 'desc' : 'asc');
+    setOrderBy(property);
+  };
+
+  const handleChangePage = (event, newPage) => {
+    getListOs({ size: rowsPerPage, page: newPage });
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    getListOs({ size: parseInt(event.target.value, 10), page: 0 });
+  };
+
+  // Avoid a layout jump when reaching the last page with empty rows.
+  const emptyRows =
+    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
+
+  return (
+    <Box sx={{ width: '100%' }}>
+      <Paper sx={{ width: '100%', mb: 2 }}>
+        <ToastContainer />
+        <TableContainer>
+          <Table
+            sx={{ minWidth: 750 }}
+            aria-labelledby="tableTitle"
+            size='medium'
+          >
+            <EnhancedTableHead
+              order={order}
+              orderBy={orderBy}
+              onRequestSort={handleRequestSort}
+            />
+            <TableBody>
+              {stableSort(rows, getComparator(order, orderBy))
+                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                .map((row, index) => {
+                  const labelId = `enhanced-table-checkbox-${index}`;
+
+                  return (
+                    <TableRow
+                      hover
+                      role="checkbox"
+                      tabIndex={-1}
+                      key={row.idOS}
+                    >
+                      <TableCell
+                        component="th"
+                        id={labelId}
+                        scope="row"
+                      >
+                        {row.motive}
+                      </TableCell>
+                      <TableCell align="left">{row.dateOS}</TableCell>
+                      <TableCell align="left">{row.usuario.name}</TableCell>
+                      <TableCell align="left">{row.status.name}</TableCell>
+                      <TableCell align="left">{row.priority.name}</TableCell>
+                      <TableCell align="left">{row.typeServices.services}</TableCell>
+                      <TableCell align="left">{row.client.name}</TableCell>
+                    </TableRow>
+                  );
+                })}
+              {emptyRows > 0 && (
+                <TableRow
+                  style={{
+                    height: (53) * emptyRows,
+                  }}
+                >
+                  <TableCell colSpan={6} />
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
+        <TablePagination
+          rowsPerPageOptions={[5, 10, 25]}
+          component="div"
+          count={numberOfElements}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+        />
+      </Paper>
+    </Box>
+  );
+}
