@@ -12,6 +12,9 @@ import { H1 } from "../../components/Text";
 import { TableCellHeader, StatusCell, PrioridadeCell } from "./styles";
 import { MoreIcon } from "../../components/Buttons";
 import ButtonNewService from "./ButtonNewService";
+import { useContext } from "react";
+import FilterContext from "../../context/FilterContext";
+import { useEffect } from "react";
 
 function createData(
   id,
@@ -118,6 +121,10 @@ function ColorPrioridade(prioridade) {
 }
 
 function PersonalServices() {
+  const [filterData] = useContext(FilterContext);
+  useEffect(() => {
+    console.log(filterData);
+  }, [filterData]);
   return (
     <Box>
       <Box
@@ -146,35 +153,114 @@ function PersonalServices() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.map((row) => (
-              <TableRow
-                key={row.id}
-                sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-              >
-                <TableCell align="left">{row.id}</TableCell>
-                <TableCell component="th" scope="row">
-                  {row.service}
-                </TableCell>
-                <TableCell align="left">{row.client}</TableCell>
-                <TableCell align="left">{row.equipamento}</TableCell>
-                <TableCell align="left">{row.date}</TableCell>
-                <TableCell align="left">
-                  <StatusCell sx={{ backgroundColor: ColorStatus(row.status) }}>
-                    {row.status}
-                  </StatusCell>
-                </TableCell>
-                <TableCell align="left">
-                  <PrioridadeCell
-                    sx={{ backgroundColor: ColorPrioridade(row.prioridade) }}
-                  >
-                    {row.prioridade}
-                  </PrioridadeCell>
-                </TableCell>
-                <TableCell align="left">
-                  <MoreIcon />
-                </TableCell>
-              </TableRow>
-            ))}
+            {rows.map((row) =>
+              filterData.filters.length !== 0 ? (
+                <>
+                  {filterData.filters.includes(row.status) ? (
+                    <TableRow
+                      key={row.id}
+                      sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                    >
+                      <TableCell align="left">{row.id}</TableCell>
+                      <TableCell component="th" scope="row">
+                        {row.service}
+                      </TableCell>
+                      <TableCell align="left">{row.client}</TableCell>
+                      <TableCell align="left">{row.equipamento}</TableCell>
+                      <TableCell align="left">{row.date}</TableCell>
+                      <TableCell align="left">
+                        <StatusCell
+                          sx={{ backgroundColor: ColorStatus(row.status) }}
+                        >
+                          {row.status}
+                        </StatusCell>
+                      </TableCell>
+                      <TableCell align="left">
+                        <PrioridadeCell
+                          sx={{
+                            backgroundColor: ColorPrioridade(row.prioridade),
+                          }}
+                        >
+                          {row.prioridade}
+                        </PrioridadeCell>
+                      </TableCell>
+                      <TableCell align="left">
+                        <MoreIcon />
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    <></>
+                  )}
+                  {filterData.filters.includes(row.prioridade) ? (
+                    <TableRow
+                      key={row.id}
+                      sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                    >
+                      <TableCell align="left">{row.id}</TableCell>
+                      <TableCell component="th" scope="row">
+                        {row.service}
+                      </TableCell>
+                      <TableCell align="left">{row.client}</TableCell>
+                      <TableCell align="left">{row.equipamento}</TableCell>
+                      <TableCell align="left">{row.date}</TableCell>
+                      <TableCell align="left">
+                        <StatusCell
+                          sx={{ backgroundColor: ColorStatus(row.status) }}
+                        >
+                          {row.status}
+                        </StatusCell>
+                      </TableCell>
+                      <TableCell align="left">
+                        <PrioridadeCell
+                          sx={{
+                            backgroundColor: ColorPrioridade(row.prioridade),
+                          }}
+                        >
+                          {row.prioridade}
+                        </PrioridadeCell>
+                      </TableCell>
+                      <TableCell align="left">
+                        <MoreIcon />
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    <></>
+                  )}
+                </>
+              ) : (
+                <TableRow
+                  key={row.id}
+                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                >
+                  <TableCell align="left">{row.id}</TableCell>
+                  <TableCell component="th" scope="row">
+                    {row.service}
+                  </TableCell>
+                  <TableCell align="left">{row.client}</TableCell>
+                  <TableCell align="left">{row.equipamento}</TableCell>
+                  <TableCell align="left">{row.date}</TableCell>
+                  <TableCell align="left">
+                    <StatusCell
+                      sx={{ backgroundColor: ColorStatus(row.status) }}
+                    >
+                      {row.status}
+                    </StatusCell>
+                  </TableCell>
+                  <TableCell align="left">
+                    <PrioridadeCell
+                      sx={{
+                        backgroundColor: ColorPrioridade(row.prioridade),
+                      }}
+                    >
+                      {row.prioridade}
+                    </PrioridadeCell>
+                  </TableCell>
+                  <TableCell align="left">
+                    <MoreIcon />
+                  </TableCell>
+                </TableRow>
+              )
+            )}
           </TableBody>
         </Table>
       </TableContainer>

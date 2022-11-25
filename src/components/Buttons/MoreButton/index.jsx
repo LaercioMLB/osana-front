@@ -3,6 +3,8 @@ import Button from "@mui/material/Button";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
+import ModalDelete from "../../Modal/ModalDelete";
+import ModalEdit from "../../Modal/ModalEdit";
 
 export default function MoreButton() {
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -34,9 +36,12 @@ export default function MoreButton() {
           "aria-labelledby": "basic-button",
         }}
       >
-        <MenuItem onClick={handleClose}>Profile</MenuItem>
-        <MenuItem onClick={handleClose}>My account</MenuItem>
-        <MenuItem onClick={handleClose}>Logout</MenuItem>
+        <MenuItem>
+          <ModalEdit />
+        </MenuItem>
+        <MenuItem>
+          <ModalDelete />
+        </MenuItem>
       </Menu>
     </div>
   );

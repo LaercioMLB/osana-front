@@ -5,7 +5,7 @@ import Button from "@mui/material/Button";
 import AddIcon from "@mui/icons-material/Add";
 import { H1 } from "../../components/Text";
 import { Divider, MenuItem, TextField } from "@mui/material";
-import { StylesProvider } from "@material-ui/core";
+import { maskCpfCnpj } from "../../utils/mascaras";
 
 const style = {
   display: "flex",
@@ -23,6 +23,7 @@ const style = {
 
 export default function ButtonNewClient() {
   const [open, setOpen] = React.useState(false);
+  const [cpfCnpj, setCpfCnpj] = React.useState("");
   const handleOpen = () => {
     setOpen(true);
   };
@@ -131,6 +132,9 @@ export default function ButtonNewClient() {
               sx={{ width: "48%" }}
               label="CNPJ/CPF"
               variant="outlined"
+              value={cpfCnpj}
+              inputProps={{ maxLength: 18 }}
+              onChange={(e) => setCpfCnpj(maskCpfCnpj(e.target.value))}
             />
           </Box>
           <Box
