@@ -37,9 +37,9 @@ export default function AccountButton() {
   };
 
   const handleLogout = () => {
-    localStorage.clear()
-    setUserData({ isGestor: false, user: {} })
-    navigate("/login")
+    localStorage.clear();
+    setUserData({ isGestor: false, user: {} });
+    navigate("/login");
   };
 
   const menuId = "primary-search-account-menu";
@@ -59,9 +59,8 @@ export default function AccountButton() {
       open={isMenuOpen}
       onClose={handleMenuClose}
     >
-      <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-      <MenuItem onClick={handleMenuClose}>My account</MenuItem>
-      <MenuItem onClick={handleLogout}>Logout</MenuItem>
+      <MenuItem onClick={handleMenuClose}>Perfil</MenuItem>
+      <MenuItem onClick={handleLogout}>Sair</MenuItem>
     </Menu>
   );
 
