@@ -3,11 +3,15 @@ import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
 import Button from "@mui/material/Button";
 import AddIcon from "@mui/icons-material/Add";
+import InputLabel from '@mui/material/InputLabel';
+import Select from '@mui/material/Select';
+import Chip from '@mui/material/Chip';
 import { H1 } from "../../components/Text";
 import { MenuItem, TextField } from "@mui/material";
 import api from "../../services/api";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from 'react-toastify';
+import { useTheme } from '@mui/material/styles';
 
 const style = {
   display: "flex",
@@ -23,14 +27,34 @@ const style = {
   width: "100%",
 };
 
+const ITEM_HEIGHT = 48;
+const ITEM_PADDING_TOP = 8;
+const MenuProps = {
+  PaperProps: {
+    style: {
+      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+      width: 250,
+    },
+  },
+};
+
+function getStyles(name, personName, theme) {
+  return {
+    fontWeight:
+      personName.indexOf(name) === -1
+        ? theme.typography.fontWeightRegular
+        : theme.typography.fontWeightMedium,
+  };
+}
+
 export default function ButtonNewService({ idUsuario, createNewOS }) {
+  const theme = useTheme();
   const navigate = useNavigate();
   const [open, setOpen] = React.useState(false);
   const [listClient, setListClient] = React.useState([]);
   const [listPriority, setListPriority] = React.useState([]);
   const [listTypeService, setListTypeService] = React.useState([]);
   const [listEquipment, setListEquipment] = React.useState([]);
-  const [listInventory, setListInventory] = React.useState([]);
 
   const [client, setClient] = React.useState('');
   const [prior, setPrior] = React.useState('');
@@ -38,7 +62,6 @@ export default function ButtonNewService({ idUsuario, createNewOS }) {
   const [motive, setMotive] = React.useState('');
   const [observacoes, setObservacoes] = React.useState('');
   const [equipments, setEquipments] = React.useState([]);
-  const [inventories, setInventories] = React.useState([]);
   const [devolution, setDevolution] = React.useState(null);
 
   const handleOpen = () => {
@@ -60,6 +83,13 @@ export default function ButtonNewService({ idUsuario, createNewOS }) {
     setTypeServices(event.target.value);
   };
 
+  const handleChangeEquipment = (event) => {
+    const {
+      target: { value },
+    } = event;
+    setEquipments(value);
+  };
+
   const config = {
     headers: {
       "Authorization": `Bearer ${localStorage.getItem('token')}`,
@@ -79,7 +109,7 @@ export default function ButtonNewService({ idUsuario, createNewOS }) {
             obs: observacoes,
             devolution: devolution,
             equipaments: equipments,
-            inventories: inventories,
+            inventories: [],
         }, 
         config
       )
@@ -127,22 +157,6 @@ export default function ButtonNewService({ idUsuario, createNewOS }) {
       );
   }
 
-  async function getListInventories(){
-    await api.get(`/inventory`, config)
-      .then((response) => {
-        setListInventory(response.data)
-      })
-      .catch((error) => {
-          if (error.response.status === 403){
-            localStorage.clear()
-            navigate("/login")
-          }else{
-            toast.error("Algo deu errado !")
-          }
-        }
-      );
-  }
-
   async function getListServices(){
     await api.get(`/services`, config)
       .then((response) => {
@@ -164,7 +178,6 @@ export default function ButtonNewService({ idUsuario, createNewOS }) {
       getListClientes();
       getListServices();
       getListEquipments();
-      getListInventories();
       setListPriority([
         {id: 1, name: "Alto"},
       ])
@@ -289,56 +302,34 @@ export default function ButtonNewService({ idUsuario, createNewOS }) {
             />
           </Box>
 
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "row",
-              width: "100%",
-              justifyContent: "space-between",
-              marginY: "10px",
-            }}
+          
+          <InputLabel id="demo-multiple-chip-label">Selecione os Equipamentos (Optional)</InputLabel>
+          <Select
+            labelId="demo-multiple-chip-label"
+            id="demo-multiple-chip"
+            multiple
+            sx={{ marginBottom: "10px", width: "100%" }}
+            value={equipments}
+            onChange={handleChangeEquipment}
+            renderValue={(selected) => (
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                {selected.map((value) => (
+                  <Chip key={value} label={value} />
+                ))}
+              </Box>
+            )}
+            MenuProps={MenuProps}
           >
-            <TextField
-              select
-              label="Equipamentos"
-              value={''}
-              onChange={handleChangePrio}
-              sx={{ marginBottom: "10px", width: "100%" }}
-            >
-              {listEquipment.map((option) => (
-                <MenuItem key={option.id} value={option.id}>
-                  {option.name} - {option.model}
-                </MenuItem>
-              ))}
-            </TextField>
-          </Box>
-
-
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "row",
-              width: "100%",
-              justifyContent: "space-between",
-              marginY: "10px",
-            }}
-          >
-            <TextField
-              select
-              label="Inventorio"
-              value={''}
-              onChange={handleChangePrio}
-              sx={{ marginBottom: "10px", width: "100%" }}
-            >
-              {listInventory.map((option) => (
-                <MenuItem key={option.id} value={option.id}>
-                  {option.name} (Quantidade: {option.quantity})
-                </MenuItem>
-              ))}
-            </TextField>
-          </Box>
-
-
+            {listEquipment.map((equipment) => (
+              <MenuItem
+                key={equipment.id}
+                value={equipment.id}
+                style={getStyles(equipment.name, equipments, theme)}
+              >
+                {equipment.name} - {equipment.model}
+              </MenuItem>
+            ))}
+          </Select>
 
           <Box
             sx={{

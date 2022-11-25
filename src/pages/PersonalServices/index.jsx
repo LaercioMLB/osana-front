@@ -47,7 +47,7 @@ function PersonalServices({ idUsuario }) {
   const [ listOS, setListOS ] = useState([]);
 
   const createNewOS = (newOSData) => {
-    console.log(newOSData)
+    setListOS([...listOS, newOSData])
   }
 
   const convertData = (data) => {
