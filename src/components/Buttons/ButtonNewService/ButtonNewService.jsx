@@ -3,10 +3,9 @@ import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
 import Button from "@mui/material/Button";
 import AddIcon from "@mui/icons-material/Add";
-import { H1 } from "../../components/Text";
-import { Divider, MenuItem, TextField } from "@mui/material";
-import { StylesProvider } from "@material-ui/core";
-import api from "../../services/api";
+import { H1 } from "../../Text";
+import { MenuItem, TextField } from "@mui/material";
+import api from "../../../services/api";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from 'react-toastify';
 
@@ -24,12 +23,17 @@ const style = {
   width: "100%",
 };
 
-export default function ButtonNewService() {
+export default function ButtonNewService({ idUsuario, createNewOS }) {
   const navigate = useNavigate();
   const [open, setOpen] = React.useState(false);
+  const [listClient, setListClient] = React.useState([]);
+  const [listPriority, setListPriority] = React.useState([]);
+  const [listTypeService, setListTypeService] = React.useState([]);
   const [client, setClient] = React.useState('');
   const [prior, setPrior] = React.useState('');
-  const [typeService, setTypeServices] = React.useState("");
+  const [typeService, setTypeServices] = React.useState('');
+  const [motive, setMotive] = React.useState('');
+  const [observacoes, setObservacoes] = React.useState('');
 
   const handleOpen = () => {
     setOpen(true);
@@ -53,29 +57,41 @@ export default function ButtonNewService() {
   const config = {
     headers: {
       "Authorization": `Bearer ${localStorage.getItem('token')}`,
+      "Content-Type": "application/json", 
     },
+  };
+
+  const handleCreateOs = async (event) => {
+    event.preventDefault();
+    if (client && prior && typeService && motive){
+      await api.post('/os', {
+            idUsuario: idUsuario,
+            idClient: client, 
+            idPriority: prior, 
+            idTypeServices: typeService, 
+            motive: motive,
+            obs: observacoes,
+            equipaments: [],
+            inventories: [],
+        }, 
+        config
+      )
+      .then((response) => {
+        toast.success("Cadastrado com Sucesso")
+        createNewOS(response.data)
+        setOpen(false);
+      })
+      .catch((error) => toast.error(error.response.data)
+      );
+    }else{
+      toast.error("Preencha o Formulário corretamente !")
+    }
   };
 
   async function getListClientes(){
     await api.get(`/client`, config)
       .then((response) => {
-        setClient(response.data)
-      })
-      .catch((error) => {
-          if (error.response.status === 403){
-            localStorage.clear()
-            navigate("/login")
-          }else{
-            toast.error("Algo deu errado !")
-          }
-        }
-      );
-  }
-
-  async function getListPrioridades(){
-    await api.get(`/os`, config)
-      .then((response) => {
-        setPrior(response.data)
+        setListClient(response.data)
       })
       .catch((error) => {
           if (error.response.status === 403){
@@ -91,7 +107,7 @@ export default function ButtonNewService() {
   async function getListServices(){
     await api.get(`/services`, config)
       .then((response) => {
-        setTypeServices(response.data)
+        setListTypeService(response.data)
       })
       .catch((error) => {
           if (error.response.status === 403){
@@ -107,9 +123,12 @@ export default function ButtonNewService() {
   React.useEffect(() => {
     if (localStorage.getItem('token')){
       getListClientes();
-      getListPrioridades();
       getListServices();
+      setListPriority([
+        {id: 1, name: "Alto"},
+      ])
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return (
@@ -122,6 +141,8 @@ export default function ButtonNewService() {
       >
         Nova OS
       </Button>
+
+      <ToastContainer />
 
       <Modal
         open={open}
@@ -141,19 +162,20 @@ export default function ButtonNewService() {
           <TextField
             select
             label="Cliente"
-            value={client}
             onChange={handleChangeClient}
             sx={{ marginBottom: "10px" }}
+            value={client}
           >
-            {client.map((option) => (
-              <MenuItem key={option.value} value={option.value}>
-                {option.value}
+            {listClient.map((option) => (
+              <MenuItem key={option.id} value={option.id}>
+                {option.name}
               </MenuItem>
             ))}
           </TextField>
           <TextField
             fullWidth
             label="Motivo"
+            onChange={event => setMotive(event.target.value)}
             multiline
             rows={6}
             variant="outlined"
@@ -162,6 +184,7 @@ export default function ButtonNewService() {
           <TextField
             fullWidth
             label="Observações"
+            onChange={event => setObservacoes(event.target.value)}
             multiline
             rows={6}
             variant="outlined"
@@ -183,9 +206,9 @@ export default function ButtonNewService() {
               onChange={handleChangePrio}
               sx={{ marginBottom: "10px", width: "48%" }}
             >
-              {prior.map((option) => (
-                <MenuItem key={option.value} value={option.value}>
-                  {option.value}
+              {listPriority.map((option) => (
+                <MenuItem key={option.id} value={option.id}>
+                  {option.name}
                 </MenuItem>
               ))}
             </TextField>
@@ -197,9 +220,9 @@ export default function ButtonNewService() {
               onChange={handleChangeTypeServices}
               sx={{ marginBottom: "10px", width: "48%" }}
             >
-              {typeService.map((option) => (
-                <MenuItem key={option.value} value={option.value}>
-                  {option.value}
+              {listTypeService.map((option) => (
+                <MenuItem key={option.idTypeServices} value={option.idTypeServices}>
+                  {option.services}
                 </MenuItem>
               ))}
             </TextField>
@@ -211,7 +234,7 @@ export default function ButtonNewService() {
               marginY: "10px",
             }}
           >
-            <Button sx={{ marginRight: "10px" }} variant="contained">
+            <Button sx={{ marginRight: "10px" }} variant="contained" onClick={handleCreateOs}>
               Confirmar
             </Button>
             <Button variant="outlined">Cancelar</Button>
