@@ -14,37 +14,40 @@ import { MoreIcon } from "../../components/Buttons";
 import ButtonNewClient from "./ButtonNewClient";
 import api from "../../services/api";
 import { useNavigate } from "react-router-dom";
-import { ToastContainer, toast } from 'react-toastify';
+import { ToastContainer, toast } from "react-toastify";
+import { useContext } from "react";
+import FilterContext from "../../context/FilterContext";
 
 function Client() {
   const navigate = useNavigate();
-  const [ listClients, setListClients ] = useState([]);
+  const [listClients, setListClients] = useState([]);
+  const [filterData] = useContext(FilterContext);
 
   const config = {
     headers: {
-      "Authorization": `Bearer ${localStorage.getItem('token')}`,
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
     },
   };
 
-  async function getClients(){
-    await api.get('/client', config)
+  async function getClients() {
+    await api
+      .get("/client", config)
       .then((response) => setListClients(response.data))
       .catch((error) => {
-          if (error.response.status === 403){
-            localStorage.clear()
-            navigate("/login")
-          }else{
-            toast.error("Algo deu errado !")
-          }
+        if (error.response.status === 403) {
+          localStorage.clear();
+          navigate("/login");
+        } else {
+          toast.error("Algo deu errado !");
         }
-      );
+      });
   }
 
   useEffect(() => {
-    if (localStorage.getItem('token')){
+    if (localStorage.getItem("token")) {
       getClients();
     }
-  }, [])
+  }, []);
 
   return (
     <Box>
@@ -72,21 +75,41 @@ function Client() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {listClients.map((client) => (
-              <TableRow
-                key={client.id}
-                sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-              >
-                <TableCell component="th" scope="row">
-                  {client.name}
-                </TableCell>
-                <TableCell align="left">{client.cnpj}</TableCell>
-                <TableCell align="left">{client.contract}</TableCell>
-                <TableCell align="left">
-                  <MoreIcon />
-                </TableCell>
-              </TableRow>
-            ))}
+            {listClients.map((client) =>
+              filterData.filters.length !== 0 ? (
+                filterData.filters.includes(client.contract) ? (
+                  <TableRow
+                    key={client.id}
+                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                  >
+                    <TableCell component="th" scope="row">
+                      {client.name}
+                    </TableCell>
+                    <TableCell align="left">{client.cnpj}</TableCell>
+                    <TableCell align="left">{client.contract}</TableCell>
+                    <TableCell align="left">
+                      <MoreIcon />
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  <></>
+                )
+              ) : (
+                <TableRow
+                  key={client.id}
+                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                >
+                  <TableCell component="th" scope="row">
+                    {client.name}
+                  </TableCell>
+                  <TableCell align="left">{client.cnpj}</TableCell>
+                  <TableCell align="left">{client.contract}</TableCell>
+                  <TableCell align="left">
+                    <MoreIcon />
+                  </TableCell>
+                </TableRow>
+              )
+            )}
           </TableBody>
         </Table>
       </TableContainer>

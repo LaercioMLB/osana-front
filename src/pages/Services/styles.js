@@ -26,3 +26,4 @@ const PrioridadeCell = styled(Box)(({ theme }) => ({
 }));
 
 export { TableCellHeader, StatusCell, PrioridadeCell };
+
