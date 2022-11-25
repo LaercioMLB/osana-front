@@ -31,7 +31,7 @@ export function UserContextProvider(props) {
             })
             navigate("/login")
           }else{
-            toast.error("Algo deu errado !")
+            toast.error(error.response.data.message)
           }
         }
       );

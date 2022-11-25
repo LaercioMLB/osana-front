@@ -14,6 +14,7 @@ import { visuallyHidden } from '@mui/utils';
 import api from "../../services/api";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from 'react-toastify';
+import { StatusCell, PrioridadeCell } from "./styles";
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -29,20 +30,6 @@ function getComparator(order, orderBy) {
   return order === 'desc'
     ? (a, b) => descendingComparator(a, b, orderBy)
     : (a, b) => -descendingComparator(a, b, orderBy);
-}
-
-// This method is created for cross-browser compatibility, if you don't
-// need to support IE11, you can use Array.prototype.sort() directly
-function stableSort(array, comparator) {
-  const stabilizedThis = array.map((el, index) => [el, index]);
-  stabilizedThis.sort((a, b) => {
-    const order = comparator(a[0], b[0]);
-    if (order !== 0) {
-      return order;
-    }
-    return a[1] - b[1];
-  });
-  return stabilizedThis.map((el) => el[0]);
 }
 
 const headCells = [
@@ -172,12 +159,6 @@ export default function Services() {
     }
   }, [])
 
-  // React.useEffect(() => {
-  //   if (localStorage.getItem('token')){
-  //     getListOs({ size: 10, page: 0 });
-  //   }
-  // }, [])
-
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
@@ -192,9 +173,33 @@ export default function Services() {
     getListOs({ size: parseInt(event.target.value, 10), page: 0 });
   };
 
-  // Avoid a layout jump when reaching the last page with empty rows.
-  const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
+  function ColorStatus(status) {
+    let color;
+    if (status === "Andamento") {
+      color = "#E6F819";
+    }
+    if (status === "Finalizado") {
+      color = "#8D8D8D";
+    }
+    if (status === "Aberto") {
+      color = "#1DF819";
+    }
+    return color;
+  }
+  
+  function ColorPrioridade(prioridade) {
+    let color;
+    if (prioridade === "Alta") {
+      color = "#FFC700";
+    }
+    if (prioridade === "Baixa") {
+      color = "#4200FF";
+    }
+    if (prioridade === "Urgente") {
+      color = "#FF0000";
+    }
+    return color;
+  }
 
   return (
     <Box sx={{ width: '100%' }}>
@@ -212,9 +217,7 @@ export default function Services() {
               onRequestSort={handleRequestSort}
             />
             <TableBody>
-              {stableSort(rows, getComparator(order, orderBy))
-                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((row, index) => {
+              {rows.sort(getComparator(order, orderBy)).slice().map((row, index) => {
                   const labelId = `enhanced-table-checkbox-${index}`;
 
                   return (
@@ -231,24 +234,21 @@ export default function Services() {
                       >
                         {row.motive}
                       </TableCell>
-                      <TableCell align="left">{row.dateOS}</TableCell>
+                      <TableCell align="left">{row.dateOS.split("T")[0].split("-").reverse().join("/")}</TableCell>
                       <TableCell align="left">{row.usuario.name}</TableCell>
-                      <TableCell align="left">{row.status.name}</TableCell>
-                      <TableCell align="left">{row.priority.name}</TableCell>
+                      <TableCell sx={{ backgroundColor: ColorStatus(row.status.name) }}>
+                        {row.status.name}
+                      </TableCell>
+                      <TableCell
+                        sx={{ backgroundColor: ColorPrioridade(row.priority.name) }}
+                      >
+                        {row.priority.name}
+                      </TableCell>
                       <TableCell align="left">{row.typeServices.services}</TableCell>
                       <TableCell align="left">{row.client.name}</TableCell>
                     </TableRow>
                   );
                 })}
-              {emptyRows > 0 && (
-                <TableRow
-                  style={{
-                    height: (53) * emptyRows,
-                  }}
-                >
-                  <TableCell colSpan={6} />
-                </TableRow>
-              )}
             </TableBody>
           </Table>
         </TableContainer>

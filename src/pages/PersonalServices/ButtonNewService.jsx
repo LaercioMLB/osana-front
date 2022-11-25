@@ -6,24 +6,9 @@ import AddIcon from "@mui/icons-material/Add";
 import { H1 } from "../../components/Text";
 import { Divider, MenuItem, TextField } from "@mui/material";
 import { StylesProvider } from "@material-ui/core";
-
-const clientes = [
-  {
-    value: "Uniamérica",
-  },
-];
-
-const prioridade = [
-  {
-    value: "Urgente",
-  },
-];
-
-const services = [
-  {
-    value: "Formatação",
-  },
-];
+import api from "../../services/api";
+import { useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from 'react-toastify';
 
 const style = {
   display: "flex",
@@ -40,10 +25,11 @@ const style = {
 };
 
 export default function ButtonNewService() {
+  const navigate = useNavigate();
   const [open, setOpen] = React.useState(false);
-  const [client, setClient] = React.useState("Uniamérica");
-  const [prior, setPrior] = React.useState("Urgente");
-  const [typeService, setTypeServices] = React.useState("Urgente");
+  const [client, setClient] = React.useState('');
+  const [prior, setPrior] = React.useState('');
+  const [typeService, setTypeServices] = React.useState("");
 
   const handleOpen = () => {
     setOpen(true);
@@ -63,6 +49,68 @@ export default function ButtonNewService() {
   const handleChangeTypeServices = (event) => {
     setTypeServices(event.target.value);
   };
+
+  const config = {
+    headers: {
+      "Authorization": `Bearer ${localStorage.getItem('token')}`,
+    },
+  };
+
+  async function getListClientes(){
+    await api.get(`/client`, config)
+      .then((response) => {
+        setClient(response.data)
+      })
+      .catch((error) => {
+          if (error.response.status === 403){
+            localStorage.clear()
+            navigate("/login")
+          }else{
+            toast.error("Algo deu errado !")
+          }
+        }
+      );
+  }
+
+  async function getListPrioridades(){
+    await api.get(`/os`, config)
+      .then((response) => {
+        setPrior(response.data)
+      })
+      .catch((error) => {
+          if (error.response.status === 403){
+            localStorage.clear()
+            navigate("/login")
+          }else{
+            toast.error("Algo deu errado !")
+          }
+        }
+      );
+  }
+
+  async function getListServices(){
+    await api.get(`/services`, config)
+      .then((response) => {
+        setTypeServices(response.data)
+      })
+      .catch((error) => {
+          if (error.response.status === 403){
+            localStorage.clear()
+            navigate("/login")
+          }else{
+            toast.error("Algo deu errado !")
+          }
+        }
+      );
+  }
+
+  React.useEffect(() => {
+    if (localStorage.getItem('token')){
+      getListClientes();
+      getListPrioridades();
+      getListServices();
+    }
+  }, [])
 
   return (
     <div>
@@ -97,7 +145,7 @@ export default function ButtonNewService() {
             onChange={handleChangeClient}
             sx={{ marginBottom: "10px" }}
           >
-            {clientes.map((option) => (
+            {client.map((option) => (
               <MenuItem key={option.value} value={option.value}>
                 {option.value}
               </MenuItem>
@@ -135,7 +183,7 @@ export default function ButtonNewService() {
               onChange={handleChangePrio}
               sx={{ marginBottom: "10px", width: "48%" }}
             >
-              {prioridade.map((option) => (
+              {prior.map((option) => (
                 <MenuItem key={option.value} value={option.value}>
                   {option.value}
                 </MenuItem>
@@ -149,7 +197,7 @@ export default function ButtonNewService() {
               onChange={handleChangeTypeServices}
               sx={{ marginBottom: "10px", width: "48%" }}
             >
-              {services.map((option) => (
+              {typeService.map((option) => (
                 <MenuItem key={option.value} value={option.value}>
                   {option.value}
                 </MenuItem>
