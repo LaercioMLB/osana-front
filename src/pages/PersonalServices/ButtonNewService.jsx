@@ -4,26 +4,10 @@ import Modal from "@mui/material/Modal";
 import Button from "@mui/material/Button";
 import AddIcon from "@mui/icons-material/Add";
 import { H1 } from "../../components/Text";
-import { Divider, MenuItem, TextField } from "@mui/material";
-import { StylesProvider } from "@material-ui/core";
-
-const clientes = [
-  {
-    value: "Uniamérica",
-  },
-];
-
-const prioridade = [
-  {
-    value: "Urgente",
-  },
-];
-
-const services = [
-  {
-    value: "Formatação",
-  },
-];
+import { MenuItem, TextField } from "@mui/material";
+import api from "../../services/api";
+import { useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from 'react-toastify';
 
 const style = {
   display: "flex",
@@ -39,11 +23,23 @@ const style = {
   width: "100%",
 };
 
-export default function ButtonNewService() {
+export default function ButtonNewService({ idUsuario, createNewOS }) {
+  const navigate = useNavigate();
   const [open, setOpen] = React.useState(false);
-  const [client, setClient] = React.useState("Uniamérica");
-  const [prior, setPrior] = React.useState("Urgente");
-  const [typeService, setTypeServices] = React.useState("Urgente");
+  const [listClient, setListClient] = React.useState([]);
+  const [listPriority, setListPriority] = React.useState([]);
+  const [listTypeService, setListTypeService] = React.useState([]);
+  const [listEquipment, setListEquipment] = React.useState([]);
+  const [listInventory, setListInventory] = React.useState([]);
+
+  const [client, setClient] = React.useState('');
+  const [prior, setPrior] = React.useState('');
+  const [typeService, setTypeServices] = React.useState('');
+  const [motive, setMotive] = React.useState('');
+  const [observacoes, setObservacoes] = React.useState('');
+  const [equipments, setEquipments] = React.useState([]);
+  const [inventories, setInventories] = React.useState([]);
+  const [devolution, setDevolution] = React.useState(null);
 
   const handleOpen = () => {
     setOpen(true);
@@ -64,6 +60,118 @@ export default function ButtonNewService() {
     setTypeServices(event.target.value);
   };
 
+  const config = {
+    headers: {
+      "Authorization": `Bearer ${localStorage.getItem('token')}`,
+      "Content-Type": "application/json", 
+    },
+  };
+
+  const handleCreateOs = async (event) => {
+    event.preventDefault();
+    if (client && prior && typeService && motive){
+      await api.post('/os', {
+            idUsuario: idUsuario,
+            idClient: client, 
+            idPriority: prior, 
+            idTypeServices: typeService, 
+            motive: motive,
+            obs: observacoes,
+            devolution: devolution,
+            equipaments: equipments,
+            inventories: inventories,
+        }, 
+        config
+      )
+      .then((response) => {
+        toast.success("Cadastrado com Sucesso")
+        createNewOS(response.data)
+        setOpen(false);
+      })
+      .catch((error) => toast.error(error.response.data)
+      );
+    }else{
+      toast.error("Preencha o Formulário corretamente !")
+    }
+  };
+
+  async function getListClientes(){
+    await api.get(`/client`, config)
+      .then((response) => {
+        setListClient(response.data)
+      })
+      .catch((error) => {
+          if (error.response.status === 403){
+            localStorage.clear()
+            navigate("/login")
+          }else{
+            toast.error("Algo deu errado !")
+          }
+        }
+      );
+  }
+
+  async function getListEquipments(){
+    await api.get(`/equipment`, config)
+      .then((response) => {
+        setListEquipment(response.data)
+      })
+      .catch((error) => {
+          if (error.response.status === 403){
+            localStorage.clear()
+            navigate("/login")
+          }else{
+            toast.error("Algo deu errado !")
+          }
+        }
+      );
+  }
+
+  async function getListInventories(){
+    await api.get(`/inventory`, config)
+      .then((response) => {
+        setListInventory(response.data)
+      })
+      .catch((error) => {
+          if (error.response.status === 403){
+            localStorage.clear()
+            navigate("/login")
+          }else{
+            toast.error("Algo deu errado !")
+          }
+        }
+      );
+  }
+
+  async function getListServices(){
+    await api.get(`/services`, config)
+      .then((response) => {
+        setListTypeService(response.data)
+      })
+      .catch((error) => {
+          if (error.response.status === 403){
+            localStorage.clear()
+            navigate("/login")
+          }else{
+            toast.error("Algo deu errado !")
+          }
+        }
+      );
+  }
+
+  React.useEffect(() => {
+    if (localStorage.getItem('token')){
+      getListClientes();
+      getListServices();
+      getListEquipments();
+      getListInventories();
+      setListPriority([
+        {id: 1, name: "Alto"},
+      ])
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   return (
     <div>
       <Button
@@ -74,6 +182,8 @@ export default function ButtonNewService() {
       >
         Nova OS
       </Button>
+
+      <ToastContainer />
 
       <Modal
         open={open}
@@ -93,19 +203,20 @@ export default function ButtonNewService() {
           <TextField
             select
             label="Cliente"
-            value={client}
             onChange={handleChangeClient}
             sx={{ marginBottom: "10px" }}
+            value={client}
           >
-            {clientes.map((option) => (
-              <MenuItem key={option.value} value={option.value}>
-                {option.value}
+            {listClient.map((option) => (
+              <MenuItem key={option.id} value={option.id}>
+                {option.name}
               </MenuItem>
             ))}
           </TextField>
           <TextField
             fullWidth
             label="Motivo"
+            onChange={event => setMotive(event.target.value)}
             multiline
             rows={6}
             variant="outlined"
@@ -114,6 +225,7 @@ export default function ButtonNewService() {
           <TextField
             fullWidth
             label="Observações"
+            onChange={event => setObservacoes(event.target.value)}
             multiline
             rows={6}
             variant="outlined"
@@ -135,9 +247,9 @@ export default function ButtonNewService() {
               onChange={handleChangePrio}
               sx={{ marginBottom: "10px", width: "48%" }}
             >
-              {prioridade.map((option) => (
-                <MenuItem key={option.value} value={option.value}>
-                  {option.value}
+              {listPriority.map((option) => (
+                <MenuItem key={option.id} value={option.id}>
+                  {option.name}
                 </MenuItem>
               ))}
             </TextField>
@@ -149,13 +261,85 @@ export default function ButtonNewService() {
               onChange={handleChangeTypeServices}
               sx={{ marginBottom: "10px", width: "48%" }}
             >
-              {services.map((option) => (
-                <MenuItem key={option.value} value={option.value}>
-                  {option.value}
+              {listTypeService.map((option) => (
+                <MenuItem key={option.idTypeServices} value={option.idTypeServices}>
+                  {option.services}
                 </MenuItem>
               ))}
             </TextField>
           </Box>
+
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "row",
+              width: "100%",
+              justifyContent: "space-between",
+              marginY: "10px",
+            }}
+          >
+            <TextField
+              name="Data de Devolução"
+              label="Data de Devolução (Optional)"
+              InputLabelProps={{ shrink: true }}
+              type="date"
+              defaultValue=""
+              onChange={event => setDevolution(event.target.value)}
+              sx={{ marginBottom: "10px", width: "100%" }}
+            />
+          </Box>
+
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "row",
+              width: "100%",
+              justifyContent: "space-between",
+              marginY: "10px",
+            }}
+          >
+            <TextField
+              select
+              label="Equipamentos"
+              value={''}
+              onChange={handleChangePrio}
+              sx={{ marginBottom: "10px", width: "100%" }}
+            >
+              {listEquipment.map((option) => (
+                <MenuItem key={option.id} value={option.id}>
+                  {option.name} - {option.model}
+                </MenuItem>
+              ))}
+            </TextField>
+          </Box>
+
+
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "row",
+              width: "100%",
+              justifyContent: "space-between",
+              marginY: "10px",
+            }}
+          >
+            <TextField
+              select
+              label="Inventorio"
+              value={''}
+              onChange={handleChangePrio}
+              sx={{ marginBottom: "10px", width: "100%" }}
+            >
+              {listInventory.map((option) => (
+                <MenuItem key={option.id} value={option.id}>
+                  {option.name} (Quantidade: {option.quantity})
+                </MenuItem>
+              ))}
+            </TextField>
+          </Box>
+
+
+
           <Box
             sx={{
               display: "flex",
@@ -163,10 +347,10 @@ export default function ButtonNewService() {
               marginY: "10px",
             }}
           >
-            <Button sx={{ marginRight: "10px" }} variant="contained">
+            <Button sx={{ marginRight: "10px" }} variant="contained" onClick={handleCreateOs}>
               Confirmar
             </Button>
-            <Button variant="outlined">Cancelar</Button>
+            <Button variant="outlined" onClick={handleClose}>Cancelar</Button>
           </Box>
         </Box>
       </Modal>

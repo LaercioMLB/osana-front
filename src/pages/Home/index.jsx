@@ -94,7 +94,7 @@ export default function Home() {
           <Client />
         </TabPanel>
         <TabPanel value={filterData.tabSelected} index={1}>
-          <PersonalServices />
+          <PersonalServices idUsuario={userData.user.id} />
         </TabPanel>
         <TabPanel value={filterData.tabSelected} index={2}>
           <Services />

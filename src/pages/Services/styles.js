@@ -1,4 +1,4 @@
-import { Box, TableCell } from "@mui/material";
+import { TableCell, Box } from "@mui/material";
 import { styled } from "@mui/material/styles";
 
 const TableCellHeader = styled(TableCell)(({ theme }) => ({
@@ -26,3 +26,4 @@ const PrioridadeCell = styled(Box)(({ theme }) => ({
 }));
 
 export { TableCellHeader, StatusCell, PrioridadeCell };
+

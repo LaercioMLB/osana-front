@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Table,
@@ -12,85 +12,8 @@ import { H1 } from "../../components/Text";
 import { TableCellHeader, StatusCell, PrioridadeCell } from "./styles";
 import { MoreIcon } from "../../components/Buttons";
 import ButtonNewService from "./ButtonNewService";
-import { useContext } from "react";
-import FilterContext from "../../context/FilterContext";
-import { useEffect } from "react";
-
-function createData(
-  id,
-  service,
-  client,
-  equipamento,
-  date,
-  hours,
-  status,
-  prioridade
-) {
-  return { id, service, client, equipamento, date, hours, status, prioridade };
-}
-
-const rows = [
-  createData(
-    "1",
-    "Formatação",
-    "Uniamérica",
-    "Computador",
-    "24/10/22 ",
-    "22:10",
-    "Andamento",
-    "Alta"
-  ),
-  createData(
-    "2",
-    "Formatação",
-    "Uniamérica",
-    "Computador",
-    "24/10/22 ",
-    "22:10",
-    "Andamento",
-    "Alta"
-  ),
-  createData(
-    "3",
-    "Formatação",
-    "Uniamérica",
-    "Computador",
-    "24/10/22 ",
-    "22:10",
-    "Andamento",
-    "Alta"
-  ),
-  createData(
-    "4",
-    "Formatação",
-    "Uniamérica",
-    "Computador",
-    "24/10/22 ",
-    "22:10",
-    "Andamento",
-    "Alta"
-  ),
-  createData(
-    "5",
-    "Formatação",
-    "Uniamérica",
-    "Computador",
-    "24/10/22 ",
-    "22:10",
-    "Aberto",
-    "Alta"
-  ),
-  createData(
-    "6",
-    "Formatação",
-    "Uniamérica",
-    "Computador",
-    "24/10/22 ",
-    "22:10",
-    "Finalizado",
-    "Alta"
-  ),
-];
+import api from "../../services/api";
+import { ToastContainer, toast } from 'react-toastify';
 
 function ColorStatus(status) {
   let color;
@@ -120,13 +43,48 @@ function ColorPrioridade(prioridade) {
   return color;
 }
 
-function PersonalServices() {
-  const [filterData] = useContext(FilterContext);
-  useEffect(() => {
-    console.log(filterData);
-  }, [filterData]);
+function PersonalServices({ idUsuario }) {
+  const [ listOS, setListOS ] = useState([]);
+
+  const createNewOS = (newOSData) => {
+    console.log(newOSData)
+  }
+
+  const convertData = (data) => {
+    if (data){
+      var newData = data.split("T")[0].split("-").reverse().join("/")
+      return newData
+    }
+  }
+
+  const config = {
+    headers: {
+      "Authorization": `Bearer ${localStorage.getItem('token')}`,
+      "Content-Type": "application/json", 
+    },
+  };
+
+  async function getListMyOs(){
+    await api.get(`/os/findOSByUser/${idUsuario}`, config)
+      .then((response) => {
+        setListOS(response.data)
+      })
+      .catch((error) => {
+          toast.error(error.response.data)
+        }
+      );
+  }
+
+  useEffect(()=>{
+    if (localStorage.getItem('token')){
+      getListMyOs();
+    }
+    // eslint-disable-next-line
+  }, [])
+
   return (
     <Box>
+      <ToastContainer />
       <Box
         sx={{
           display: "flex",
@@ -136,131 +94,48 @@ function PersonalServices() {
         }}
       >
         <H1>Minhas OS</H1>
-        <ButtonNewService />
+        <ButtonNewService idUsuario={idUsuario} createNewOS={createNewOS} />
       </Box>
       <TableContainer>
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
           <TableHead>
             <TableRow>
-              <TableCellHeader align="left">Id</TableCellHeader>
               <TableCellHeader>Serviço</TableCellHeader>
               <TableCellHeader align="left">Cliente</TableCellHeader>
-              <TableCellHeader align="left">Equipamento</TableCellHeader>
-              <TableCellHeader align="left">Data/Hora</TableCellHeader>
+              <TableCellHeader align="left">Data de Criação</TableCellHeader>
               <TableCellHeader align="left">Status</TableCellHeader>
               <TableCellHeader align="left">Prioridade</TableCellHeader>
               <TableCellHeader align="left"></TableCellHeader>
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.map((row) =>
-              filterData.filters.length !== 0 ? (
-                <>
-                  {filterData.filters.includes(row.status) ? (
-                    <TableRow
-                      key={row.id}
-                      sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                    >
-                      <TableCell align="left">{row.id}</TableCell>
-                      <TableCell component="th" scope="row">
-                        {row.service}
-                      </TableCell>
-                      <TableCell align="left">{row.client}</TableCell>
-                      <TableCell align="left">{row.equipamento}</TableCell>
-                      <TableCell align="left">{row.date}</TableCell>
-                      <TableCell align="left">
-                        <StatusCell
-                          sx={{ backgroundColor: ColorStatus(row.status) }}
-                        >
-                          {row.status}
-                        </StatusCell>
-                      </TableCell>
-                      <TableCell align="left">
-                        <PrioridadeCell
-                          sx={{
-                            backgroundColor: ColorPrioridade(row.prioridade),
-                          }}
-                        >
-                          {row.prioridade}
-                        </PrioridadeCell>
-                      </TableCell>
-                      <TableCell align="left">
-                        <MoreIcon />
-                      </TableCell>
-                    </TableRow>
-                  ) : (
-                    <></>
-                  )}
-                  {filterData.filters.includes(row.prioridade) ? (
-                    <TableRow
-                      key={row.id}
-                      sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                    >
-                      <TableCell align="left">{row.id}</TableCell>
-                      <TableCell component="th" scope="row">
-                        {row.service}
-                      </TableCell>
-                      <TableCell align="left">{row.client}</TableCell>
-                      <TableCell align="left">{row.equipamento}</TableCell>
-                      <TableCell align="left">{row.date}</TableCell>
-                      <TableCell align="left">
-                        <StatusCell
-                          sx={{ backgroundColor: ColorStatus(row.status) }}
-                        >
-                          {row.status}
-                        </StatusCell>
-                      </TableCell>
-                      <TableCell align="left">
-                        <PrioridadeCell
-                          sx={{
-                            backgroundColor: ColorPrioridade(row.prioridade),
-                          }}
-                        >
-                          {row.prioridade}
-                        </PrioridadeCell>
-                      </TableCell>
-                      <TableCell align="left">
-                        <MoreIcon />
-                      </TableCell>
-                    </TableRow>
-                  ) : (
-                    <></>
-                  )}
-                </>
-              ) : (
-                <TableRow
-                  key={row.id}
-                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                >
-                  <TableCell align="left">{row.id}</TableCell>
-                  <TableCell component="th" scope="row">
-                    {row.service}
-                  </TableCell>
-                  <TableCell align="left">{row.client}</TableCell>
-                  <TableCell align="left">{row.equipamento}</TableCell>
-                  <TableCell align="left">{row.date}</TableCell>
-                  <TableCell align="left">
-                    <StatusCell
-                      sx={{ backgroundColor: ColorStatus(row.status) }}
-                    >
-                      {row.status}
-                    </StatusCell>
-                  </TableCell>
-                  <TableCell align="left">
-                    <PrioridadeCell
-                      sx={{
-                        backgroundColor: ColorPrioridade(row.prioridade),
-                      }}
-                    >
-                      {row.prioridade}
-                    </PrioridadeCell>
-                  </TableCell>
-                  <TableCell align="left">
-                    <MoreIcon />
-                  </TableCell>
-                </TableRow>
-              )
-            )}
+            {listOS.map((row) => (
+              <TableRow
+                key={row.idOS}
+                sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+              >
+                <TableCell component="th" scope="row">
+                  {row.typeServices.services}
+                </TableCell>
+                <TableCell align="left">{row.client.name}</TableCell>
+                <TableCell align="left">{convertData(row.dateOS)}</TableCell>
+                <TableCell align="left">
+                  <StatusCell sx={{ backgroundColor: ColorStatus(row.status.name) }}>
+                    {row.status.name}
+                  </StatusCell>
+                </TableCell>
+                <TableCell align="left">
+                  <PrioridadeCell
+                    sx={{ backgroundColor: ColorPrioridade(row.priority.name) }}
+                  >
+                    {row.priority.name}
+                  </PrioridadeCell>
+                </TableCell>
+                <TableCell align="left">
+                  <MoreIcon />
+                </TableCell>
+              </TableRow>
+            ))}
           </TableBody>
         </Table>
       </TableContainer>
