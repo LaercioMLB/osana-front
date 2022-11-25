@@ -50,6 +50,13 @@ function PersonalServices({ idUsuario }) {
     console.log(newOSData)
   }
 
+  const convertData = (data) => {
+    if (data){
+      var newData = data.split("T")[0].split("-").reverse().join("/")
+      return newData
+    }
+  }
+
   const config = {
     headers: {
       "Authorization": `Bearer ${localStorage.getItem('token')}`,
@@ -68,11 +75,12 @@ function PersonalServices({ idUsuario }) {
       );
   }
 
-  // useEffect(()=>{
-  //   if (localStorage.getItem('token')){
-  //     getListMyOs();
-  //   }
-  // }, [])
+  useEffect(()=>{
+    if (localStorage.getItem('token')){
+      getListMyOs();
+    }
+    // eslint-disable-next-line
+  }, [])
 
   return (
     <Box>
@@ -94,8 +102,7 @@ function PersonalServices({ idUsuario }) {
             <TableRow>
               <TableCellHeader>Serviço</TableCellHeader>
               <TableCellHeader align="left">Cliente</TableCellHeader>
-              <TableCellHeader align="left">Equipamento</TableCellHeader>
-              <TableCellHeader align="left">Data/Hora</TableCellHeader>
+              <TableCellHeader align="left">Data de Criação</TableCellHeader>
               <TableCellHeader align="left">Status</TableCellHeader>
               <TableCellHeader align="left">Prioridade</TableCellHeader>
               <TableCellHeader align="left"></TableCellHeader>
@@ -104,26 +111,24 @@ function PersonalServices({ idUsuario }) {
           <TableBody>
             {listOS.map((row) => (
               <TableRow
-                key={row.id}
+                key={row.idOS}
                 sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
               >
-                <TableCell align="left">{row.id}</TableCell>
                 <TableCell component="th" scope="row">
-                  {row.service}
+                  {row.typeServices.services}
                 </TableCell>
-                <TableCell align="left">{row.client}</TableCell>
-                <TableCell align="left">{row.equipamento}</TableCell>
-                <TableCell align="left">{row.date}</TableCell>
+                <TableCell align="left">{row.client.name}</TableCell>
+                <TableCell align="left">{convertData(row.dateOS)}</TableCell>
                 <TableCell align="left">
-                  <StatusCell sx={{ backgroundColor: ColorStatus(row.status) }}>
-                    {row.status}
+                  <StatusCell sx={{ backgroundColor: ColorStatus(row.status.name) }}>
+                    {row.status.name}
                   </StatusCell>
                 </TableCell>
                 <TableCell align="left">
                   <PrioridadeCell
-                    sx={{ backgroundColor: ColorPrioridade(row.prioridade) }}
+                    sx={{ backgroundColor: ColorPrioridade(row.priority.name) }}
                   >
-                    {row.prioridade}
+                    {row.priority.name}
                   </PrioridadeCell>
                 </TableCell>
                 <TableCell align="left">

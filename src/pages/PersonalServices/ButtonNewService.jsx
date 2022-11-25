@@ -29,11 +29,17 @@ export default function ButtonNewService({ idUsuario, createNewOS }) {
   const [listClient, setListClient] = React.useState([]);
   const [listPriority, setListPriority] = React.useState([]);
   const [listTypeService, setListTypeService] = React.useState([]);
+  const [listEquipment, setListEquipment] = React.useState([]);
+  const [listInventory, setListInventory] = React.useState([]);
+
   const [client, setClient] = React.useState('');
   const [prior, setPrior] = React.useState('');
   const [typeService, setTypeServices] = React.useState('');
   const [motive, setMotive] = React.useState('');
   const [observacoes, setObservacoes] = React.useState('');
+  const [equipments, setEquipments] = React.useState([]);
+  const [inventories, setInventories] = React.useState([]);
+  const [devolution, setDevolution] = React.useState(null);
 
   const handleOpen = () => {
     setOpen(true);
@@ -71,8 +77,9 @@ export default function ButtonNewService({ idUsuario, createNewOS }) {
             idTypeServices: typeService, 
             motive: motive,
             obs: observacoes,
-            equipaments: [],
-            inventories: [],
+            devolution: devolution,
+            equipaments: equipments,
+            inventories: inventories,
         }, 
         config
       )
@@ -92,6 +99,38 @@ export default function ButtonNewService({ idUsuario, createNewOS }) {
     await api.get(`/client`, config)
       .then((response) => {
         setListClient(response.data)
+      })
+      .catch((error) => {
+          if (error.response.status === 403){
+            localStorage.clear()
+            navigate("/login")
+          }else{
+            toast.error("Algo deu errado !")
+          }
+        }
+      );
+  }
+
+  async function getListEquipments(){
+    await api.get(`/equipment`, config)
+      .then((response) => {
+        setListEquipment(response.data)
+      })
+      .catch((error) => {
+          if (error.response.status === 403){
+            localStorage.clear()
+            navigate("/login")
+          }else{
+            toast.error("Algo deu errado !")
+          }
+        }
+      );
+  }
+
+  async function getListInventories(){
+    await api.get(`/inventory`, config)
+      .then((response) => {
+        setListInventory(response.data)
       })
       .catch((error) => {
           if (error.response.status === 403){
@@ -124,6 +163,8 @@ export default function ButtonNewService({ idUsuario, createNewOS }) {
     if (localStorage.getItem('token')){
       getListClientes();
       getListServices();
+      getListEquipments();
+      getListInventories();
       setListPriority([
         {id: 1, name: "Alto"},
       ])
@@ -227,6 +268,78 @@ export default function ButtonNewService({ idUsuario, createNewOS }) {
               ))}
             </TextField>
           </Box>
+
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "row",
+              width: "100%",
+              justifyContent: "space-between",
+              marginY: "10px",
+            }}
+          >
+            <TextField
+              name="Data de Devolução"
+              label="Data de Devolução (Optional)"
+              InputLabelProps={{ shrink: true }}
+              type="date"
+              defaultValue=""
+              onChange={event => setDevolution(event.target.value)}
+              sx={{ marginBottom: "10px", width: "100%" }}
+            />
+          </Box>
+
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "row",
+              width: "100%",
+              justifyContent: "space-between",
+              marginY: "10px",
+            }}
+          >
+            <TextField
+              select
+              label="Equipamentos"
+              value={''}
+              onChange={handleChangePrio}
+              sx={{ marginBottom: "10px", width: "100%" }}
+            >
+              {listEquipment.map((option) => (
+                <MenuItem key={option.id} value={option.id}>
+                  {option.name} - {option.model}
+                </MenuItem>
+              ))}
+            </TextField>
+          </Box>
+
+
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "row",
+              width: "100%",
+              justifyContent: "space-between",
+              marginY: "10px",
+            }}
+          >
+            <TextField
+              select
+              label="Inventorio"
+              value={''}
+              onChange={handleChangePrio}
+              sx={{ marginBottom: "10px", width: "100%" }}
+            >
+              {listInventory.map((option) => (
+                <MenuItem key={option.id} value={option.id}>
+                  {option.name} (Quantidade: {option.quantity})
+                </MenuItem>
+              ))}
+            </TextField>
+          </Box>
+
+
+
           <Box
             sx={{
               display: "flex",
@@ -237,7 +350,7 @@ export default function ButtonNewService({ idUsuario, createNewOS }) {
             <Button sx={{ marginRight: "10px" }} variant="contained" onClick={handleCreateOs}>
               Confirmar
             </Button>
-            <Button variant="outlined">Cancelar</Button>
+            <Button variant="outlined" onClick={handleClose}>Cancelar</Button>
           </Box>
         </Box>
       </Modal>
