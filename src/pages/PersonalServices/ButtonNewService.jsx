@@ -3,9 +3,9 @@ import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
 import Button from "@mui/material/Button";
 import AddIcon from "@mui/icons-material/Add";
-import { H1 } from "../../Text";
+import { H1 } from "../../components/Text";
 import { MenuItem, TextField } from "@mui/material";
-import api from "../../../services/api";
+import api from "../../services/api";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from 'react-toastify';
 

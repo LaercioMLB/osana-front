@@ -11,22 +11,9 @@ import {
 import { H1 } from "../../components/Text";
 import { TableCellHeader, StatusCell, PrioridadeCell } from "./styles";
 import { MoreIcon } from "../../components/Buttons";
-import ButtonNewService from "../../components/Buttons/ButtonNewService/ButtonNewService";
+import ButtonNewService from "./ButtonNewService";
 import api from "../../services/api";
 import { ToastContainer, toast } from 'react-toastify';
-
-const rows = [
-  (
-    "1",
-    "Formatação",
-    "Uniamérica",
-    "Computador",
-    "24/10/22 ",
-    "22:10",
-    "Andamento",
-    "Alta"
-  ),
-];
 
 function ColorStatus(status) {
   let color;
@@ -81,11 +68,11 @@ function PersonalServices({ idUsuario }) {
       );
   }
 
-  useEffect(()=>{
-    if (localStorage.getItem('token')){
-      getListMyOs();
-    }
-  }, [])
+  // useEffect(()=>{
+  //   if (localStorage.getItem('token')){
+  //     getListMyOs();
+  //   }
+  // }, [])
 
   return (
     <Box>
@@ -115,7 +102,7 @@ function PersonalServices({ idUsuario }) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.map((row) => (
+            {listOS.map((row) => (
               <TableRow
                 key={row.id}
                 sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
