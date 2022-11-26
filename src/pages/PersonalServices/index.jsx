@@ -10,10 +10,13 @@ import {
 } from "@mui/material";
 import { H1 } from "../../components/Text";
 import { TableCellHeader, StatusCell, PrioridadeCell } from "./styles";
-import { MoreIcon } from "../../components/Buttons";
 import ButtonNewService from "./ButtonNewService";
 import api from "../../services/api";
 import { ToastContainer, toast } from 'react-toastify';
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
+import ModalDelete from "../../components/Modal/ModalDelete";
 
 function ColorStatus(status) {
   let color;
@@ -49,6 +52,17 @@ function PersonalServices({ idUsuario }) {
   const createNewOS = (newOSData) => {
     setListOS([...listOS, newOSData])
   }
+
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const open = Boolean(anchorEl);
+
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
 
   const convertData = (data) => {
     if (data){
@@ -102,6 +116,7 @@ function PersonalServices({ idUsuario }) {
             <TableRow>
               <TableCellHeader>Serviço</TableCellHeader>
               <TableCellHeader align="left">Cliente</TableCellHeader>
+              <TableCellHeader align="left">Motivo</TableCellHeader>
               <TableCellHeader align="left">Data de Criação</TableCellHeader>
               <TableCellHeader align="left">Status</TableCellHeader>
               <TableCellHeader align="left">Prioridade</TableCellHeader>
@@ -118,6 +133,7 @@ function PersonalServices({ idUsuario }) {
                   {row.typeServices.services}
                 </TableCell>
                 <TableCell align="left">{row.client.name}</TableCell>
+                <TableCell align="left">{row.motive}</TableCell>
                 <TableCell align="left">{convertData(row.dateOS)}</TableCell>
                 <TableCell align="left">
                   <StatusCell sx={{ backgroundColor: ColorStatus(row.status.name) }}>
@@ -132,7 +148,31 @@ function PersonalServices({ idUsuario }) {
                   </PrioridadeCell>
                 </TableCell>
                 <TableCell align="left">
-                  <MoreIcon />
+                  <MoreVertIcon
+                    id="basic-button"
+                    aria-controls={open ? "basic-menu" : undefined}
+                    aria-haspopup="true"
+                    aria-expanded={open ? "true" : undefined}
+                    onClick={handleClick}
+                    sx={{ cursor: "pointer" }}
+                  />
+
+                  <Menu
+                    id="basic-menu"
+                    anchorEl={anchorEl}
+                    open={open}
+                    onClose={handleClose}
+                    MenuListProps={{
+                      "aria-labelledby": "basic-button",
+                    }}
+                  >
+                    <MenuItem>
+                      {/* <ModalEdit /> */}
+                    </MenuItem>
+                    <MenuItem>
+                      <ModalDelete />
+                    </MenuItem>
+                  </Menu>
                 </TableCell>
               </TableRow>
             ))}

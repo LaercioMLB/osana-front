@@ -179,7 +179,9 @@ export default function ButtonNewService({ idUsuario, createNewOS }) {
       getListServices();
       getListEquipments();
       setListPriority([
-        {id: 1, name: "Alto"},
+        {id: 1, name: "Alta"},
+        {id: 2, name: "Baixa"},
+        {id: 3, name: "Urgente"},
       ])
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
