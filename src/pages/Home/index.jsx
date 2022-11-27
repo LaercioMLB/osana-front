@@ -97,7 +97,7 @@ export default function Home() {
           <PersonalServices idUsuario={userData.user.id} />
         </TabPanel>
         <TabPanel value={filterData.tabSelected} index={2}>
-          <Services />
+          <Services idUsuario={userData.user.id}/>
         </TabPanel>
         {userData.isGestor 
           ?

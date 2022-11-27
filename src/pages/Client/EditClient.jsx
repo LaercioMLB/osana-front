@@ -24,11 +24,11 @@ const style = {
 
 export default function EditClient({ client, editClient }) {
   const [open, setOpen] = React.useState(false);
-  const [cpfCnpj, setCpfCnpj] = React.useState(client.cnpj);
-  const [firstName, setFirstName] = React.useState(client.firstName);
-  const [lastName, setLastName] = React.useState(client.lastName);
-  const [email, setEmail] = React.useState(client.email);
-  const [phone, setPhone] = React.useState(client.phone);
+  const [cpfCnpj, setCpfCnpj] = React.useState("");
+  const [firstName, setFirstName] = React.useState("");
+  const [lastName, setLastName] = React.useState("");
+  const [email, setEmail] = React.useState("");
+  const [phone, setPhone] = React.useState(0);
   const handleOpen = () => {
     setOpen(true);
   };
@@ -36,11 +36,24 @@ export default function EditClient({ client, editClient }) {
     setOpen(false);
   };
 
-  const [currency, setCurrency] = React.useState(client.contract);
+  const [currency, setCurrency] = React.useState("");
 
   const handleChange = (event) => {
     setCurrency(event.target.value);
   };
+
+  function setValues(){
+    setCpfCnpj(client.cnpj);
+    setFirstName(client.firstName);
+    setLastName(client.lastName);
+    setEmail(client.email);
+    setPhone(client.phone);
+    setCurrency(client.contract);
+  }
+
+  React.useEffect(() => {
+    setValues();
+  }, [])
 
   const config = {
     headers: {
@@ -188,7 +201,7 @@ export default function EditClient({ client, editClient }) {
             <Button sx={{ marginRight: "10px" }} variant="contained" onClick={handleEditClient}>
               Confirmar
             </Button>
-            <Button variant="outlined">Cancelar</Button>
+            <Button variant="outlined" onClick={handleClose}>Cancelar</Button>
           </Box>
         </Box>
       </Modal>

@@ -56,14 +56,14 @@ export default function EditOS({ type, idUsuario, osObj, editOS }) {
   const [listEquipment, setListEquipment] = React.useState([]);
   const [listStatus, setListStatus] = React.useState([]);
 
-  const [client, setClient] = React.useState(osObj.client.id);
-  const [prior, setPrior] = React.useState(osObj.priority.idPriority);
-  const [status, setStatus] = React.useState(osObj.status.id);
-  const [typeService, setTypeServices] = React.useState(osObj.typeServices.idTypeServices);
-  const [motive, setMotive] = React.useState(osObj.motive);
-  const [observacoes, setObservacoes] = React.useState(osObj.obs);
+  const [client, setClient] = React.useState(0);
+  const [prior, setPrior] = React.useState(0);
+  const [status, setStatus] = React.useState(0);
+  const [typeService, setTypeServices] = React.useState(0);
+  const [motive, setMotive] = React.useState("");
+  const [observacoes, setObservacoes] = React.useState("");
   const [equipments, setEquipments] = React.useState([]);
-  const [devolution, setDevolution] = React.useState(osObj.devolution);
+  const [devolution, setDevolution] = React.useState("");
 
   const handleOpen = () => {
     setOpen(true);
@@ -94,6 +94,23 @@ export default function EditOS({ type, idUsuario, osObj, editOS }) {
     } = event;
     setEquipments(value);
   };
+
+  const convertData = (data) => {
+    if (data){
+      var newData = data.split("T")[0]
+      return newData
+    }
+  }
+
+  function setValues(){
+    setClient(osObj.client.id)
+    setPrior(osObj.priority.idPriority)
+    setStatus(osObj.status.id)
+    setTypeServices(osObj.typeServices.idTypeServices)
+    setMotive(osObj.motive)
+    setObservacoes(osObj.obs)
+    setDevolution(convertData(osObj.devolution))
+  }
 
   const config = {
     headers: {
@@ -194,6 +211,7 @@ export default function EditOS({ type, idUsuario, osObj, editOS }) {
         {id: 2, name: "Finalizado"},
         {id: 3, name: "Aberto"},
       ])
+      setValues();
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -311,7 +329,6 @@ export default function EditOS({ type, idUsuario, osObj, editOS }) {
               type="date"
               value={devolution}
               disabled={type === 'edit' ? false : true}
-              defaultValue=""
               onChange={event => setDevolution(event.target.value)}
               sx={{ marginBottom: "10px", width: "100%" }}
             />
