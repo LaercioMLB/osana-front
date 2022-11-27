@@ -2,8 +2,6 @@ import * as React from "react";
 import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
 import Button from "@mui/material/Button";
-import api from "../../services/api";
-import { toast } from 'react-toastify';
 import { H1 } from "../../components/Text";
 import { maskCpfCnpj } from "../../utils/mascaras";
 import { Divider, MenuItem, TextField } from "@mui/material";

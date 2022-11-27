@@ -16,7 +16,8 @@ import { ToastContainer, toast } from 'react-toastify';
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import ModalDelete from "../../components/Modal/ModalDelete";
+import DeleteOS from "./DeleteOS";
+import EditOS from "./EditOS";
 
 function ColorStatus(status) {
   let color;
@@ -51,6 +52,17 @@ function PersonalServices({ idUsuario }) {
 
   const createNewOS = (newOSData) => {
     setListOS([...listOS, newOSData])
+  }
+
+  const deleteOS = (deletedOSId) => {
+    setListOS(listOS.filter((os) => os.idOS !== deletedOSId))
+    setAnchorEl(null);
+  }
+  
+  const editOS = (editedOS) => {
+    const newListOs = listOS.filter((os) => os.idOS !== editedOS.idOS)
+    setListOS([...newListOs, editedOS])
+    setAnchorEl(null);
   }
 
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -167,10 +179,13 @@ function PersonalServices({ idUsuario }) {
                     }}
                   >
                     <MenuItem>
-                      {/* <ModalEdit /> */}
+                      <EditOS type={'view'} osObj={row} />
                     </MenuItem>
                     <MenuItem>
-                      <ModalDelete />
+                      <EditOS type={'edit'} idUsuario={idUsuario} osObj={row} editOS={editOS}/>
+                    </MenuItem>
+                    <MenuItem>
+                      <DeleteOS idOS={row.idOS} deleteOS={deleteOS}/>
                     </MenuItem>
                   </Menu>
                 </TableCell>
