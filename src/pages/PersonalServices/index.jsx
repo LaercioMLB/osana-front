@@ -132,7 +132,7 @@ function PersonalServices({ idUsuario }) {
                 <TableCell component="th" scope="row">
                   {row.typeServices.services}
                 </TableCell>
-                <TableCell align="left">{row.client.name}</TableCell>
+                <TableCell align="left">{row.client.firstName}</TableCell>
                 <TableCell align="left">{row.motive}</TableCell>
                 <TableCell align="left">{convertData(row.dateOS)}</TableCell>
                 <TableCell align="left">

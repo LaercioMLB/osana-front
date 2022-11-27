@@ -245,7 +245,7 @@ export default function Services() {
                         {row.priority.name}
                       </TableCell>
                       <TableCell align="left">{row.typeServices.services}</TableCell>
-                      <TableCell align="left">{row.client.name}</TableCell>
+                      <TableCell align="left">{row.client.firstName}</TableCell>
                     </TableRow>
                   );
                 })}

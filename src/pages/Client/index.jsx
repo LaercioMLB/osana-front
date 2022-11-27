@@ -10,18 +10,48 @@ import {
 } from "@mui/material";
 import { H1 } from "../../components/Text";
 import { TableCellHeader } from "./styles";
-import { MoreIcon } from "../../components/Buttons";
 import ButtonNewClient from "./ButtonNewClient";
+import DeleteClient from "./DeleteClient";
+import EditClient from "./EditClient";
+import ViewClient from "./ViewClient";
 import api from "../../services/api";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import { useContext } from "react";
 import FilterContext from "../../context/FilterContext";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
 
 function Client() {
   const navigate = useNavigate();
   const [listClients, setListClients] = useState([]);
   const [filterData] = useContext(FilterContext);
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const open = Boolean(anchorEl);
+
+  const createNewClient = (newClientData) => {
+    setListClients([...listClients, newClientData])
+  }
+
+  const deleteClient = (deletedClientId) => {
+    setListClients(listClients.filter((client) => client.id !== deletedClientId))
+    setAnchorEl(null);
+  }
+
+  const editClient = (editedClient) => {
+    const newListClients = listClients.filter((client) => client.id !== editedClient.id)
+    setListClients([...newListClients, editedClient])
+    setAnchorEl(null);
+  }
+
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
 
   const config = {
     headers: {
@@ -61,7 +91,7 @@ function Client() {
         }}
       >
         <H1>Clientes</H1>
-        <ButtonNewClient />
+        <ButtonNewClient createNewClient={createNewClient}/>
       </Box>
 
       <TableContainer>
@@ -83,12 +113,39 @@ function Client() {
                     sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                   >
                     <TableCell component="th" scope="row">
-                      {client.name}
+                      {client.firstName} {client.lastName !== null ? client.lastName : ""}
                     </TableCell>
                     <TableCell align="left">{client.cnpj}</TableCell>
-                    <TableCell align="left">{client.contract}</TableCell>
+                    <TableCell align="left">{client.contract === "true" ? "Tem Contrato" : "Não Tem Contrato"}</TableCell>
                     <TableCell align="left">
-                      <MoreIcon />
+                      <MoreVertIcon
+                        id="basic-button"
+                        aria-controls={open ? "basic-menu" : undefined}
+                        aria-haspopup="true"
+                        aria-expanded={open ? "true" : undefined}
+                        onClick={handleClick}
+                        sx={{ cursor: "pointer" }}
+                      />
+
+                      <Menu
+                        id="basic-menu"
+                        anchorEl={anchorEl}
+                        open={open}
+                        onClose={handleClose}
+                        MenuListProps={{
+                          "aria-labelledby": "basic-button",
+                        }}
+                      >
+                        <MenuItem>
+                          <ViewClient client={client} />
+                        </MenuItem>
+                        <MenuItem>
+                          <EditClient client={client} editClient={editClient} />
+                        </MenuItem>
+                        <MenuItem>
+                          <DeleteClient idClient={client.id} nameCliente={client.firstName} deleteClient={deleteClient}/>
+                        </MenuItem>
+                      </Menu>
                     </TableCell>
                   </TableRow>
                 ) : (
@@ -100,12 +157,39 @@ function Client() {
                   sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                 >
                   <TableCell component="th" scope="row">
-                    {client.name}
+                    {client.firstName} {client.lastName !== null ? client.lastName : ""}
                   </TableCell>
                   <TableCell align="left">{client.cnpj}</TableCell>
-                  <TableCell align="left">{client.contract}</TableCell>
+                  <TableCell align="left">{client.contract === "true" ? "Tem Contrato" : "Não Tem Contrato"}</TableCell>
                   <TableCell align="left">
-                    <MoreIcon />
+                    <MoreVertIcon
+                      id="basic-button"
+                      aria-controls={open ? "basic-menu" : undefined}
+                      aria-haspopup="true"
+                      aria-expanded={open ? "true" : undefined}
+                      onClick={handleClick}
+                      sx={{ cursor: "pointer" }}
+                    />
+
+                    <Menu
+                      id="basic-menu"
+                      anchorEl={anchorEl}
+                      open={open}
+                      onClose={handleClose}
+                      MenuListProps={{
+                        "aria-labelledby": "basic-button",
+                      }}
+                    >
+                      <MenuItem>
+                        <ViewClient client={client} />
+                      </MenuItem>
+                      <MenuItem>
+                        <EditClient client={client} editClient={editClient} />
+                      </MenuItem>
+                      <MenuItem>
+                        <DeleteClient idClient={client.id} nameCliente={client.firstName} deleteClient={deleteClient}/>
+                      </MenuItem>
+                    </Menu>
                   </TableCell>
                 </TableRow>
               )

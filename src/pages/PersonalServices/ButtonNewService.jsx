@@ -24,7 +24,7 @@ const style = {
   border: "none",
   padding: "20px",
   borderRadius: "6px",
-  width: "100%",
+  width: "95%",
 };
 
 const ITEM_HEIGHT = 48;
@@ -206,6 +206,7 @@ export default function ButtonNewService({ idUsuario, createNewOS }) {
         sx={{
           maxWidth: "900px",
           margin: "auto",
+          overflow: 'scroll',
         }}
       >
         <Box
@@ -224,7 +225,7 @@ export default function ButtonNewService({ idUsuario, createNewOS }) {
           >
             {listClient.map((option) => (
               <MenuItem key={option.id} value={option.id}>
-                {option.name}
+                {option.firstName}
               </MenuItem>
             ))}
           </TextField>
