@@ -19,6 +19,7 @@ import MenuItem from "@mui/material/MenuItem";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import DeleteOS from "../PersonalServices/DeleteOS";
 import EditOS from "../PersonalServices/EditOS";
+import { StatusCell, PrioridadeCell } from "./styles";
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -275,13 +276,17 @@ export default function Services({ idUsuario }) {
                       </TableCell>
                       <TableCell align="left">{convertData(row.dateOS)}</TableCell>
                       <TableCell align="left">{row.usuario.name}</TableCell>
-                      <TableCell sx={{ backgroundColor: ColorStatus(row.status.name) }}>
-                        {row.status.name}
+                      <TableCell align="left">
+                        <StatusCell sx={{ backgroundColor: ColorStatus(row.status.name) }}>
+                          {row.status.name}
+                        </StatusCell>
                       </TableCell>
-                      <TableCell
-                        sx={{ backgroundColor: ColorPrioridade(row.priority.name) }}
-                      >
-                        {row.priority.name}
+                      <TableCell align="left">
+                        <PrioridadeCell
+                          sx={{ backgroundColor: ColorPrioridade(row.priority.name) }}
+                        >
+                          {row.priority.name}
+                        </PrioridadeCell>
                       </TableCell>
                       <TableCell align="left">{row.typeServices.services}</TableCell>
                       <TableCell align="left">{row.client.firstName}</TableCell>
