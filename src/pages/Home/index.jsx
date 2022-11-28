@@ -54,7 +54,7 @@ export default function Home() {
   const [userData, setUserData] = useContext(UserContext);
 
   const handleChange = (event, newValue) => {
-    setFilterData({ ...filterData, tabSelected: newValue, filters: [] });
+    setFilterData({ ...filterData, tabSelected: newValue, filters: [], searchText: '' });
   };
 
   React.useEffect(() => {

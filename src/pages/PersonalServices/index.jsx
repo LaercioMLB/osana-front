@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   Box,
   Table,
@@ -18,6 +18,7 @@ import MenuItem from "@mui/material/MenuItem";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import DeleteOS from "./DeleteOS";
 import EditOS from "./EditOS";
+import FilterContext from "../../context/FilterContext";
 
 function ColorStatus(status) {
   let color;
@@ -48,6 +49,7 @@ function ColorPrioridade(prioridade) {
 }
 
 function PersonalServices({ idUsuario }) {
+  const [filterData] = useContext(FilterContext);
   const [ listOS, setListOS ] = useState([]);
 
   const createNewOS = (newOSData) => {
@@ -136,61 +138,121 @@ function PersonalServices({ idUsuario }) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {listOS.map((row) => (
-              <TableRow
-                key={row.idOS}
-                sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-              >
-                <TableCell component="th" scope="row">
-                  {row.typeServices.services}
-                </TableCell>
-                <TableCell align="left">{row.client.firstName}</TableCell>
-                <TableCell align="left">{row.motive}</TableCell>
-                <TableCell align="left">{convertData(row.dateOS)}</TableCell>
-                <TableCell align="left">
-                  <StatusCell sx={{ backgroundColor: ColorStatus(row.status.name) }}>
-                    {row.status.name}
-                  </StatusCell>
-                </TableCell>
-                <TableCell align="left">
-                  <PrioridadeCell
-                    sx={{ backgroundColor: ColorPrioridade(row.priority.name) }}
+            {listOS.map((row) => 
+              filterData.filters.length !== 0 ? (
+                filterData.filters.includes(row.status.name) || filterData.filters.includes(row.priority.name) ? (
+                  <TableRow
+                    key={row.idOS}
+                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                   >
-                    {row.priority.name}
-                  </PrioridadeCell>
-                </TableCell>
-                <TableCell align="left">
-                  <MoreVertIcon
-                    id="basic-button"
-                    aria-controls={open ? "basic-menu" : undefined}
-                    aria-haspopup="true"
-                    aria-expanded={open ? "true" : undefined}
-                    onClick={handleClick}
-                    sx={{ cursor: "pointer" }}
-                  />
+                    <TableCell component="th" scope="row">
+                      {row.typeServices.services}
+                    </TableCell>
+                    <TableCell align="left">{row.client.firstName}</TableCell>
+                    <TableCell align="left">{row.motive}</TableCell>
+                    <TableCell align="left">{convertData(row.dateOS)}</TableCell>
+                    <TableCell align="left">
+                      <StatusCell sx={{ backgroundColor: ColorStatus(row.status.name) }}>
+                        {row.status.name}
+                      </StatusCell>
+                    </TableCell>
+                    <TableCell align="left">
+                      <PrioridadeCell
+                        sx={{ backgroundColor: ColorPrioridade(row.priority.name) }}
+                      >
+                        {row.priority.name}
+                      </PrioridadeCell>
+                    </TableCell>
+                    <TableCell align="left">
+                      <MoreVertIcon
+                        id="basic-button"
+                        aria-controls={open ? "basic-menu" : undefined}
+                        aria-haspopup="true"
+                        aria-expanded={open ? "true" : undefined}
+                        onClick={handleClick}
+                        sx={{ cursor: "pointer" }}
+                      />
 
-                  <Menu
-                    id="basic-menu"
-                    anchorEl={anchorEl}
-                    open={open}
-                    onClose={handleClose}
-                    MenuListProps={{
-                      "aria-labelledby": "basic-button",
-                    }}
-                  >
-                    <MenuItem>
-                      <EditOS type={'view'} osObj={row} />
-                    </MenuItem>
-                    <MenuItem>
-                      <EditOS type={'edit'} idUsuario={idUsuario} osObj={row} editOS={editOS}/>
-                    </MenuItem>
-                    <MenuItem>
-                      <DeleteOS idOS={row.idOS} deleteOS={deleteOS}/>
-                    </MenuItem>
-                  </Menu>
-                </TableCell>
-              </TableRow>
-            ))}
+                      <Menu
+                        id="basic-menu"
+                        anchorEl={anchorEl}
+                        open={open}
+                        onClose={handleClose}
+                        MenuListProps={{
+                          "aria-labelledby": "basic-button",
+                        }}
+                      >
+                        <MenuItem>
+                          <EditOS type={'view'} osObj={row} />
+                        </MenuItem>
+                        <MenuItem>
+                          <EditOS type={'edit'} idUsuario={idUsuario} osObj={row} editOS={editOS}/>
+                        </MenuItem>
+                        <MenuItem>
+                          <DeleteOS idOS={row.idOS} deleteOS={deleteOS}/>
+                        </MenuItem>
+                      </Menu>
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  <></>
+                )
+              ) : (
+                <TableRow
+                  key={row.idOS}
+                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                >
+                  <TableCell component="th" scope="row">
+                    {row.typeServices.services}
+                  </TableCell>
+                  <TableCell align="left">{row.client.firstName}</TableCell>
+                  <TableCell align="left">{row.motive}</TableCell>
+                  <TableCell align="left">{convertData(row.dateOS)}</TableCell>
+                  <TableCell align="left">
+                    <StatusCell sx={{ backgroundColor: ColorStatus(row.status.name) }}>
+                      {row.status.name}
+                    </StatusCell>
+                  </TableCell>
+                  <TableCell align="left">
+                    <PrioridadeCell
+                      sx={{ backgroundColor: ColorPrioridade(row.priority.name) }}
+                    >
+                      {row.priority.name}
+                    </PrioridadeCell>
+                  </TableCell>
+                  <TableCell align="left">
+                    <MoreVertIcon
+                      id="basic-button"
+                      aria-controls={open ? "basic-menu" : undefined}
+                      aria-haspopup="true"
+                      aria-expanded={open ? "true" : undefined}
+                      onClick={handleClick}
+                      sx={{ cursor: "pointer" }}
+                    />
+
+                    <Menu
+                      id="basic-menu"
+                      anchorEl={anchorEl}
+                      open={open}
+                      onClose={handleClose}
+                      MenuListProps={{
+                        "aria-labelledby": "basic-button",
+                      }}
+                    >
+                      <MenuItem>
+                        <EditOS type={'view'} osObj={row} />
+                      </MenuItem>
+                      <MenuItem>
+                        <EditOS type={'edit'} idUsuario={idUsuario} osObj={row} editOS={editOS}/>
+                      </MenuItem>
+                      <MenuItem>
+                        <DeleteOS idOS={row.idOS} deleteOS={deleteOS}/>
+                      </MenuItem>
+                    </Menu>
+                  </TableCell>
+                </TableRow>
+              )
+            )}
           </TableBody>
         </Table>
       </TableContainer>
