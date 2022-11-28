@@ -109,6 +109,7 @@ export default function EditOS({ type, idUsuario, osObj, editOS }) {
     setTypeServices(osObj.typeServices.idTypeServices)
     setMotive(osObj.motive)
     setObservacoes(osObj.obs)
+    setEquipments(osObj.equipment)
     setDevolution(convertData(osObj.devolution))
   }
 
@@ -131,7 +132,7 @@ export default function EditOS({ type, idUsuario, osObj, editOS }) {
           motive: motive,
           obs: observacoes,
           devolution: devolution,
-          equipaments: equipments,
+          equipaments: equipments.map(el => el.id),
           inventories: [],
         }, 
         config
@@ -361,21 +362,24 @@ export default function EditOS({ type, idUsuario, osObj, editOS }) {
             renderValue={(selected) => (
               <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                 {selected.map((value) => (
-                  <Chip key={value} label={value} />
+                  <Chip key={value.id} label={value.name + ' - ' + value.model} />
                 ))}
               </Box>
             )}
             MenuProps={MenuProps}
           >
-            {listEquipment.map((equipment) => (
-              <MenuItem
-                key={equipment.id}
-                value={equipment.id}
-                style={getStyles(equipment.name, equipments, theme)}
-              >
-                {equipment.name} - {equipment.model}
-              </MenuItem>
-            ))}
+            {listEquipment.map((equipment) => {
+              // let value = equipments.find(produto => produto.id === equipment.id)
+              return (
+                <MenuItem
+                  key={equipment.id}
+                  value={equipment}
+                  style={getStyles(equipment.name, equipments, theme)}
+                >
+                  {equipment.name} - {equipment.model}
+                </MenuItem>
+              )
+            })}
           </Select>
 
           <Box

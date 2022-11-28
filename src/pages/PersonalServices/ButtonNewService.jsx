@@ -108,7 +108,7 @@ export default function ButtonNewService({ idUsuario, createNewOS }) {
             motive: motive,
             obs: observacoes,
             devolution: devolution,
-            equipaments: equipments,
+            equipaments: equipments.map(el => el.id),
             inventories: [],
         }, 
         config
@@ -317,7 +317,7 @@ export default function ButtonNewService({ idUsuario, createNewOS }) {
             renderValue={(selected) => (
               <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                 {selected.map((value) => (
-                  <Chip key={value} label={value} />
+                  <Chip key={value.id} label={value.name + ' - ' + value.model} />
                 ))}
               </Box>
             )}
@@ -326,7 +326,7 @@ export default function ButtonNewService({ idUsuario, createNewOS }) {
             {listEquipment.map((equipment) => (
               <MenuItem
                 key={equipment.id}
-                value={equipment.id}
+                value={equipment}
                 style={getStyles(equipment.name, equipments, theme)}
               >
                 {equipment.name} - {equipment.model}
