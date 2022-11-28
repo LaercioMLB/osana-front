@@ -2,6 +2,7 @@ import * as React from "react";
 import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
 import Button from "@mui/material/Button";
+import InputLabel from '@mui/material/InputLabel';
 import { H1 } from "../../components/Text";
 import api from "../../services/api";
 import { toast } from 'react-toastify';
@@ -334,8 +335,10 @@ export default function EditOS({ type, idUsuario, osObj, editOS }) {
               </MenuItem>
             ))}
           </TextField>
-
+          
+          <InputLabel id="equipments-label">Selecione os Equipamentos (Optional)</InputLabel>
           <Select
+            id="equipments-label"
             isMulti
             name="equipments"
             defaultValue={equipments}

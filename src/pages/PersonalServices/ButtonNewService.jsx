@@ -2,6 +2,7 @@ import * as React from "react";
 import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
 import Button from "@mui/material/Button";
+import InputLabel from '@mui/material/InputLabel';
 import AddIcon from "@mui/icons-material/Add";
 import { H1 } from "../../components/Text";
 import { MenuItem, TextField } from "@mui/material";
@@ -284,8 +285,10 @@ export default function ButtonNewService({ idUsuario, createNewOS }) {
               sx={{ marginBottom: "10px", width: "100%" }}
             />
           </Box>
-
+          
+          <InputLabel id="equipments-label">Selecione os Equipamentos (Optional)</InputLabel>
           <Select
+            id="equipments-label"
             isMulti
             name="equipments"
             options={listEquipment}
