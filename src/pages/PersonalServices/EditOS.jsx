@@ -2,15 +2,12 @@ import * as React from "react";
 import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
 import Button from "@mui/material/Button";
-import InputLabel from '@mui/material/InputLabel';
-import Select from '@mui/material/Select';
-import Chip from '@mui/material/Chip';
 import { H1 } from "../../components/Text";
 import api from "../../services/api";
-import { useTheme } from '@mui/material/styles';
 import { toast } from 'react-toastify';
 import { MenuItem, TextField } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import Select from 'react-select'
 
 const style = {
   display: "flex",
@@ -26,28 +23,7 @@ const style = {
   width: "95%",
 };
 
-const ITEM_HEIGHT = 48;
-const ITEM_PADDING_TOP = 8;
-const MenuProps = {
-  PaperProps: {
-    style: {
-      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-      width: 250,
-    },
-  },
-};
-
-function getStyles(name, personName, theme) {
-  return {
-    fontWeight:
-      personName.indexOf(name) === -1
-        ? theme.typography.fontWeightRegular
-        : theme.typography.fontWeightMedium,
-  };
-}
-
 export default function EditOS({ type, idUsuario, osObj, editOS }) {
-  const theme = useTheme();
   const navigate = useNavigate();
   const [open, setOpen] = React.useState(false);
   const [listClient, setListClient] = React.useState([]);
@@ -88,10 +64,8 @@ export default function EditOS({ type, idUsuario, osObj, editOS }) {
     setStatus(event.target.value);
   };
 
-  const handleChangeEquipment = (event) => {
-    const {
-      target: { value },
-    } = event;
+  const handleChangeEquipment = (result) => {
+    const value = result.map(el => el.value)
     setEquipments(value);
   };
 
@@ -109,7 +83,12 @@ export default function EditOS({ type, idUsuario, osObj, editOS }) {
     setTypeServices(osObj.typeServices.idTypeServices)
     setMotive(osObj.motive)
     setObservacoes(osObj.obs)
-    setEquipments(osObj.equipment)
+    setEquipments(osObj.equipment.map(el => {
+      return {
+        value: el.id,
+        label: `${el.name} - ${el.model}`
+      }
+    }))
     setDevolution(convertData(osObj.devolution))
   }
 
@@ -132,7 +111,7 @@ export default function EditOS({ type, idUsuario, osObj, editOS }) {
           motive: motive,
           obs: observacoes,
           devolution: devolution,
-          equipaments: equipments.map(el => el.id),
+          equipaments: equipments,
           inventories: [],
         }, 
         config
@@ -168,7 +147,13 @@ export default function EditOS({ type, idUsuario, osObj, editOS }) {
   async function getListEquipments(){
     await api.get(`/equipment`, config)
       .then((response) => {
-        setListEquipment(response.data)
+        let arrayList = response.data.map(el => {
+          return {
+            value: el.id,
+            label: `${el.name} - ${el.model}`
+          }
+        })
+        setListEquipment(arrayList)
       })
       .catch((error) => {
           if (error.response.status === 403){
@@ -341,7 +326,7 @@ export default function EditOS({ type, idUsuario, osObj, editOS }) {
             value={status}
             disabled={type === 'edit' ? false : true}
             onChange={handleChangStatus}
-            sx={{ marginBottom: "10px", width: "100%" }}
+            sx={{ marginBottom: "20px", width: "100%" }}
           >
             {listStatus.map((option) => (
               <MenuItem key={option.id} value={option.id}>
@@ -350,43 +335,25 @@ export default function EditOS({ type, idUsuario, osObj, editOS }) {
             ))}
           </TextField>
 
-          <InputLabel id="demo-multiple-chip-label">Selecione os Equipamentos (Optional)</InputLabel>
           <Select
-            labelId="demo-multiple-chip-label"
-            id="demo-multiple-chip"
-            multiple
-            sx={{ marginBottom: "10px", width: "100%" }}
-            value={equipments}
-            disabled={type === 'edit' ? false : true}
+            isMulti
+            name="equipments"
+            defaultValue={equipments}
+            options={listEquipment}
+            isSearchable={true}
+            isClearable={true}
+            isDisabled={type === 'edit' ? false : true}
+            className="basic-multi-select"
+            classNamePrefix="select"
             onChange={handleChangeEquipment}
-            renderValue={(selected) => (
-              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                {selected.map((value) => (
-                  <Chip key={value.id} label={value.name + ' - ' + value.model} />
-                ))}
-              </Box>
-            )}
-            MenuProps={MenuProps}
-          >
-            {listEquipment.map((equipment) => {
-              // let value = equipments.find(produto => produto.id === equipment.id)
-              return (
-                <MenuItem
-                  key={equipment.id}
-                  value={equipment}
-                  style={getStyles(equipment.name, equipments, theme)}
-                >
-                  {equipment.name} - {equipment.model}
-                </MenuItem>
-              )
-            })}
-          </Select>
+          />
 
           <Box
             sx={{
               display: "flex",
               flexDirection: "row",
               marginY: "10px",
+              marginTop: "30px"
             }}
           >
             <Button sx={{ marginRight: "10px" }} variant="contained" onClick={handleUpdateOs} disabled={type === 'edit' ? false : true}>

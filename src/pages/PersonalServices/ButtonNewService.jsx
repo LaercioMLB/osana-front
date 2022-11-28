@@ -3,15 +3,12 @@ import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
 import Button from "@mui/material/Button";
 import AddIcon from "@mui/icons-material/Add";
-import InputLabel from '@mui/material/InputLabel';
-import Select from '@mui/material/Select';
-import Chip from '@mui/material/Chip';
 import { H1 } from "../../components/Text";
 import { MenuItem, TextField } from "@mui/material";
 import api from "../../services/api";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from 'react-toastify';
-import { useTheme } from '@mui/material/styles';
+import Select from 'react-select'
 
 const style = {
   display: "flex",
@@ -27,28 +24,7 @@ const style = {
   width: "95%",
 };
 
-const ITEM_HEIGHT = 48;
-const ITEM_PADDING_TOP = 8;
-const MenuProps = {
-  PaperProps: {
-    style: {
-      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-      width: 250,
-    },
-  },
-};
-
-function getStyles(name, personName, theme) {
-  return {
-    fontWeight:
-      personName.indexOf(name) === -1
-        ? theme.typography.fontWeightRegular
-        : theme.typography.fontWeightMedium,
-  };
-}
-
 export default function ButtonNewService({ idUsuario, createNewOS }) {
-  const theme = useTheme();
   const navigate = useNavigate();
   const [open, setOpen] = React.useState(false);
   const [listClient, setListClient] = React.useState([]);
@@ -83,10 +59,8 @@ export default function ButtonNewService({ idUsuario, createNewOS }) {
     setTypeServices(event.target.value);
   };
 
-  const handleChangeEquipment = (event) => {
-    const {
-      target: { value },
-    } = event;
+  const handleChangeEquipment = (result) => {
+    const value = result.map(el => el.value)
     setEquipments(value);
   };
 
@@ -108,7 +82,7 @@ export default function ButtonNewService({ idUsuario, createNewOS }) {
             motive: motive,
             obs: observacoes,
             devolution: devolution,
-            equipaments: equipments.map(el => el.id),
+            equipaments: equipments,
             inventories: [],
         }, 
         config
@@ -144,7 +118,13 @@ export default function ButtonNewService({ idUsuario, createNewOS }) {
   async function getListEquipments(){
     await api.get(`/equipment`, config)
       .then((response) => {
-        setListEquipment(response.data)
+        let arrayList = response.data.map(el => {
+          return {
+            value: el.id,
+            label: `${el.name} - ${el.model}`
+          }
+        })
+        setListEquipment(arrayList)
       })
       .catch((error) => {
           if (error.response.status === 403){
@@ -305,40 +285,23 @@ export default function ButtonNewService({ idUsuario, createNewOS }) {
             />
           </Box>
 
-          
-          <InputLabel id="demo-multiple-chip-label">Selecione os Equipamentos (Optional)</InputLabel>
           <Select
-            labelId="demo-multiple-chip-label"
-            id="demo-multiple-chip"
-            multiple
-            sx={{ marginBottom: "10px", width: "100%" }}
-            value={equipments}
+            isMulti
+            name="equipments"
+            options={listEquipment}
+            isSearchable={true}
+            isClearable={true}
+            className="basic-multi-select"
+            classNamePrefix="select"
             onChange={handleChangeEquipment}
-            renderValue={(selected) => (
-              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                {selected.map((value) => (
-                  <Chip key={value.id} label={value.name + ' - ' + value.model} />
-                ))}
-              </Box>
-            )}
-            MenuProps={MenuProps}
-          >
-            {listEquipment.map((equipment) => (
-              <MenuItem
-                key={equipment.id}
-                value={equipment}
-                style={getStyles(equipment.name, equipments, theme)}
-              >
-                {equipment.name} - {equipment.model}
-              </MenuItem>
-            ))}
-          </Select>
+          />
 
           <Box
             sx={{
               display: "flex",
               flexDirection: "row",
               marginY: "10px",
+              marginTop: "30px"
             }}
           >
             <Button sx={{ marginRight: "10px" }} variant="contained" onClick={handleCreateOs}>
