@@ -43,17 +43,19 @@ export default function EditClient({ client, editClient }) {
   };
 
   function setValues(){
-    setCpfCnpj(client.cnpj);
-    setFirstName(client.firstName);
-    setLastName(client.lastName);
-    setEmail(client.email);
-    setPhone(client.phone);
+    setCpfCnpj(client.cnpj === null ? "" : client.cnpj);
+    setFirstName(client.firstName === null ? "" : client.firstName);
+    setLastName(client.lastName === null ? "" : client.lastName);
+    setEmail(client.email === null ? "" : client.email);
+    setPhone(client.phone === null ? "" : client.phone);
     setCurrency(client.contract);
   }
 
   React.useEffect(() => {
-    setValues();
-  }, [])
+    if (open === true){
+      setValues();
+    }
+  }, [open])
 
   const config = {
     headers: {
@@ -88,8 +90,8 @@ export default function EditClient({ client, editClient }) {
   };
 
   return (
-    <Box>
-      <Box onClick={handleOpen}>Editar</Box>
+    <div>
+      <MenuItem onClick={handleOpen}>Editar</MenuItem>
 
       <Modal
         open={open}
@@ -205,7 +207,7 @@ export default function EditClient({ client, editClient }) {
           </Box>
         </Box>
       </Modal>
-    </Box>
+    </div>
   );
 }
 

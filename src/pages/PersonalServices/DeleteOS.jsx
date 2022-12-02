@@ -5,6 +5,7 @@ import Button from "@mui/material/Button";
 import { H1 } from "../../components/Text";
 import api from "../../services/api";
 import { toast } from 'react-toastify';
+import { MenuItem } from "@mui/material";
 
 const style = {
   display: "flex",
@@ -52,7 +53,7 @@ export default function DeleteOS({ idOS, deleteOS }) {
 
   return (
     <Box>
-      <Box onClick={handleOpen}>Excluir</Box>
+      <MenuItem onClick={handleOpen}>Excluir</MenuItem>
 
       <Modal
         open={open}

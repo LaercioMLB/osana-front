@@ -10,6 +10,7 @@ import api from "../../services/api";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from 'react-toastify';
 import Select from 'react-select'
+import { priorityObject } from "../../services/staticData"
 
 const style = {
   display: "flex",
@@ -75,16 +76,17 @@ export default function ButtonNewService({ idUsuario, createNewOS }) {
   const handleCreateOs = async (event) => {
     event.preventDefault();
     if (client && prior && typeService && motive){
+      console.log(idUsuario)
       await api.post('/os', {
-            idUsuario: idUsuario,
-            idClient: client, 
-            idPriority: prior, 
-            idTypeServices: typeService, 
-            motive: motive,
-            obs: observacoes,
-            devolution: devolution,
-            equipaments: equipments,
-            inventories: [],
+          idUsuario: idUsuario,
+          idClient: client, 
+          idPriority: prior, 
+          idTypeServices: typeService, 
+          motive: motive,
+          obs: observacoes,
+          devolution: devolution,
+          equipaments: equipments,
+          inventories: [],
         }, 
         config
       )
@@ -101,7 +103,7 @@ export default function ButtonNewService({ idUsuario, createNewOS }) {
   };
 
   async function getListClientes(){
-    await api.get(`/client`, config)
+    await api.get(`/client/findAll`, config)
       .then((response) => {
         setListClient(response.data)
       })
@@ -117,7 +119,7 @@ export default function ButtonNewService({ idUsuario, createNewOS }) {
   }
 
   async function getListEquipments(){
-    await api.get(`/equipment`, config)
+    await api.get(`/equipment/findAll`, config)
       .then((response) => {
         let arrayList = response.data.map(el => {
           return {
@@ -139,7 +141,7 @@ export default function ButtonNewService({ idUsuario, createNewOS }) {
   }
 
   async function getListServices(){
-    await api.get(`/services`, config)
+    await api.get(`/services/findAll`, config)
       .then((response) => {
         setListTypeService(response.data)
       })
@@ -155,18 +157,14 @@ export default function ButtonNewService({ idUsuario, createNewOS }) {
   }
 
   React.useEffect(() => {
-    if (localStorage.getItem('token')){
+    if (open === true){
       getListClientes();
       getListServices();
       getListEquipments();
-      setListPriority([
-        {id: 1, name: "Alta"},
-        {id: 2, name: "Baixa"},
-        {id: 3, name: "Urgente"},
-      ])
+      setListPriority(priorityObject)
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [open])
 
   return (
     <div>

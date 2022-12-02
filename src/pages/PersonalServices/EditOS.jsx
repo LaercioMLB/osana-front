@@ -9,6 +9,7 @@ import { toast } from 'react-toastify';
 import { MenuItem, TextField } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import Select from 'react-select'
+import { statusObject, priorityObject } from "../../services/staticData"
 
 const style = {
   display: "flex",
@@ -83,14 +84,14 @@ export default function EditOS({ type, idUsuario, osObj, editOS }) {
     setStatus(osObj.status.id)
     setTypeServices(osObj.typeServices.idTypeServices)
     setMotive(osObj.motive)
-    setObservacoes(osObj.obs)
+    setObservacoes(osObj.obs === null ? "" : osObj.obs)
     setEquipments(osObj.equipment.map(el => {
       return {
         value: el.id,
         label: `${el.name} - ${el.model}`
       }
     }))
-    setDevolution(convertData(osObj.devolution))
+    setDevolution(osObj.devolution === null ? "" : convertData(osObj.devolution))
   }
 
   const config = {
@@ -130,7 +131,7 @@ export default function EditOS({ type, idUsuario, osObj, editOS }) {
   };
 
   async function getListClientes(){
-    await api.get(`/client`, config)
+    await api.get(`/client/findAll`, config)
       .then((response) => {
         setListClient(response.data)
       })
@@ -146,7 +147,7 @@ export default function EditOS({ type, idUsuario, osObj, editOS }) {
   }
 
   async function getListEquipments(){
-    await api.get(`/equipment`, config)
+    await api.get(`/equipment/findAll`, config)
       .then((response) => {
         let arrayList = response.data.map(el => {
           return {
@@ -168,7 +169,7 @@ export default function EditOS({ type, idUsuario, osObj, editOS }) {
   }
 
   async function getListServices(){
-    await api.get(`/services`, config)
+    await api.get(`/services/findAll`, config)
       .then((response) => {
         setListTypeService(response.data)
       })
@@ -184,28 +185,20 @@ export default function EditOS({ type, idUsuario, osObj, editOS }) {
   }
 
   React.useEffect(() => {
-    if (localStorage.getItem('token')){
+    if (open === true){
       getListClientes();
       getListServices();
       getListEquipments();
-      setListPriority([
-        {id: 1, name: "Alta"},
-        {id: 2, name: "Baixa"},
-        {id: 3, name: "Urgente"},
-      ])
-      setListStatus([
-        {id: 1, name: "Andamento"},
-        {id: 2, name: "Finalizado"},
-        {id: 3, name: "Aberto"},
-      ])
+      setListPriority(priorityObject)
+      setListStatus(statusObject)
       setValues();
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [open])
 
   return (
     <Box>
-      <Box onClick={handleOpen}>{type === 'edit' ? "Editar" : "Visualizar"}</Box>
+      <MenuItem onClick={handleOpen}>{type === 'edit' ? "Editar" : "Visualizar"}</MenuItem>
 
       <Modal
         open={open}
@@ -222,7 +215,7 @@ export default function EditOS({ type, idUsuario, osObj, editOS }) {
             ...style,
           }}
         >
-          <H1>Nova OS</H1>
+          <H1>{type === 'edit' ? "Editar OS" : "Visualizar OS"}</H1>
 
           <TextField
             select

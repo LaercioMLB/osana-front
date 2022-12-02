@@ -309,15 +309,9 @@ export default function Services({ idUsuario }) {
                             "aria-labelledby": "basic-button",
                           }}
                         >
-                          <MenuItem>
-                            <EditOS type={'view'} osObj={row} />
-                          </MenuItem>
-                          <MenuItem>
-                            <EditOS type={'edit'} idUsuario={idUsuario} osObj={row} editOS={editOS}/>
-                          </MenuItem>
-                          <MenuItem>
-                            <DeleteOS idOS={row.idOS} deleteOS={deleteOS}/>
-                          </MenuItem>
+                          <EditOS type={'view'} osObj={row} />
+                          <EditOS type={'edit'} idUsuario={idUsuario} osObj={row} editOS={editOS}/>
+                          <DeleteOS idOS={row.idOS} deleteOS={deleteOS}/>
                         </Menu>
                       </TableCell>
                     </TableRow>
