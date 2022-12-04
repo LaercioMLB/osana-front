@@ -21,11 +21,12 @@ const style = {
   width: "50%",
 };
 
-export default function DeleteOS({ idOS, deleteOS }) {
+export default function DeleteOS({ idOS, deleteOS, handleCloseMenu }) {
   const [open, setOpen] = React.useState(false);
 
   const handleClose = () => {
     setOpen(false);
+    handleCloseMenu();
   };
 
   const handleOpen = () => {
@@ -45,7 +46,7 @@ export default function DeleteOS({ idOS, deleteOS }) {
     .then(() => {
       toast.success("OS Deletada com Sucesso")
       deleteOS(idOS)
-      setOpen(false);
+      handleClose();
     })
     .catch((error) => toast.error(error.response.data)
     );

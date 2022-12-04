@@ -10,6 +10,7 @@ import {
 } from "@mui/material";
 import PropTypes from 'prop-types';
 import { H1 } from "../../components/Text";
+import Button from '@mui/material/Button';
 import ButtonNewClient from "./ButtonNewClient";
 import DeleteClient from "./DeleteClient";
 import EditClient from "./EditClient";
@@ -81,6 +82,44 @@ const headCells = [
   },
 ];
 
+function PositionedMenu({ row, deleteClient, editClient }) {
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const open = Boolean(anchorEl);
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  return (
+    <div>
+      <MoreVertIcon
+        id="basic-button"
+        aria-controls={open ? "basic-menu" : undefined}
+        aria-haspopup="true"
+        aria-expanded={open ? "true" : undefined}
+        onClick={handleClick}
+        sx={{ cursor: "pointer" }}
+      />
+
+      <Menu
+        id="basic-menu"
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleClose}
+        MenuListProps={{
+          "aria-labelledby": "basic-button",
+        }}
+      >
+        <ViewClient client={row} handleCloseMenu={handleClose}/>
+        <EditClient client={row} editClient={editClient} handleCloseMenu={handleClose}/>
+        <DeleteClient idClient={row.id} nameCliente={row.firstName} deleteClient={deleteClient} handleCloseMenu={handleClose}/>
+      </Menu>
+    </div>
+  );
+}
+
 function EnhancedTableHead(props) {
   const { order, orderBy, onRequestSort } =
     props;
@@ -126,37 +165,29 @@ EnhancedTableHead.propTypes = {
 function Client() {
   const navigate = useNavigate();
   // const [filterData] = useContext(FilterContext);
-  const [anchorEl, setAnchorEl] = useState(null);
   const [order, setOrder] = useState('asc');
   const [orderBy, setOrderBy] = useState('firstName');
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [numberOfElements, setNumberOfElements] = useState(0);
   const [rows, setRows] = useState([]);
-  const open = Boolean(anchorEl);
 
   const createNewClient = (newClientData) => {
     setRows([...rows, newClientData])
+    let number = numberOfElements + 1;
+    setNumberOfElements(number)
   }
 
   const deleteClient = (deletedClientId) => {
     setRows(rows.filter((client) => client.id !== deletedClientId))
-    setAnchorEl(null);
+    let number = numberOfElements - 1;
+    setNumberOfElements(number)
   }
 
   const editClient = (editedClient) => {
     const newListClients = rows.filter((client) => client.id !== editedClient.id)
-    setRows([...newListClients, editedClient])
-    setAnchorEl(null);
+    setRows([...newListClients, editedClient]);
   }
-
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
 
   const config = {
     headers: {
@@ -254,28 +285,7 @@ function Client() {
                         <TableCell align="left">{row.contract === 'true' ? "Tem Contrato" : "Não Tem Contrato"}</TableCell>
                         <TableCell align="left">{row.cnpj}</TableCell>
                         <TableCell align="left">
-                          <MoreVertIcon
-                            id="basic-button"
-                            aria-controls={open ? "basic-menu" : undefined}
-                            aria-haspopup="true"
-                            aria-expanded={open ? "true" : undefined}
-                            onClick={handleClick}
-                            sx={{ cursor: "pointer" }}
-                          />
-
-                          <Menu
-                            id="basic-menu"
-                            anchorEl={anchorEl}
-                            open={open}
-                            onClose={handleClose}
-                            MenuListProps={{
-                              "aria-labelledby": "basic-button",
-                            }}
-                          >
-                            <ViewClient client={row} />
-                            <EditClient client={row} editClient={editClient} />
-                            <DeleteClient idClient={row.id} nameCliente={row.firstName} deleteClient={deleteClient}/>
-                          </Menu>
+                          <PositionedMenu row={row} deleteClient={deleteClient} editClient={editClient}/>
                         </TableCell>
                       </TableRow>
                     );

@@ -32,6 +32,11 @@ export default function ButtonNewClient({ createNewClient }) {
   const [phone, setPhone] = React.useState("");
   const handleOpen = () => {
     setOpen(true);
+    setCpfCnpj("")
+    setFirstName("")
+    setLastName("")
+    setEmail("")
+    setPhone("")
   };
   const handleClose = () => {
     setOpen(false);

@@ -21,11 +21,12 @@ const style = {
   width: "70%",
 };
 
-export default function DeleteClient({ idClient, nameCliente, deleteClient }) {
+export default function DeleteClient({ idClient, nameCliente, deleteClient, handleCloseMenu }) {
   const [open, setOpen] = React.useState(false);
 
   const handleClose = () => {
     setOpen(false);
+    handleCloseMenu();
   };
 
   const handleOpen = () => {
@@ -45,7 +46,7 @@ export default function DeleteClient({ idClient, nameCliente, deleteClient }) {
     .then(() => {
       toast.success("Cliente Deletado com Sucesso")
       deleteClient(idClient)
-      setOpen(false);
+      handleClose();
     })
     .catch((error) => toast.error(error.response.data)
     );

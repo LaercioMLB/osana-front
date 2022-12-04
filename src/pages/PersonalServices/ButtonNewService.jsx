@@ -40,10 +40,17 @@ export default function ButtonNewService({ idUsuario, createNewOS }) {
   const [motive, setMotive] = React.useState('');
   const [observacoes, setObservacoes] = React.useState('');
   const [equipments, setEquipments] = React.useState([]);
-  const [devolution, setDevolution] = React.useState(null);
+  const [devolution, setDevolution] = React.useState('');
 
   const handleOpen = () => {
     setOpen(true);
+    setClient('')
+    setPrior('')
+    setTypeServices('')
+    setMotive('')
+    setObservacoes('')
+    setEquipments([])
+    setDevolution('')
   };
   const handleClose = () => {
     setOpen(false);
@@ -76,7 +83,6 @@ export default function ButtonNewService({ idUsuario, createNewOS }) {
   const handleCreateOs = async (event) => {
     event.preventDefault();
     if (client && prior && typeService && motive){
-      console.log(idUsuario)
       await api.post('/os', {
           idUsuario: idUsuario,
           idClient: client, 

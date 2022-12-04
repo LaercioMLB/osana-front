@@ -15,10 +15,10 @@ import api from "../../services/api";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from 'react-toastify';
 import Menu from "@mui/material/Menu";
-import MenuItem from "@mui/material/MenuItem";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import DeleteOS from "../PersonalServices/DeleteOS";
 import EditOS from "../PersonalServices/EditOS";
+import ViewOS from "../PersonalServices/ViewOS";
 import { StatusCell, PrioridadeCell } from "./styles";
 
 function descendingComparator(a, b, orderBy) {
@@ -88,6 +88,44 @@ const headCells = [
   },
 ];
 
+function PositionedMenu({ row, deleteOS, editOS, idUsuario }) {
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const open = Boolean(anchorEl);
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  return (
+    <div>
+      <MoreVertIcon
+        id="basic-button"
+        aria-controls={open ? "basic-menu" : undefined}
+        aria-haspopup="true"
+        aria-expanded={open ? "true" : undefined}
+        onClick={handleClick}
+        sx={{ cursor: "pointer" }}
+      />
+
+      <Menu
+        id="basic-menu"
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleClose}
+        MenuListProps={{
+          "aria-labelledby": "basic-button",
+        }}
+      >
+        <ViewOS osObj={row}  handleCloseMenu={handleClose}/>
+        <EditOS idUsuario={idUsuario} osObj={row} editOS={editOS} handleCloseMenu={handleClose}/>
+        <DeleteOS idOS={row.idOS} deleteOS={deleteOS} handleCloseMenu={handleClose}/>
+      </Menu>
+    </div>
+  );
+}
+
 function EnhancedTableHead(props) {
   const { order, orderBy, onRequestSort } =
     props;
@@ -139,26 +177,15 @@ export default function Services({ idUsuario }) {
   const [numberOfElements, setNumberOfElements] = React.useState(0);
   const [rows, setRows] = React.useState([]);
 
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const open = Boolean(anchorEl);
-
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
   const deleteOS = (deletedOSId) => {
     setRows(rows.filter((os) => os.idOS !== deletedOSId))
-    setAnchorEl(null);
+    let number = numberOfElements - 1;
+    setNumberOfElements(number)
   }
   
   const editOS = (editedOS) => {
     const newListOs = rows.filter((os) => os.idOS !== editedOS.idOS)
     setRows([...newListOs, editedOS])
-    setAnchorEl(null);
   }
 
   const config = {
@@ -291,28 +318,7 @@ export default function Services({ idUsuario }) {
                       <TableCell align="left">{row.typeServices.services}</TableCell>
                       <TableCell align="left">{row.client.firstName}</TableCell>
                       <TableCell align="left">
-                        <MoreVertIcon
-                          id="basic-button"
-                          aria-controls={open ? "basic-menu" : undefined}
-                          aria-haspopup="true"
-                          aria-expanded={open ? "true" : undefined}
-                          onClick={handleClick}
-                          sx={{ cursor: "pointer" }}
-                        />
-
-                        <Menu
-                          id="basic-menu"
-                          anchorEl={anchorEl}
-                          open={open}
-                          onClose={handleClose}
-                          MenuListProps={{
-                            "aria-labelledby": "basic-button",
-                          }}
-                        >
-                          <EditOS type={'view'} osObj={row} />
-                          <EditOS type={'edit'} idUsuario={idUsuario} osObj={row} editOS={editOS}/>
-                          <DeleteOS idOS={row.idOS} deleteOS={deleteOS}/>
-                        </Menu>
+                        <PositionedMenu row={row} idUsuario={idUsuario} deleteOS={deleteOS} editOS={editOS}/>
                       </TableCell>
                     </TableRow>
                   );

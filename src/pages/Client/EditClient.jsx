@@ -22,7 +22,7 @@ const style = {
   width: "100%",
 };
 
-export default function EditClient({ client, editClient }) {
+export default function EditClient({ client, editClient, handleCloseMenu }) {
   const [open, setOpen] = React.useState(false);
   const [cpfCnpj, setCpfCnpj] = React.useState("");
   const [firstName, setFirstName] = React.useState("");
@@ -34,6 +34,7 @@ export default function EditClient({ client, editClient }) {
   };
   const handleClose = () => {
     setOpen(false);
+    handleCloseMenu();
   };
 
   const [currency, setCurrency] = React.useState("");
@@ -80,7 +81,7 @@ export default function EditClient({ client, editClient }) {
       .then((response) => {
         toast.success("Cliente Editado com Sucesso")
         editClient(response.data)
-        setOpen(false);
+        handleClose();
       })
       .catch((error) => toast.error(error.response.data)
       );

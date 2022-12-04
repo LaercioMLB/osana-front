@@ -25,7 +25,7 @@ const style = {
   width: "95%",
 };
 
-export default function EditOS({ type, idUsuario, osObj, editOS }) {
+export default function EditOS({ idUsuario, osObj, editOS, handleCloseMenu }) {
   const navigate = useNavigate();
   const [open, setOpen] = React.useState(false);
   const [listClient, setListClient] = React.useState([]);
@@ -48,6 +48,7 @@ export default function EditOS({ type, idUsuario, osObj, editOS }) {
   };
   const handleClose = () => {
     setOpen(false);
+    handleCloseMenu();
   };
 
   const handleChangeClient = (event) => {
@@ -85,7 +86,7 @@ export default function EditOS({ type, idUsuario, osObj, editOS }) {
     setTypeServices(osObj.typeServices.idTypeServices)
     setMotive(osObj.motive)
     setObservacoes(osObj.obs === null ? "" : osObj.obs)
-    setEquipments(osObj.equipment.map(el => {
+    handleChangeEquipment(osObj.equipment.map(el => {
       return {
         value: el.id,
         label: `${el.name} - ${el.model}`
@@ -121,7 +122,7 @@ export default function EditOS({ type, idUsuario, osObj, editOS }) {
       .then((response) => {
         toast.success("Alterado com Sucesso")
         editOS(response.data)
-        setOpen(false);
+        handleClose();
       })
       .catch((error) => toast.error(error.response.data)
       );
@@ -198,7 +199,7 @@ export default function EditOS({ type, idUsuario, osObj, editOS }) {
 
   return (
     <Box>
-      <MenuItem onClick={handleOpen}>{type === 'edit' ? "Editar" : "Visualizar"}</MenuItem>
+      <MenuItem onClick={handleOpen}>Editar OS</MenuItem>
 
       <Modal
         open={open}
@@ -215,7 +216,7 @@ export default function EditOS({ type, idUsuario, osObj, editOS }) {
             ...style,
           }}
         >
-          <H1>{type === 'edit' ? "Editar OS" : "Visualizar OS"}</H1>
+          <H1>Editar OS</H1>
 
           <TextField
             select
@@ -223,7 +224,6 @@ export default function EditOS({ type, idUsuario, osObj, editOS }) {
             onChange={handleChangeClient}
             sx={{ marginBottom: "10px" }}
             value={client}
-            disabled={type === 'edit' ? false : true}
           >
             {listClient.map((option) => (
               <MenuItem key={option.id} value={option.id}>
@@ -237,7 +237,6 @@ export default function EditOS({ type, idUsuario, osObj, editOS }) {
             onChange={event => setMotive(event.target.value)}
             multiline
             value={motive}
-            disabled={type === 'edit' ? false : true}
             rows={6}
             variant="outlined"
             sx={{ marginY: "10px" }}
@@ -248,7 +247,6 @@ export default function EditOS({ type, idUsuario, osObj, editOS }) {
             onChange={event => setObservacoes(event.target.value)}
             multiline
             value={observacoes}
-            disabled={type === 'edit' ? false : true}
             rows={6}
             variant="outlined"
             sx={{ marginY: "10px" }}
@@ -266,7 +264,6 @@ export default function EditOS({ type, idUsuario, osObj, editOS }) {
               select
               label="Prioridade"
               value={prior}
-              disabled={type === 'edit' ? false : true}
               onChange={handleChangePrio}
               sx={{ marginBottom: "10px", width: "48%" }}
             >
@@ -281,7 +278,6 @@ export default function EditOS({ type, idUsuario, osObj, editOS }) {
               select
               label="Tipo de serviço"
               value={typeService}
-              disabled={type === 'edit' ? false : true}
               onChange={handleChangeTypeServices}
               sx={{ marginBottom: "10px", width: "48%" }}
             >
@@ -308,7 +304,6 @@ export default function EditOS({ type, idUsuario, osObj, editOS }) {
               InputLabelProps={{ shrink: true }}
               type="date"
               value={devolution}
-              disabled={type === 'edit' ? false : true}
               onChange={event => setDevolution(event.target.value)}
               sx={{ marginBottom: "10px", width: "100%" }}
             />
@@ -318,7 +313,6 @@ export default function EditOS({ type, idUsuario, osObj, editOS }) {
             select
             label="Status"
             value={status}
-            disabled={type === 'edit' ? false : true}
             onChange={handleChangStatus}
             sx={{ marginBottom: "20px", width: "100%" }}
           >
@@ -334,11 +328,15 @@ export default function EditOS({ type, idUsuario, osObj, editOS }) {
             id="equipments-label"
             isMulti
             name="equipments"
-            defaultValue={equipments}
+            defaultValue={osObj.equipment.map(el => {
+              return {
+                value: el.id,
+                label: `${el.name} - ${el.model}`
+              }
+            })}
             options={listEquipment}
             isSearchable={true}
             isClearable={true}
-            isDisabled={type === 'edit' ? false : true}
             className="basic-multi-select"
             classNamePrefix="select"
             onChange={handleChangeEquipment}
@@ -352,7 +350,7 @@ export default function EditOS({ type, idUsuario, osObj, editOS }) {
               marginTop: "30px"
             }}
           >
-            <Button sx={{ marginRight: "10px" }} variant="contained" onClick={handleUpdateOs} disabled={type === 'edit' ? false : true}>
+            <Button sx={{ marginRight: "10px" }} variant="contained" onClick={handleUpdateOs}>
               Confirmar
             </Button>
             <Button variant="outlined" onClick={handleClose}>Cancelar</Button>

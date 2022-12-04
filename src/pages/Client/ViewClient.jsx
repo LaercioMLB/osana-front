@@ -20,7 +20,7 @@ const style = {
   width: "100%",
 };
 
-export default function ViewClient({ client }) {
+export default function ViewClient({ client, handleCloseMenu }) {
   const [open, setOpen] = React.useState(false);
   const [cpfCnpj, setCpfCnpj] = React.useState(client.cnpj === null ? "Não tem Identidade" : client.cnpj);
   const [firstName, setFirstName] = React.useState(client.firstName === null ? "Não tem Nome" : client.firstName);
@@ -33,6 +33,7 @@ export default function ViewClient({ client }) {
   };
   const handleClose = () => {
     setOpen(false);
+    handleCloseMenu();
   };
 
   const [currency, setCurrency] = React.useState(client.contract);
