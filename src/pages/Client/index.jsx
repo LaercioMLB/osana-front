@@ -188,7 +188,6 @@ function Client() {
     const newListClients = rows.filter((client) => client.id !== editedClient.id)
     setRows([...newListClients, editedClient]);
   }
-
   const config = {
     headers: {
       Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -247,7 +246,7 @@ function Client() {
         }}
       >
         <H1>Clientes</H1>
-        <ButtonNewClient createNewClient={createNewClient}/>
+        <ButtonNewClient />
       </Box>
       <Box sx={{ width: '100%' }}>
         <Paper sx={{ width: '100%', mb: 2 }}>
@@ -265,7 +264,6 @@ function Client() {
               <TableBody>
                 {rows.sort(getComparator(order, orderBy)).slice().map((row, index) => {
                     const labelId = `enhanced-table-checkbox-${index}`;
-
                     return (
                       <TableRow
                         hover

@@ -80,12 +80,6 @@ const headCells = [
     disablePadding: false,
     label: 'Cliente',
   },
-  {
-    id: 'actions',
-    numeric: false,
-    disablePadding: false,
-    label: 'Ações',
-  },
 ];
 
 function PositionedMenu({ row, deleteOS, editOS, idUsuario }) {
@@ -168,7 +162,7 @@ EnhancedTableHead.propTypes = {
   orderBy: PropTypes.string.isRequired,
 };
 
-export default function Services({ idUsuario }) {
+export default function Services() {
   const navigate = useNavigate();
   const [order, setOrder] = React.useState('asc');
   const [orderBy, setOrderBy] = React.useState('dateOS');
@@ -187,7 +181,6 @@ export default function Services({ idUsuario }) {
     const newListOs = rows.filter((os) => os.idOS !== editedOS.idOS)
     setRows([...newListOs, editedOS])
   }
-
   const config = {
     headers: {
       "Authorization": `Bearer ${localStorage.getItem('token')}`,
@@ -261,13 +254,6 @@ export default function Services({ idUsuario }) {
     return color;
   }
 
-  const convertData = (data) => {
-    if (data){
-      var newData = data.split("T")[0].split("-").reverse().join("/")
-      return newData
-    }
-  }
-
   return (
     <Box sx={{ width: '100%' }}>
       <Paper sx={{ width: '100%', mb: 2 }}>
@@ -301,21 +287,18 @@ export default function Services({ idUsuario }) {
                       >
                         {row.motive}
                       </TableCell>
-                      <TableCell align="left">{convertData(row.dateOS)}</TableCell>
+                      <TableCell align="left">{row.dateOS.split("T")[0].split("-").reverse().join("/")}</TableCell>
                       <TableCell align="left">{row.usuario.name}</TableCell>
-                      <TableCell align="left">
-                        <StatusCell sx={{ backgroundColor: ColorStatus(row.status.name) }}>
-                          {row.status.name}
-                        </StatusCell>
+                      <TableCell sx={{ backgroundColor: ColorStatus(row.status.name) }}>
+                        {row.status.name}
                       </TableCell>
-                      <TableCell align="left">
-                        <PrioridadeCell
-                          sx={{ backgroundColor: ColorPrioridade(row.priority.name) }}
-                        >
-                          {row.priority.name}
-                        </PrioridadeCell>
+                      <TableCell
+                        sx={{ backgroundColor: ColorPrioridade(row.priority.name) }}
+                      >
+                        {row.priority.name}
                       </TableCell>
                       <TableCell align="left">{row.typeServices.services}</TableCell>
+
                       <TableCell align="left">{row.client.firstName}</TableCell>
                       <TableCell align="left">
                         <PositionedMenu row={row} idUsuario={idUsuario} deleteOS={deleteOS} editOS={editOS}/>

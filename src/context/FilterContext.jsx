@@ -6,7 +6,6 @@ export function FilterContextProvider(props) {
   const [filterData, setFilterData] = useState({
     tabSelected: 0,
     filters: [],
-    searchText: '',
   });
 
   return (

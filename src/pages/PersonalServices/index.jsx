@@ -9,6 +9,7 @@ import {
   TableRow,
 } from "@mui/material";
 import { H1 } from "../../components/Text";
+
 import { StatusCell, PrioridadeCell } from "./styles";
 import ButtonNewService from "./ButtonNewService";
 import api from "../../services/api";
@@ -53,7 +54,6 @@ function ColorPrioridade(prioridade) {
   }
   return color;
 }
-
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
     return -1;
@@ -227,6 +227,7 @@ function PersonalServices({ idUsuario }) {
     const newListOs = rows.filter((os) => os.idOS !== editedOS.idOS)
     setRows([...newListOs, editedOS])
   }
+
 
   const convertData = (data) => {
     if (data){
