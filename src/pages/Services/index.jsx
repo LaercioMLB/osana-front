@@ -14,11 +14,6 @@ import { visuallyHidden } from '@mui/utils';
 import api from "../../services/api";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from 'react-toastify';
-import Menu from "@mui/material/Menu";
-import MenuItem from "@mui/material/MenuItem";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
-import DeleteOS from "../PersonalServices/DeleteOS";
-import EditOS from "../PersonalServices/EditOS";
 import { StatusCell, PrioridadeCell } from "./styles";
 
 function descendingComparator(a, b, orderBy) {
@@ -80,12 +75,6 @@ const headCells = [
     disablePadding: false,
     label: 'Cliente',
   },
-  {
-    id: 'actions',
-    numeric: false,
-    disablePadding: false,
-    label: 'Ações',
-  },
 ];
 
 function EnhancedTableHead(props) {
@@ -130,7 +119,7 @@ EnhancedTableHead.propTypes = {
   orderBy: PropTypes.string.isRequired,
 };
 
-export default function Services({ idUsuario }) {
+export default function Services() {
   const navigate = useNavigate();
   const [order, setOrder] = React.useState('asc');
   const [orderBy, setOrderBy] = React.useState('dateOS');
@@ -138,28 +127,6 @@ export default function Services({ idUsuario }) {
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [numberOfElements, setNumberOfElements] = React.useState(0);
   const [rows, setRows] = React.useState([]);
-
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const open = Boolean(anchorEl);
-
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
-  const deleteOS = (deletedOSId) => {
-    setRows(rows.filter((os) => os.idOS !== deletedOSId))
-    setAnchorEl(null);
-  }
-  
-  const editOS = (editedOS) => {
-    const newListOs = rows.filter((os) => os.idOS !== editedOS.idOS)
-    setRows([...newListOs, editedOS])
-    setAnchorEl(null);
-  }
 
   const config = {
     headers: {
@@ -234,13 +201,6 @@ export default function Services({ idUsuario }) {
     return color;
   }
 
-  const convertData = (data) => {
-    if (data){
-      var newData = data.split("T")[0].split("-").reverse().join("/")
-      return newData
-    }
-  }
-
   return (
     <Box sx={{ width: '100%' }}>
       <Paper sx={{ width: '100%', mb: 2 }}>
@@ -274,52 +234,18 @@ export default function Services({ idUsuario }) {
                       >
                         {row.motive}
                       </TableCell>
-                      <TableCell align="left">{convertData(row.dateOS)}</TableCell>
+                      <TableCell align="left">{row.dateOS.split("T")[0].split("-").reverse().join("/")}</TableCell>
                       <TableCell align="left">{row.usuario.name}</TableCell>
-                      <TableCell align="left">
-                        <StatusCell sx={{ backgroundColor: ColorStatus(row.status.name) }}>
-                          {row.status.name}
-                        </StatusCell>
+                      <TableCell sx={{ backgroundColor: ColorStatus(row.status.name) }}>
+                        {row.status.name}
                       </TableCell>
-                      <TableCell align="left">
-                        <PrioridadeCell
-                          sx={{ backgroundColor: ColorPrioridade(row.priority.name) }}
-                        >
-                          {row.priority.name}
-                        </PrioridadeCell>
+                      <TableCell
+                        sx={{ backgroundColor: ColorPrioridade(row.priority.name) }}
+                      >
+                        {row.priority.name}
                       </TableCell>
                       <TableCell align="left">{row.typeServices.services}</TableCell>
-                      <TableCell align="left">{row.client.firstName}</TableCell>
-                      <TableCell align="left">
-                        <MoreVertIcon
-                          id="basic-button"
-                          aria-controls={open ? "basic-menu" : undefined}
-                          aria-haspopup="true"
-                          aria-expanded={open ? "true" : undefined}
-                          onClick={handleClick}
-                          sx={{ cursor: "pointer" }}
-                        />
-
-                        <Menu
-                          id="basic-menu"
-                          anchorEl={anchorEl}
-                          open={open}
-                          onClose={handleClose}
-                          MenuListProps={{
-                            "aria-labelledby": "basic-button",
-                          }}
-                        >
-                          <MenuItem>
-                            <EditOS type={'view'} osObj={row} />
-                          </MenuItem>
-                          <MenuItem>
-                            <EditOS type={'edit'} idUsuario={idUsuario} osObj={row} editOS={editOS}/>
-                          </MenuItem>
-                          <MenuItem>
-                            <DeleteOS idOS={row.idOS} deleteOS={deleteOS}/>
-                          </MenuItem>
-                        </Menu>
-                      </TableCell>
+                      <TableCell align="left">{row.client.name}</TableCell>
                     </TableRow>
                   );
                 })}

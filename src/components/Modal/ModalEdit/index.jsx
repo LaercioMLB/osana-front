@@ -81,7 +81,7 @@ export default function ModalEdit() {
         open={open}
         onClose={handleClose}
         sx={{
-          maxWidth: "900px",
+          maxWidth: "600px",
           margin: "auto",
         }}
       >
@@ -205,7 +205,7 @@ export default function ModalEdit() {
               fullWidth
               label="Motivo"
               multiline
-              rows={6}
+              rows={3}
               variant="outlined"
               sx={{ marginY: "10px" }}
             />
@@ -213,7 +213,7 @@ export default function ModalEdit() {
               fullWidth
               label="Observações"
               multiline
-              rows={6}
+              rows={3}
               variant="outlined"
               sx={{ marginY: "10px" }}
             />

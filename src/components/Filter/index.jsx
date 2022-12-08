@@ -15,14 +15,14 @@ export default function Filter() {
 
   const handleChangeFilter = (prop) => (event) => {
     if (event.target.checked) {
-      let { tabSelected, filters, searchText } = filterData;
+      let { tabSelected, filters } = filterData;
       if (!filters.includes(prop)) {
-        setFilterData({ tabSelected, filters: [...filters, prop], searchText });
+        setFilterData({ tabSelected, filters: [...filters, prop] });
       }
     } else {
-      let { tabSelected, filters, searchText } = filterData;
+      let { tabSelected, filters } = filterData;
       const newFilters = filters.filter((el) => el !== prop);
-      setFilterData({ tabSelected, filters: newFilters, searchText });
+      setFilterData({ tabSelected, filters: newFilters });
     }
   };
 
@@ -45,19 +45,17 @@ export default function Filter() {
         fullWidth
         label="Pesquisar"
         placeholder="O que procura?"
-        value={filterData.searchText}
-        onChange={event => setFilterData({...filterData, searchText: event.target.value})}
         sx={{ marginY: "30px" }}
       />
 
       {filterData.tabSelected === 0 && (
         <FormGroup>
           <FormControlLabel
-            control={<Checkbox onChange={handleChangeFilter("true")} />}
+            control={<Checkbox onChange={handleChangeFilter("conctract")} />}
             label="Com contrato"
           />
           <FormControlLabel
-            control={<Checkbox onChange={handleChangeFilter("false")} />}
+            control={<Checkbox onChange={handleChangeFilter("no conctract")} />}
             label="Sem contrato"
           />
         </FormGroup>

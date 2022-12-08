@@ -6,8 +6,6 @@ import AddIcon from "@mui/icons-material/Add";
 import { H1 } from "../../components/Text";
 import { Divider, MenuItem, TextField } from "@mui/material";
 import { maskCpfCnpj } from "../../utils/mascaras";
-import api from "../../services/api";
-import { toast } from 'react-toastify';
 
 const style = {
   display: "flex",
@@ -23,13 +21,9 @@ const style = {
   width: "100%",
 };
 
-export default function ButtonNewClient({ createNewClient }) {
+export default function ButtonNewClient() {
   const [open, setOpen] = React.useState(false);
   const [cpfCnpj, setCpfCnpj] = React.useState("");
-  const [firstName, setFirstName] = React.useState("");
-  const [lastName, setLastName] = React.useState("");
-  const [email, setEmail] = React.useState("");
-  const [phone, setPhone] = React.useState("");
   const handleOpen = () => {
     setOpen(true);
   };
@@ -41,38 +35,6 @@ export default function ButtonNewClient({ createNewClient }) {
 
   const handleChange = (event) => {
     setCurrency(event.target.value);
-  };
-
-  const config = {
-    headers: {
-      "Authorization": `Bearer ${localStorage.getItem('token')}`,
-      "Content-Type": "application/json", 
-    },
-  };
-
-  const handleCreateClient = async (event) => {
-    event.preventDefault();
-    if (cpfCnpj && firstName && lastName && email && phone){
-      await api.post('/client', {
-            firstName: firstName,
-            lastName: lastName, 
-            email: email, 
-            phone: phone, 
-            contract: currency,
-            cnpj: cpfCnpj,
-        }, 
-        config
-      )
-      .then((response) => {
-        toast.success("Cliente Cadastrado com Sucesso")
-        createNewClient(response.data)
-        setOpen(false);
-      })
-      .catch((error) => toast.error(error.response.data)
-      );
-    }else{
-      toast.error("Preencha o Formulário corretamente !")
-    }
   };
 
   return (
@@ -113,13 +75,11 @@ export default function ButtonNewClient({ createNewClient }) {
               sx={{ width: "48%" }}
               label="Primeiro Nome"
               variant="outlined"
-              onChange={event => setFirstName(event.target.value)}
             />
             <TextField
               sx={{ width: "48%" }}
               label="Sobrenome"
               variant="outlined"
-              onChange={event => setLastName(event.target.value)}
             />
           </Box>
           <Divider sx={{ marginY: "25px" }} />
@@ -137,14 +97,12 @@ export default function ButtonNewClient({ createNewClient }) {
               label="Email"
               required
               variant="outlined"
-              onChange={event => setEmail(event.target.value)}
             />
             <TextField
               sx={{ width: "48%" }}
               label="Celular"
               required
               variant="outlined"
-              onChange={event => setPhone(event.target.value)}
             />
           </Box>
           <Box
@@ -184,10 +142,9 @@ export default function ButtonNewClient({ createNewClient }) {
               display: "flex",
               flexDirection: "row",
               marginY: "10px",
-              marginTop: "30px"
             }}
           >
-            <Button sx={{ marginRight: "10px" }} variant="contained" onClick={handleCreateClient}>
+            <Button sx={{ marginRight: "10px" }} variant="contained">
               Confirmar
             </Button>
             <Button variant="outlined">Cancelar</Button>

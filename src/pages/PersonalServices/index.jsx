@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Table,
@@ -10,15 +10,10 @@ import {
 } from "@mui/material";
 import { H1 } from "../../components/Text";
 import { TableCellHeader, StatusCell, PrioridadeCell } from "./styles";
+import { MoreIcon } from "../../components/Buttons";
 import ButtonNewService from "./ButtonNewService";
 import api from "../../services/api";
 import { ToastContainer, toast } from 'react-toastify';
-import Menu from "@mui/material/Menu";
-import MenuItem from "@mui/material/MenuItem";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
-import DeleteOS from "./DeleteOS";
-import EditOS from "./EditOS";
-import FilterContext from "../../context/FilterContext";
 
 function ColorStatus(status) {
   let color;
@@ -49,34 +44,11 @@ function ColorPrioridade(prioridade) {
 }
 
 function PersonalServices({ idUsuario }) {
-  const [filterData] = useContext(FilterContext);
   const [ listOS, setListOS ] = useState([]);
 
   const createNewOS = (newOSData) => {
-    setListOS([...listOS, newOSData])
+    console.log(newOSData)
   }
-
-  const deleteOS = (deletedOSId) => {
-    setListOS(listOS.filter((os) => os.idOS !== deletedOSId))
-    setAnchorEl(null);
-  }
-  
-  const editOS = (editedOS) => {
-    const newListOs = listOS.filter((os) => os.idOS !== editedOS.idOS)
-    setListOS([...newListOs, editedOS])
-    setAnchorEl(null);
-  }
-
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const open = Boolean(anchorEl);
-
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
 
   const convertData = (data) => {
     if (data){
@@ -130,7 +102,6 @@ function PersonalServices({ idUsuario }) {
             <TableRow>
               <TableCellHeader>Serviço</TableCellHeader>
               <TableCellHeader align="left">Cliente</TableCellHeader>
-              <TableCellHeader align="left">Motivo</TableCellHeader>
               <TableCellHeader align="left">Data de Criação</TableCellHeader>
               <TableCellHeader align="left">Status</TableCellHeader>
               <TableCellHeader align="left">Prioridade</TableCellHeader>
@@ -138,121 +109,33 @@ function PersonalServices({ idUsuario }) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {listOS.map((row) => 
-              filterData.filters.length !== 0 ? (
-                filterData.filters.includes(row.status.name) || filterData.filters.includes(row.priority.name) ? (
-                  <TableRow
-                    key={row.idOS}
-                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+            {listOS.map((row) => (
+              <TableRow
+                key={row.idOS}
+                sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+              >
+                <TableCell component="th" scope="row">
+                  {row.typeServices.services}
+                </TableCell>
+                <TableCell align="left">{row.client.name}</TableCell>
+                <TableCell align="left">{convertData(row.dateOS)}</TableCell>
+                <TableCell align="left">
+                  <StatusCell sx={{ backgroundColor: ColorStatus(row.status.name) }}>
+                    {row.status.name}
+                  </StatusCell>
+                </TableCell>
+                <TableCell align="left">
+                  <PrioridadeCell
+                    sx={{ backgroundColor: ColorPrioridade(row.priority.name) }}
                   >
-                    <TableCell component="th" scope="row">
-                      {row.typeServices.services}
-                    </TableCell>
-                    <TableCell align="left">{row.client.firstName}</TableCell>
-                    <TableCell align="left">{row.motive}</TableCell>
-                    <TableCell align="left">{convertData(row.dateOS)}</TableCell>
-                    <TableCell align="left">
-                      <StatusCell sx={{ backgroundColor: ColorStatus(row.status.name) }}>
-                        {row.status.name}
-                      </StatusCell>
-                    </TableCell>
-                    <TableCell align="left">
-                      <PrioridadeCell
-                        sx={{ backgroundColor: ColorPrioridade(row.priority.name) }}
-                      >
-                        {row.priority.name}
-                      </PrioridadeCell>
-                    </TableCell>
-                    <TableCell align="left">
-                      <MoreVertIcon
-                        id="basic-button"
-                        aria-controls={open ? "basic-menu" : undefined}
-                        aria-haspopup="true"
-                        aria-expanded={open ? "true" : undefined}
-                        onClick={handleClick}
-                        sx={{ cursor: "pointer" }}
-                      />
-
-                      <Menu
-                        id="basic-menu"
-                        anchorEl={anchorEl}
-                        open={open}
-                        onClose={handleClose}
-                        MenuListProps={{
-                          "aria-labelledby": "basic-button",
-                        }}
-                      >
-                        <MenuItem>
-                          <EditOS type={'view'} osObj={row} />
-                        </MenuItem>
-                        <MenuItem>
-                          <EditOS type={'edit'} idUsuario={idUsuario} osObj={row} editOS={editOS}/>
-                        </MenuItem>
-                        <MenuItem>
-                          <DeleteOS idOS={row.idOS} deleteOS={deleteOS}/>
-                        </MenuItem>
-                      </Menu>
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  <></>
-                )
-              ) : (
-                <TableRow
-                  key={row.idOS}
-                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                >
-                  <TableCell component="th" scope="row">
-                    {row.typeServices.services}
-                  </TableCell>
-                  <TableCell align="left">{row.client.firstName}</TableCell>
-                  <TableCell align="left">{row.motive}</TableCell>
-                  <TableCell align="left">{convertData(row.dateOS)}</TableCell>
-                  <TableCell align="left">
-                    <StatusCell sx={{ backgroundColor: ColorStatus(row.status.name) }}>
-                      {row.status.name}
-                    </StatusCell>
-                  </TableCell>
-                  <TableCell align="left">
-                    <PrioridadeCell
-                      sx={{ backgroundColor: ColorPrioridade(row.priority.name) }}
-                    >
-                      {row.priority.name}
-                    </PrioridadeCell>
-                  </TableCell>
-                  <TableCell align="left">
-                    <MoreVertIcon
-                      id="basic-button"
-                      aria-controls={open ? "basic-menu" : undefined}
-                      aria-haspopup="true"
-                      aria-expanded={open ? "true" : undefined}
-                      onClick={handleClick}
-                      sx={{ cursor: "pointer" }}
-                    />
-
-                    <Menu
-                      id="basic-menu"
-                      anchorEl={anchorEl}
-                      open={open}
-                      onClose={handleClose}
-                      MenuListProps={{
-                        "aria-labelledby": "basic-button",
-                      }}
-                    >
-                      <MenuItem>
-                        <EditOS type={'view'} osObj={row} />
-                      </MenuItem>
-                      <MenuItem>
-                        <EditOS type={'edit'} idUsuario={idUsuario} osObj={row} editOS={editOS}/>
-                      </MenuItem>
-                      <MenuItem>
-                        <DeleteOS idOS={row.idOS} deleteOS={deleteOS}/>
-                      </MenuItem>
-                    </Menu>
-                  </TableCell>
-                </TableRow>
-              )
-            )}
+                    {row.priority.name}
+                  </PrioridadeCell>
+                </TableCell>
+                <TableCell align="left">
+                  <MoreIcon />
+                </TableCell>
+              </TableRow>
+            ))}
           </TableBody>
         </Table>
       </TableContainer>
