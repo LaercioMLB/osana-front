@@ -4,12 +4,14 @@ import Modal from "@mui/material/Modal";
 import Button from "@mui/material/Button";
 import AddIcon from "@mui/icons-material/Add";
 import { H1 } from "../../components/Text";
+import InputLabel from '@mui/material/InputLabel';
 import { MenuItem, TextField } from "@mui/material";
 import api from "../../services/api";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from 'react-toastify';
 import Select from 'react-select'
 import { priorityObject } from "../../services/staticData"
+
 const style = {
   display: "flex",
   flexDirection: "column",
@@ -21,7 +23,7 @@ const style = {
   border: "none",
   padding: "20px",
   borderRadius: "6px",
-  width: "100%",
+  width: "95%",
 };
 
 export default function ButtonNewService({ idUsuario, createNewOS }) {
@@ -31,7 +33,6 @@ export default function ButtonNewService({ idUsuario, createNewOS }) {
   const [listPriority, setListPriority] = React.useState([]);
   const [listTypeService, setListTypeService] = React.useState([]);
   const [listEquipment, setListEquipment] = React.useState([]);
-  const [listInventory, setListInventory] = React.useState([]);
 
   const [client, setClient] = React.useState("");
   const [prior, setPrior] = React.useState("");
@@ -65,6 +66,11 @@ export default function ButtonNewService({ idUsuario, createNewOS }) {
 
   const handleChangeTypeServices = (event) => {
     setTypeServices(event.target.value);
+  };
+
+  const handleChangeEquipment = (result) => {
+    const value = result.map(el => el.value)
+    setEquipments(value);
   };
 
   const config = {
@@ -104,7 +110,6 @@ export default function ButtonNewService({ idUsuario, createNewOS }) {
 
   async function getListClientes(){
     await api.get(`/client/findAll`, config)
-
       .then((response) => {
         setListClient(response.data);
       })
@@ -121,7 +126,13 @@ export default function ButtonNewService({ idUsuario, createNewOS }) {
   async function getListEquipments(){
     await api.get(`/equipment/findAll`, config)
       .then((response) => {
-        setListEquipment(response.data);
+        let arrayList = response.data.map(el => {
+          return {
+            value: el.id,
+            label: `${el.name} - ${el.model}`
+          }
+        })
+        setListEquipment(arrayList)
       })
       .catch((error) => {
         if (error.response.status === 403) {
@@ -132,27 +143,9 @@ export default function ButtonNewService({ idUsuario, createNewOS }) {
         }
       });
   }
-
-  async function getListInventories() {
-    await api
-      .get(`/inventory`, config)
-      .then((response) => {
-        setListInventory(response.data);
-      })
-      .catch((error) => {
-        if (error.response.status === 403) {
-          localStorage.clear();
-          navigate("/login");
-        } else {
-          toast.error("Algo deu errado !");
-        }
-      });
-  }
-
 
   async function getListServices(){
     await api.get(`/services/findAll`, config)
-
       .then((response) => {
         setListTypeService(response.data);
       })
@@ -193,8 +186,9 @@ export default function ButtonNewService({ idUsuario, createNewOS }) {
         open={open}
         onClose={handleClose}
         sx={{
-          maxWidth: "600px",
+          maxWidth: "900px",
           margin: "auto",
+          overflow: 'scroll',
         }}
       >
         <Box
@@ -213,7 +207,7 @@ export default function ButtonNewService({ idUsuario, createNewOS }) {
           >
             {listClient.map((option) => (
               <MenuItem key={option.id} value={option.id}>
-                {option.name}
+                {option.firstName} {option.lastName}
               </MenuItem>
             ))}
           </TextField>
@@ -222,7 +216,7 @@ export default function ButtonNewService({ idUsuario, createNewOS }) {
             label="Motivo"
             onChange={(event) => setMotive(event.target.value)}
             multiline
-            rows={3}
+            rows={6}
             variant="outlined"
             sx={{ marginY: "10px" }}
           />
@@ -231,7 +225,7 @@ export default function ButtonNewService({ idUsuario, createNewOS }) {
             label="Observações"
             onChange={(event) => setObservacoes(event.target.value)}
             multiline
-            rows={3}
+            rows={6}
             variant="outlined"
             sx={{ marginY: "10px" }}
           />
@@ -296,59 +290,25 @@ export default function ButtonNewService({ idUsuario, createNewOS }) {
             />
           </Box>
 
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "row",
-              width: "100%",
-              justifyContent: "space-between",
-              marginY: "10px",
-            }}
-          >
-            <TextField
-              select
-              label="Equipamentos"
-              value={""}
-              onChange={handleChangePrio}
-              sx={{ marginBottom: "10px", width: "100%" }}
-            >
-              {listEquipment.map((option) => (
-                <MenuItem key={option.id} value={option.id}>
-                  {option.name} - {option.model}
-                </MenuItem>
-              ))}
-            </TextField>
-          </Box>
-
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "row",
-              width: "100%",
-              justifyContent: "space-between",
-              marginY: "10px",
-            }}
-          >
-            <TextField
-              select
-              label="Inventorio"
-              value={""}
-              onChange={handleChangePrio}
-              sx={{ marginBottom: "10px", width: "100%" }}
-            >
-              {listInventory.map((option) => (
-                <MenuItem key={option.id} value={option.id}>
-                  {option.name} (Quantidade: {option.quantity})
-                </MenuItem>
-              ))}
-            </TextField>
-          </Box>
+          <InputLabel id="equipments-label">Selecione os Equipamentos (Optional)</InputLabel>
+          <Select
+            id="equipments-label"
+            isMulti
+            name="equipments"
+            options={listEquipment}
+            isSearchable={true}
+            isClearable={true}
+            className="basic-multi-select"
+            classNamePrefix="select"
+            onChange={handleChangeEquipment}
+          />
 
           <Box
             sx={{
               display: "flex",
               flexDirection: "row",
               marginY: "10px",
+              marginTop: "30px"
             }}
           >
             <Button

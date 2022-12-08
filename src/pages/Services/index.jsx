@@ -80,6 +80,12 @@ const headCells = [
     disablePadding: false,
     label: 'Cliente',
   },
+  {
+    id: 'actions',
+    numeric: false,
+    disablePadding: false,
+    label: 'Ações',
+  },
 ];
 
 function PositionedMenu({ row, deleteOS, editOS, idUsuario }) {
@@ -162,7 +168,7 @@ EnhancedTableHead.propTypes = {
   orderBy: PropTypes.string.isRequired,
 };
 
-export default function Services() {
+export default function Services({ idUsuario }) {
   const navigate = useNavigate();
   const [order, setOrder] = React.useState('asc');
   const [orderBy, setOrderBy] = React.useState('dateOS');
@@ -254,6 +260,13 @@ export default function Services() {
     return color;
   }
 
+  const convertData = (data) => {
+    if (data){
+      var newData = data.split("T")[0].split("-").reverse().join("/")
+      return newData
+    }
+  }
+
   return (
     <Box sx={{ width: '100%' }}>
       <Paper sx={{ width: '100%', mb: 2 }}>
@@ -287,15 +300,19 @@ export default function Services() {
                       >
                         {row.motive}
                       </TableCell>
-                      <TableCell align="left">{row.dateOS.split("T")[0].split("-").reverse().join("/")}</TableCell>
+                      <TableCell align="left">{convertData(row.dateOS)}</TableCell>
                       <TableCell align="left">{row.usuario.name}</TableCell>
-                      <TableCell sx={{ backgroundColor: ColorStatus(row.status.name) }}>
-                        {row.status.name}
+                      <TableCell align="left">
+                        <StatusCell sx={{ backgroundColor: ColorStatus(row.status.name) }}>
+                          {row.status.name}
+                        </StatusCell>
                       </TableCell>
-                      <TableCell
-                        sx={{ backgroundColor: ColorPrioridade(row.priority.name) }}
-                      >
-                        {row.priority.name}
+                      <TableCell align="left">
+                        <PrioridadeCell
+                          sx={{ backgroundColor: ColorPrioridade(row.priority.name) }}
+                        >
+                          {row.priority.name}
+                        </PrioridadeCell>
                       </TableCell>
                       <TableCell align="left">{row.typeServices.services}</TableCell>
 

@@ -54,6 +54,7 @@ function ColorPrioridade(prioridade) {
   }
   return color;
 }
+
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
     return -1;

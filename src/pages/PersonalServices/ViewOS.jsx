@@ -179,7 +179,7 @@ export default function ViewOS({ osObj, handleCloseMenu }) {
           <Demo>
             <List>
               {equipments.length > 0 ? equipments.map( el =>
-                <ListItem>
+                <ListItem key={el.id}>
                   <ListItemText
                     primary={`Nome: ${el.name}`}
                     secondary={`Modelo: ${el.model}`}

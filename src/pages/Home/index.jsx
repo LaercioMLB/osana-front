@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Typography from "@mui/material/Typography";
+import FilterContext from "../../context/FilterContext";
 import Box from "@mui/material/Box";
 import Client from "../Client";
 import PersonalServices from "../PersonalServices";
@@ -50,10 +51,13 @@ function a11yProps(index) {
 
 export default function Home() {
   const navigate = useNavigate();
+  const [filterData, setFilterData] = useContext(FilterContext);
+  // eslint-disable-next-line no-unused-vars
+  const [userData, setUserData] = useContext(UserContext);
   const [tab, setTab] = useState(0);
-  const [userData] = useContext(UserContext);
 
   const handleChange = (event, newValue) => {
+    setFilterData({ ...filterData, tabSelected: newValue, filters: [], searchText: '' });
     setTab(newValue);
   };
 
@@ -61,6 +65,7 @@ export default function Home() {
     if (!localStorage.getItem("token")) {
       navigate("/login");
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -92,7 +97,7 @@ export default function Home() {
           <PersonalServices idUsuario={userData.user.id} />
         </TabPanel>
         <TabPanel value={tab} index={2}>
-          <Services />
+          <Services idUsuario={userData.user.id}/>
         </TabPanel>
         {userData.isGestor ? (
           <TabPanel value={tab} index={3}>
