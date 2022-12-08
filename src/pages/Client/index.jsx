@@ -10,7 +10,6 @@ import {
 } from "@mui/material";
 import PropTypes from 'prop-types';
 import { H1 } from "../../components/Text";
-import Button from '@mui/material/Button';
 import ButtonNewClient from "./ButtonNewClient";
 import DeleteClient from "./DeleteClient";
 import EditClient from "./EditClient";

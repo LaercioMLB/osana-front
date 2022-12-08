@@ -8,5 +8,9 @@ const priorityObject = [
   {id: 2, name: "Baixa"},
   {id: 3, name: "Urgente"},
 ]
+const rolesUsers = [
+  {id: 1, name: "GESTOR"},
+  {id: 2, name: "TÉCNICO"},
+]
 
-export {statusObject, priorityObject};
+export {statusObject, priorityObject, rolesUsers};

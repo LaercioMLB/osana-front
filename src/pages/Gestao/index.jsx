@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, Divider, Tab, Tabs, Typography } from "@mui/material";
+import { Box, Tab, Tabs, Typography } from "@mui/material";
 import TableUsers from "./Tables/TableUsers";
 import TableServices from "./Tables/TableServices";
 import TableEquipment from "./Tables/TableEquipment";
