@@ -1,25 +1,20 @@
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import { Routes, Route, Navigate } from "react-router-dom";
+import Login from "./pages/Login";
+import Home from "./pages/Home";
+import { UserContextProvider } from "./context/UserContext";
+import { FilterContextProvider } from "./context/FilterContext";
+import 'react-toastify/dist/ReactToastify.css';
 
-function App() {
+export default function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <UserContextProvider>
+      <FilterContextProvider>
+        <Routes>
+          <Route element={<Login />} path="/login" />
+          <Route element={<Home />} path="/*" />
+        </Routes>
+      </FilterContextProvider>
+    </UserContextProvider>
   );
 }
-
-export default App;
