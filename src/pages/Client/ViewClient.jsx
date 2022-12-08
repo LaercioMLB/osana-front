@@ -20,19 +20,20 @@ const style = {
   width: "100%",
 };
 
-export default function ViewClient({ client }) {
+export default function ViewClient({ client, handleCloseMenu }) {
   const [open, setOpen] = React.useState(false);
-  const [cpfCnpj, setCpfCnpj] = React.useState(client.cnpj);
-  const [firstName, setFirstName] = React.useState(client.firstName);
-  const [lastName, setLastName] = React.useState(client.lastName);
-  const [email, setEmail] = React.useState(client.email);
-  const [phone, setPhone] = React.useState(client.phone);
+  const [cpfCnpj, setCpfCnpj] = React.useState(client.cnpj === null ? "Não tem Identidade" : client.cnpj);
+  const [firstName, setFirstName] = React.useState(client.firstName === null ? "Não tem Nome" : client.firstName);
+  const [lastName, setLastName] = React.useState(client.lastName === null ? "Não tem Sobrenome" : client.lastName);
+  const [email, setEmail] = React.useState(client.email === null ? "Não tem E-mail" : client.email);
+  const [phone, setPhone] = React.useState(client.phone === null ? "Não tem Telefone" : client.phone);
 
   const handleOpen = () => {
     setOpen(true);
   };
   const handleClose = () => {
     setOpen(false);
+    handleCloseMenu();
   };
 
   const [currency, setCurrency] = React.useState(client.contract);
@@ -42,8 +43,8 @@ export default function ViewClient({ client }) {
   };
 
   return (
-    <Box>
-      <Box onClick={handleOpen}>Visualizar Dados</Box>
+    <div>
+      <MenuItem onClick={handleOpen}>Visualizar Dados</MenuItem>
 
       <Modal
         open={open}
@@ -156,11 +157,11 @@ export default function ViewClient({ client }) {
               marginTop: "30px"
             }}
           >
-            <Button variant="outlined">Fechar Modal</Button>
+            <Button variant="outlined" onClick={handleClose}>Fechar Modal</Button>
           </Box>
         </Box>
       </Modal>
-    </Box>
+    </div>
   );
 }
 

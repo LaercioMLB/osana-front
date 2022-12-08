@@ -5,6 +5,7 @@ import Button from "@mui/material/Button";
 import { H1 } from "../../components/Text";
 import api from "../../services/api";
 import { toast } from 'react-toastify';
+import { MenuItem } from "@mui/material";
 
 const style = {
   display: "flex",
@@ -20,11 +21,12 @@ const style = {
   width: "50%",
 };
 
-export default function DeleteOS({ idOS, deleteOS }) {
+export default function DeleteOS({ idOS, deleteOS, handleCloseMenu }) {
   const [open, setOpen] = React.useState(false);
 
   const handleClose = () => {
     setOpen(false);
+    handleCloseMenu();
   };
 
   const handleOpen = () => {
@@ -44,7 +46,7 @@ export default function DeleteOS({ idOS, deleteOS }) {
     .then(() => {
       toast.success("OS Deletada com Sucesso")
       deleteOS(idOS)
-      setOpen(false);
+      handleClose();
     })
     .catch((error) => toast.error(error.response.data)
     );
@@ -52,7 +54,7 @@ export default function DeleteOS({ idOS, deleteOS }) {
 
   return (
     <Box>
-      <Box onClick={handleOpen}>Excluir</Box>
+      <MenuItem onClick={handleOpen}>Excluir</MenuItem>
 
       <Modal
         open={open}

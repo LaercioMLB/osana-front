@@ -26,6 +26,11 @@ export default function ButtonNewClient() {
   const [cpfCnpj, setCpfCnpj] = React.useState("");
   const handleOpen = () => {
     setOpen(true);
+    setCpfCnpj("")
+    setFirstName("")
+    setLastName("")
+    setEmail("")
+    setPhone("")
   };
   const handleClose = () => {
     setOpen(false);

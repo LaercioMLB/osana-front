@@ -7,8 +7,9 @@ import { H1 } from "../../components/Text";
 import { MenuItem, TextField } from "@mui/material";
 import api from "../../services/api";
 import { useNavigate } from "react-router-dom";
-import { ToastContainer, toast } from "react-toastify";
-
+import { ToastContainer, toast } from 'react-toastify';
+import Select from 'react-select'
+import { priorityObject } from "../../services/staticData"
 const style = {
   display: "flex",
   flexDirection: "column",
@@ -38,11 +39,17 @@ export default function ButtonNewService({ idUsuario, createNewOS }) {
   const [motive, setMotive] = React.useState("");
   const [observacoes, setObservacoes] = React.useState("");
   const [equipments, setEquipments] = React.useState([]);
-  const [inventories, setInventories] = React.useState([]);
-  const [devolution, setDevolution] = React.useState(null);
+  const [devolution, setDevolution] = React.useState('');
 
   const handleOpen = () => {
     setOpen(true);
+    setClient('')
+    setPrior('')
+    setTypeServices('')
+    setMotive('')
+    setObservacoes('')
+    setEquipments([])
+    setDevolution('')
   };
   const handleClose = () => {
     setOpen(false);
@@ -69,37 +76,35 @@ export default function ButtonNewService({ idUsuario, createNewOS }) {
 
   const handleCreateOs = async (event) => {
     event.preventDefault();
-    if (client && prior && typeService && motive) {
-      await api
-        .post(
-          "/os",
-          {
-            idUsuario: idUsuario,
-            idClient: client,
-            idPriority: prior,
-            idTypeServices: typeService,
-            motive: motive,
-            obs: observacoes,
-            devolution: devolution,
-            equipaments: equipments,
-            inventories: inventories,
-          },
-          config
-        )
-        .then((response) => {
-          toast.success("Cadastrado com Sucesso");
-          createNewOS(response.data);
-          setOpen(false);
-        })
-        .catch((error) => toast.error(error.response.data));
-    } else {
-      toast.error("Preencha o Formulário corretamente !");
+    if (client && prior && typeService && motive){
+      await api.post('/os', {
+          idUsuario: idUsuario,
+          idClient: client, 
+          idPriority: prior, 
+          idTypeServices: typeService, 
+          motive: motive,
+          obs: observacoes,
+          devolution: devolution,
+          equipaments: equipments,
+          inventories: [],
+        }, 
+        config
+      )
+      .then((response) => {
+        toast.success("Cadastrado com Sucesso")
+        createNewOS(response.data)
+        setOpen(false);
+      })
+      .catch((error) => toast.error(error.response.data)
+      );
+    }else{
+      toast.error("Preencha o Formulário corretamente !")
     }
   };
 
-  async function getListClientes() {
-    await api
-      .get(`/client`, config)
+  async function getListClientes(){
+    await api.get(`/client/findAll`, config)
+
       .then((response) => {
         setListClient(response.data);
       })
@@ -113,9 +118,8 @@ export default function ButtonNewService({ idUsuario, createNewOS }) {
       });
   }
 
-  async function getListEquipments() {
-    await api
-      .get(`/equipment`, config)
+  async function getListEquipments(){
+    await api.get(`/equipment/findAll`, config)
       .then((response) => {
         setListEquipment(response.data);
       })
@@ -145,9 +149,10 @@ export default function ButtonNewService({ idUsuario, createNewOS }) {
       });
   }
 
-  async function getListServices() {
-    await api
-      .get(`/services`, config)
+
+  async function getListServices(){
+    await api.get(`/services/findAll`, config)
+
       .then((response) => {
         setListTypeService(response.data);
       })
@@ -162,15 +167,14 @@ export default function ButtonNewService({ idUsuario, createNewOS }) {
   }
 
   React.useEffect(() => {
-    if (localStorage.getItem("token")) {
+    if (open === true){
       getListClientes();
       getListServices();
       getListEquipments();
-      getListInventories();
-      setListPriority([{ id: 1, name: "Alto" }]);
+      setListPriority(priorityObject)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open])
 
   return (
     <div>

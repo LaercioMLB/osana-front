@@ -22,7 +22,7 @@ const style = {
   width: "100%",
 };
 
-export default function EditClient({ client, editClient }) {
+export default function EditClient({ client, editClient, handleCloseMenu }) {
   const [open, setOpen] = React.useState(false);
   const [cpfCnpj, setCpfCnpj] = React.useState("");
   const [firstName, setFirstName] = React.useState("");
@@ -34,6 +34,7 @@ export default function EditClient({ client, editClient }) {
   };
   const handleClose = () => {
     setOpen(false);
+    handleCloseMenu();
   };
 
   const [currency, setCurrency] = React.useState("");
@@ -43,17 +44,19 @@ export default function EditClient({ client, editClient }) {
   };
 
   function setValues(){
-    setCpfCnpj(client.cnpj);
-    setFirstName(client.firstName);
-    setLastName(client.lastName);
-    setEmail(client.email);
-    setPhone(client.phone);
+    setCpfCnpj(client.cnpj === null ? "" : client.cnpj);
+    setFirstName(client.firstName === null ? "" : client.firstName);
+    setLastName(client.lastName === null ? "" : client.lastName);
+    setEmail(client.email === null ? "" : client.email);
+    setPhone(client.phone === null ? "" : client.phone);
     setCurrency(client.contract);
   }
 
   React.useEffect(() => {
-    setValues();
-  }, [])
+    if (open === true){
+      setValues();
+    }
+  }, [open])
 
   const config = {
     headers: {
@@ -78,7 +81,7 @@ export default function EditClient({ client, editClient }) {
       .then((response) => {
         toast.success("Cliente Editado com Sucesso")
         editClient(response.data)
-        setOpen(false);
+        handleClose();
       })
       .catch((error) => toast.error(error.response.data)
       );
@@ -88,8 +91,8 @@ export default function EditClient({ client, editClient }) {
   };
 
   return (
-    <Box>
-      <Box onClick={handleOpen}>Editar</Box>
+    <div>
+      <MenuItem onClick={handleOpen}>Editar</MenuItem>
 
       <Modal
         open={open}
@@ -205,7 +208,7 @@ export default function EditClient({ client, editClient }) {
           </Box>
         </Box>
       </Modal>
-    </Box>
+    </div>
   );
 }
 

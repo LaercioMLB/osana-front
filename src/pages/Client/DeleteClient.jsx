@@ -5,6 +5,7 @@ import Button from "@mui/material/Button";
 import { H1 } from "../../components/Text";
 import api from "../../services/api";
 import { toast } from 'react-toastify';
+import { MenuItem } from "@mui/material";
 
 const style = {
   display: "flex",
@@ -20,11 +21,12 @@ const style = {
   width: "70%",
 };
 
-export default function DeleteClient({ idClient, nameCliente, deleteClient }) {
+export default function DeleteClient({ idClient, nameCliente, deleteClient, handleCloseMenu }) {
   const [open, setOpen] = React.useState(false);
 
   const handleClose = () => {
     setOpen(false);
+    handleCloseMenu();
   };
 
   const handleOpen = () => {
@@ -44,15 +46,15 @@ export default function DeleteClient({ idClient, nameCliente, deleteClient }) {
     .then(() => {
       toast.success("Cliente Deletado com Sucesso")
       deleteClient(idClient)
-      setOpen(false);
+      handleClose();
     })
     .catch((error) => toast.error(error.response.data)
     );
   };
 
   return (
-    <Box>
-      <Box onClick={handleOpen}>Excluir</Box>
+    <div>
+      <MenuItem onClick={handleOpen}>Excluir</MenuItem>
 
       <Modal
         open={open}
@@ -67,7 +69,7 @@ export default function DeleteClient({ idClient, nameCliente, deleteClient }) {
             ...style,
           }}
         >
-          <H1>Tem certeza que deseja deletar o Cliente {nameCliente} ?</H1>
+          <H1>Tem certeza que deseja deletar o Cliente: {nameCliente.toUpperCase()} ?</H1>
           <Box
             sx={{
               display: "flex",
@@ -89,7 +91,7 @@ export default function DeleteClient({ idClient, nameCliente, deleteClient }) {
           </Box>
         </Box>
       </Modal>
-    </Box>
+    </div>
   );
 }
 
