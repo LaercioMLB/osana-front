@@ -171,21 +171,19 @@ function Client() {
   const [numberOfElements, setNumberOfElements] = useState(0);
   const [rows, setRows] = useState([]);
 
-  const createNewClient = (newClientData) => {
-    setRows([...rows, newClientData])
-    let number = numberOfElements + 1;
-    setNumberOfElements(number)
+  const createNewClient = () => {
+    getClients({ size: rowsPerPage, page: page })
   }
 
-  const deleteClient = (deletedClientId) => {
-    setRows(rows.filter((client) => client.id !== deletedClientId))
-    let number = numberOfElements - 1;
-    setNumberOfElements(number)
+  const deleteClient = () => {
+    getClients({ size: rowsPerPage, page: page })
   }
 
   const editClient = (editedClient) => {
-    const newListClients = rows.filter((client) => client.id !== editedClient.id)
-    setRows([...newListClients, editedClient]);
+    const index = rows.findIndex((cliente) => cliente.id === editedClient.id)
+    let newListClients = [...rows]
+    newListClients[index] = editedClient
+    setRows(newListClients);
   }
 
   const config = {

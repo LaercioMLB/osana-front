@@ -45,7 +45,7 @@ export default function DeleteClient({ idClient, nameCliente, deleteClient, hand
     await api.delete(`/client/${idClient}`, config)
     .then(() => {
       toast.success("Cliente Deletado com Sucesso")
-      deleteClient(idClient)
+      deleteClient()
       handleClose();
     })
     .catch((error) => toast.error(error.response.data)

@@ -45,7 +45,7 @@ export default function DeleteUser({ idUser, nameUser, deleteUser, handleCloseMe
     await api.delete(`/users/${idUser}`, config)
     .then(() => {
       toast.success("Usuário Deletado com Sucesso")
-      deleteUser(idUser)
+      deleteUser()
       handleClose();
     })
     .catch((error) => toast.error(error.response.data)

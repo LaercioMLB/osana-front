@@ -45,7 +45,7 @@ export default function DeleteService({ idService, nameService, deleteService, h
     await api.delete(`/services/${idService}`, config)
     .then(() => {
       toast.success("Serviço Deletado com Sucesso")
-      deleteService(idService)
+      deleteService()
       handleClose();
     })
     .catch((error) => toast.error(error.response.data)

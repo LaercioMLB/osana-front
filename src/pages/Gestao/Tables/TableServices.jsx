@@ -147,21 +147,19 @@ function TableServices() {
   const [numberOfElements, setNumberOfElements] = useState(0);
   const [rows, setRows] = useState([]);
 
-  const createNewService = (newServiceData) => {
-    setRows([...rows, newServiceData])
-    let number = numberOfElements + 1;
-    setNumberOfElements(number)
+  const createNewService = () => {
+    getServices({ size: rowsPerPage, page: page })
   }
 
-  const deleteService = (deletedServiceId) => {
-    setRows(rows.filter((service) => service.idTypeServices !== deletedServiceId))
-    let number = numberOfElements - 1;
-    setNumberOfElements(number)
+  const deleteService = () => {
+    getServices({ size: rowsPerPage, page: page })
   }
 
   const editService = (editedService) => {
-    const newListServices = rows.filter((service) => service.idTypeServices !== editedService.idTypeServices)
-    setRows([...newListServices, editedService]);
+    const index = rows.findIndex((service) => service.idTypeServices === editedService.idTypeServices)
+    let newListServices = [...rows]
+    newListServices[index] = editedService
+    setRows(newListServices);
   }
 
   const config = {

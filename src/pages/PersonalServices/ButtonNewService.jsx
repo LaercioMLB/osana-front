@@ -96,9 +96,9 @@ export default function ButtonNewService({ idUsuario, createNewOS }) {
         }, 
         config
       )
-      .then((response) => {
+      .then(() => {
         toast.success("Cadastrado com Sucesso")
-        createNewOS(response.data)
+        createNewOS()
         setOpen(false);
       })
       .catch((error) => toast.error(error.response.data)

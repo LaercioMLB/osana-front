@@ -45,7 +45,7 @@ export default function DeleteEquipment({ idEquipment, nameEquipment, deleteEqui
     await api.delete(`/equipment/${idEquipment}`, config)
     .then(() => {
       toast.success("Equipamento Deletado com Sucesso")
-      deleteEquipment(idEquipment)
+      deleteEquipment()
       handleClose();
     })
     .catch((error) => toast.error(error.response.data)

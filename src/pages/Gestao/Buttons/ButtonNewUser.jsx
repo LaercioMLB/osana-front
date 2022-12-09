@@ -8,6 +8,15 @@ import api from "../../../services/api";
 import { Divider, MenuItem, TextField } from "@mui/material";
 import { toast } from 'react-toastify';
 import { rolesUsers } from "../../../services/staticData";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import {
+  FormControl,
+  IconButton,
+  InputAdornment,
+  InputLabel,
+  OutlinedInput,
+} from "@mui/material";
 
 const style = {
   display: "flex",
@@ -29,8 +38,26 @@ export default function ButtonNewUser({ createNewUser }) {
   const [username, setUsername] = React.useState("");
   const [email, setEmail] = React.useState("");
   const [authority, setAuthority] = React.useState(0);
-  const [password, setPassword] = React.useState("");
   const [listAuthority, setListAuthority] = React.useState([]);
+  const [values, setValues] = React.useState({
+    password: "",
+    showPassword: false,
+  });
+
+  const handleChange = (prop) => (event) => {
+    setValues({ ...values, [prop]: event.target.value });
+  };
+
+  const handleClickShowPassword = () => {
+    setValues({
+      ...values,
+      showPassword: !values.showPassword,
+    });
+  };
+
+  const handleMouseDownPassword = (event) => {
+    event.preventDefault();
+  };
 
   const handleOpen = () => {
     setOpen(true);
@@ -38,7 +65,6 @@ export default function ButtonNewUser({ createNewUser }) {
     setUsername("");
     setAuthority("");
     setEmail("");
-    setPassword("");
     setListAuthority(rolesUsers)
   };
 
@@ -59,7 +85,8 @@ export default function ButtonNewUser({ createNewUser }) {
 
   const handleCreateUser = async (event) => {
     event.preventDefault();
-    if (name && username && authority && email){
+    const { password } = values
+    if (name && username && authority && email && password){
       await api.post('/users', {
             name: name,
             username: username, 
@@ -69,9 +96,9 @@ export default function ButtonNewUser({ createNewUser }) {
         }, 
         config
       )
-      .then((response) => {
+      .then(() => {
         toast.success("Usuário Cadastrado com Sucesso")
-        createNewUser(response.data)
+        createNewUser()
         setOpen(false);
       })
       .catch((error) => toast.error(error.response.data)
@@ -151,14 +178,30 @@ export default function ButtonNewUser({ createNewUser }) {
               variant="outlined"
               onChange={event => setEmail(event.target.value)}
             />
-            <TextField
-              sx={{ width: "48%" }}
-              label="Senha"
-              value={password}
-              required
-              variant="outlined"
-              onChange={event => setPassword(event.target.value)}
-            />
+            <FormControl sx={{ width: "48%" }} variant="outlined">
+              <InputLabel htmlFor="outlined-adornment-password">
+                Password
+              </InputLabel>
+              <OutlinedInput
+                id="outlined-adornment-password"
+                type={values.showPassword ? "text" : "password"}
+                value={values.password}
+                onChange={handleChange("password")}
+                endAdornment={
+                  <InputAdornment position="end">
+                    <IconButton
+                      aria-label="toggle password visibility"
+                      onClick={handleClickShowPassword}
+                      onMouseDown={handleMouseDownPassword}
+                      edge="end"
+                    >
+                      {values.showPassword ? <Visibility /> : <VisibilityOff />}
+                    </IconButton>
+                  </InputAdornment>
+                }
+                label="Password"
+              />
+            </FormControl>
           </Box>
           <Box
             sx={{

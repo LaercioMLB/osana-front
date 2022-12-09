@@ -177,15 +177,15 @@ export default function Services({ idUsuario }) {
   const [numberOfElements, setNumberOfElements] = React.useState(0);
   const [rows, setRows] = React.useState([]);
 
-  const deleteOS = (deletedOSId) => {
-    setRows(rows.filter((os) => os.idOS !== deletedOSId))
-    let number = numberOfElements - 1;
-    setNumberOfElements(number)
+  const deleteOS = () => {
+    getListOs({ size: rowsPerPage, page: page })
   }
   
   const editOS = (editedOS) => {
-    const newListOs = rows.filter((os) => os.idOS !== editedOS.idOS)
-    setRows([...newListOs, editedOS])
+    const index = rows.findIndex((os) => os.id === editedOS.id)
+    let newListOs = [...rows]
+    newListOs[index] = editedOS
+    setRows(newListOs);
   }
   const config = {
     headers: {

@@ -45,7 +45,7 @@ export default function DeleteInventory({ idInventory, nameInventory, deleteInve
     await api.delete(`/inventory/${idInventory}`, config)
     .then(() => {
       toast.success("Estoque Deletado com Sucesso")
-      deleteInventory(idInventory)
+      deleteInventory()
       handleClose();
     })
     .catch((error) => toast.error(error.response.data)

@@ -50,9 +50,9 @@ export default function ButtonNewService({ createNewService }) {
         }, 
         config
       )
-      .then((response) => {
+      .then(() => {
         toast.success("Serviço Cadastrado com Sucesso")
-        createNewService(response.data)
+        createNewService()
         setOpen(false);
       })
       .catch((error) => toast.error(error.response.data)

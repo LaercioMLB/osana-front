@@ -45,7 +45,7 @@ export default function DeleteOS({ idOS, deleteOS, handleCloseMenu }) {
     await api.delete(`/os/${idOS}`, config)
     .then(() => {
       toast.success("OS Deletada com Sucesso")
-      deleteOS(idOS)
+      deleteOS()
       handleClose();
     })
     .catch((error) => toast.error(error.response.data)

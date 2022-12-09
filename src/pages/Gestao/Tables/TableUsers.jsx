@@ -165,21 +165,19 @@ function TableUsers() {
   const [numberOfElements, setNumberOfElements] = useState(0);
   const [rows, setRows] = useState([]);
 
-  const createNewUser = (newUserData) => {
-    setRows([...rows, newUserData])
-    let number = numberOfElements + 1;
-    setNumberOfElements(number)
+  const createNewUser = () => {
+    getUsers({ size: rowsPerPage, page: page })
   }
 
-  const deleteUser = (deletedUserId) => {
-    setRows(rows.filter((user) => user.id !== deletedUserId))
-    let number = numberOfElements - 1;
-    setNumberOfElements(number)
+  const deleteUser = () => {
+    getUsers({ size: rowsPerPage, page: page })
   }
 
   const editUser = (editedUser) => {
-    const newListUsers = rows.filter((user) => user.id !== editedUser.id)
-    setRows([...newListUsers, editedUser]);
+    const index = rows.findIndex((user) => user.id === editedUser.id)
+    let newListUsers = [...rows]
+    newListUsers[index] = editedUser
+    setRows(newListUsers);
   }
 
   const config = {

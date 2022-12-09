@@ -53,9 +53,9 @@ export default function ButtonNewEquipment({ createNewEquipment }) {
         }, 
         config
       )
-      .then((response) => {
+      .then(() => {
         toast.success("Equipamento Cadastrado com Sucesso")
-        createNewEquipment(response.data)
+        createNewEquipment()
         setOpen(false);
       })
       .catch((error) => toast.error(error.response.data)

@@ -153,21 +153,19 @@ function TableServices() {
   const [numberOfElements, setNumberOfElements] = useState(0);
   const [rows, setRows] = useState([]);
 
-  const createNewEquipment = (newEquipmentData) => {
-    setRows([...rows, newEquipmentData])
-    let number = numberOfElements + 1;
-    setNumberOfElements(number)
+  const createNewEquipment = () => {
+    getEquipments({ size: rowsPerPage, page: page })
   }
 
-  const deleteEquipment = (deletedEquipmentId) => {
-    setRows(rows.filter((equipment) => equipment.id !== deletedEquipmentId))
-    let number = numberOfElements - 1;
-    setNumberOfElements(number)
+  const deleteEquipment = () => {
+    getEquipments({ size: rowsPerPage, page: page })
   }
 
   const editEquipment = (editedEquipment) => {
-    const newListEquipments = rows.filter((equipment) => equipment.id !== editedEquipment.id)
-    setRows([...newListEquipments, editedEquipment]);
+    const index = rows.findIndex((equipment) => equipment.id === editedEquipment.id)
+    let newListEquipments = [...rows]
+    newListEquipments[index] = editedEquipment
+    setRows(newListEquipments);
   }
 
   const config = {

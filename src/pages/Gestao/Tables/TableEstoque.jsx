@@ -153,21 +153,19 @@ function TableServices() {
   const [numberOfElements, setNumberOfElements] = useState(0);
   const [rows, setRows] = useState([]);
 
-  const createNewInventory = (newInventoryData) => {
-    setRows([...rows, newInventoryData])
-    let number = numberOfElements + 1;
-    setNumberOfElements(number)
+  const createNewInventory = () => {
+    getInventory({ size: rowsPerPage, page: page })
   }
 
-  const deleteInventory = (deletedInventoryId) => {
-    setRows(rows.filter((inventory) => inventory.id !== deletedInventoryId))
-    let number = numberOfElements - 1;
-    setNumberOfElements(number)
+  const deleteInventory = () => {
+    getInventory({ size: rowsPerPage, page: page })
   }
 
   const editInventory = (editedInventory) => {
-    const newListInventoryies = rows.filter((inventory) => inventory.id !== editedInventory.id)
-    setRows([...newListInventoryies, editedInventory]);
+    const index = rows.findIndex((inventory) => inventory.id === editedInventory.id)
+    let newListInventoryies = [...rows]
+    newListInventoryies[index] = editedInventory
+    setRows(newListInventoryies);
   }
 
   const config = {

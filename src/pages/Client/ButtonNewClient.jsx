@@ -69,9 +69,9 @@ export default function ButtonNewClient({ createNewClient }) {
         }, 
         config
       )
-      .then((response) => {
+      .then(() => {
         toast.success("Cliente Cadastrado com Sucesso")
-        createNewClient(response.data)
+        createNewClient()
         setOpen(false);
       })
       .catch((error) => toast.error(error.response.data)
@@ -196,7 +196,7 @@ export default function ButtonNewClient({ createNewClient }) {
             <Button sx={{ marginRight: "10px" }} variant="contained" onClick={handleCreateClient}>
               Confirmar
             </Button>
-            <Button variant="outlined">Cancelar</Button>
+            <Button variant="outlined" onClick={handleClose}>Cancelar</Button>
           </Box>
         </Box>
       </Modal>

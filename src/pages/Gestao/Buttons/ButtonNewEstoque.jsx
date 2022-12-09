@@ -53,9 +53,9 @@ export default function ButtonNewEstoque({ createNewInventory }) {
         }, 
         config
       )
-      .then((response) => {
+      .then(() => {
         toast.success("Produto no Estoque foi Cadastrado com Sucesso")
-        createNewInventory(response.data)
+        createNewInventory()
         setOpen(false);
       })
       .catch((error) => toast.error(error.response.data)

@@ -212,21 +212,19 @@ function PersonalServices({ idUsuario }) {
   const [numberOfElements, setNumberOfElements] = useState(0);
   const [rows, setRows] = useState([]);
 
-  const createNewOS = (newOSData) => {
-    setRows([...rows, newOSData])
-    let number = numberOfElements + 1;
-    setNumberOfElements(number)
+  const createNewOS = () => {
+    getListMyOs({ size: rowsPerPage, page: page })
   }
 
-  const deleteOS = (deletedOSId) => {
-    setRows(rows.filter((os) => os.idOS !== deletedOSId))
-    let number = numberOfElements - 1;
-    setNumberOfElements(number)
+  const deleteOS = () => {
+    getListMyOs({ size: rowsPerPage, page: page })
   }
   
   const editOS = (editedOS) => {
-    const newListOs = rows.filter((os) => os.idOS !== editedOS.idOS)
-    setRows([...newListOs, editedOS])
+    const index = rows.findIndex((os) => os.id === editedOS.id)
+    let newListOs = [...rows]
+    newListOs[index] = editedOS
+    setRows(newListOs);
   }
 
 
