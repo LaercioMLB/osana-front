@@ -3,17 +3,10 @@ import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
 import Button from "@mui/material/Button";
 import AddIcon from "@mui/icons-material/Add";
-import {
-  FormControl,
-  IconButton,
-  InputAdornment,
-  InputLabel,
-  OutlinedInput,
-  TextField,
-} from "@mui/material";
-import Visibility from "@mui/icons-material/Visibility";
-import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { H1 } from "../../../components/Text";
+import api from "../../../services/api";
+import { TextField } from "@mui/material";
+import { toast } from 'react-toastify';
 
 const style = {
   display: "flex",
@@ -29,37 +22,44 @@ const style = {
   width: "100%",
 };
 
-export default function ButtonNewService() {
+export default function ButtonNewService({ createNewService }) {
   const [open, setOpen] = React.useState(false);
+  const [services, setServices] = React.useState("");
+
   const handleOpen = () => {
     setOpen(true);
+    setServices("");
   };
+
   const handleClose = () => {
     setOpen(false);
   };
 
-  const [values, setValues] = React.useState({
-    amount: "",
-    username: "",
-    password: "",
-    weight: "",
-    weightRange: "",
-    showPassword: false,
-  });
-
-  const handleChange = (prop) => (event) => {
-    setValues({ ...values, [prop]: event.target.value });
+  const config = {
+    headers: {
+      "Authorization": `Bearer ${localStorage.getItem('token')}`,
+      "Content-Type": "application/json", 
+    },
   };
 
-  const handleClickShowPassword = () => {
-    setValues({
-      ...values,
-      showPassword: !values.showPassword,
-    });
-  };
-
-  const handleMouseDownPassword = (event) => {
+  const handleCreateService = async (event) => {
     event.preventDefault();
+    if (services){
+      await api.post('/services', {
+            services: services,
+        }, 
+        config
+      )
+      .then((response) => {
+        toast.success("Serviço Cadastrado com Sucesso")
+        createNewService(response.data)
+        setOpen(false);
+      })
+      .catch((error) => toast.error(error.response.data)
+      );
+    }else{
+      toast.error("Preencha o Formulário corretamente !")
+    }
   };
 
   return (
@@ -87,22 +87,36 @@ export default function ButtonNewService() {
           }}
         >
           <H1>Serviço</H1>
-          <TextField
-            sx={{ width: "48%", mt: "10px" }}
-            label="Tipo de Serviço"
-            variant="outlined"
-          />
           <Box
             sx={{
               display: "flex",
               flexDirection: "row",
-              marginY: "30px",
+              width: "100%",
+              justifyContent: "space-between",
+              marginBottom: "10px",
             }}
           >
-            <Button sx={{ marginRight: "10px" }} variant="contained">
+            <TextField
+              sx={{ width: "100%" }}
+              label="Nome do Serviço"
+              value={services}
+              variant="outlined"
+              required
+              onChange={event => setServices(event.target.value)}
+            />
+          </Box>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "row",
+              marginY: "10px",
+              marginTop: "30px"
+            }}
+          >
+            <Button sx={{ marginRight: "10px" }} variant="contained" onClick={handleCreateService}>
               Confirmar
             </Button>
-            <Button variant="outlined">Cancelar</Button>
+            <Button variant="outlined" onClick={handleClose}>Cancelar</Button>
           </Box>
         </Box>
       </Modal>

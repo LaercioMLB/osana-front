@@ -3,10 +3,9 @@ import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
 import Button from "@mui/material/Button";
 import api from "../../../../services/api";
-import { rolesUsers } from "../../../../services/staticData";
 import { toast } from 'react-toastify';
 import { H1 } from "../../../../components/Text";
-import { Divider, MenuItem, TextField } from "@mui/material";
+import { MenuItem, TextField } from "@mui/material";
 
 const style = {
   display: "flex",
@@ -22,13 +21,10 @@ const style = {
   width: "100%",
 };
 
-export default function EditUser({ user, editUser, handleCloseMenu }) {
+export default function EditEquipment({ equipment, editEquipment, handleCloseMenu }) {
   const [open, setOpen] = React.useState(false);
   const [name, setName] = React.useState("");
-  const [username, setUsername] = React.useState("");
-  const [email, setEmail] = React.useState("");
-  const [authority, setAuthority] = React.useState(0);
-  const [listAuthority, setListAuthority] = React.useState([]);
+  const [model, setModel] = React.useState("");
 
   const handleOpen = () => {
     setOpen(true);
@@ -39,16 +35,9 @@ export default function EditUser({ user, editUser, handleCloseMenu }) {
   };
 
   function setValues(){
-    setName(user.name);
-    setUsername(user.username);
-    setAuthority(user.roles[0].authority === 'ROLE_GESTOR' ? "GESTOR" : "TÉCNICO");
-    setEmail(user.email);
-    setListAuthority(rolesUsers)
+    setName(equipment.name);
+    setModel(equipment.model);
   }
-
-  const handleChangeAuthority = (event) => {
-    setAuthority(event.target.value);
-  };
 
   React.useEffect(() => {
     if (open === true){
@@ -63,20 +52,18 @@ export default function EditUser({ user, editUser, handleCloseMenu }) {
     },
   };
 
-  const handleEditUser = async (event) => {
+  const handleEditEquipment = async (event) => {
     event.preventDefault();
-    if (name && username && authority && email){
-      await api.put(`/users/${user.id}`, {
+    if (name && model){
+      await api.put(`/equipment/${equipment.id}`, {
           name: name,
-          email: email, 
-          username: username, 
-          typeUser: authority === "GESTOR" ? "ROLE_GESTOR" : "ROLE_TECNICO",
+          model: model,
         }, 
         config
       )
       .then((response) => {
-        toast.success("Usuário Editado com Sucesso")
-        editUser(response.data)
+        toast.success("Equipamento Editado com Sucesso")
+        editEquipment(response.data)
         handleClose();
       })
       .catch((error) => toast.error(error.response.data)
@@ -103,7 +90,7 @@ export default function EditUser({ user, editUser, handleCloseMenu }) {
             ...style,
           }}
         >
-          <H1>Usuário</H1>
+          <H1>Equipamento</H1>
           <Box
             sx={{
               display: "flex",
@@ -115,53 +102,20 @@ export default function EditUser({ user, editUser, handleCloseMenu }) {
           >
             <TextField
               sx={{ width: "48%" }}
-              label="Name"
+              label="Nome do Equipamento"
               value={name}
               variant="outlined"
+              required
               onChange={event => setName(event.target.value)}
             />
             <TextField
               sx={{ width: "48%" }}
-              label="Username"
-              value={username}
+              label="Nome do Modelo"
+              value={model}
               variant="outlined"
-              onChange={event => setUsername(event.target.value)}
-            />
-          </Box>
-          <Divider sx={{ marginY: "25px" }} />
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "row",
-              width: "100%",
-              justifyContent: "space-between",
-              marginY: "10px",
-            }}
-          >
-            <TextField
-              sx={{ width: "48%" }}
-              label="Email"
-              value={email}
               required
-              variant="outlined"
-              onChange={event => setEmail(event.target.value)}
+              onChange={event => setModel(event.target.value)}
             />
-            <TextField
-              select
-              label="Autorização"
-              value={authority}
-              onChange={handleChangeAuthority}
-              sx={{ marginBottom: "10px", width: "48%" }}
-            >
-              {listAuthority.map((option) => (
-                <MenuItem
-                  key={option.id}
-                  value={option.name}
-                >
-                  {option.name}
-                </MenuItem>
-              ))}
-            </TextField>
           </Box>
           <Box
             sx={{
@@ -171,7 +125,7 @@ export default function EditUser({ user, editUser, handleCloseMenu }) {
               marginTop: "30px"
             }}
           >
-            <Button sx={{ marginRight: "10px" }} variant="contained" onClick={handleEditUser}>
+            <Button sx={{ marginRight: "10px" }} variant="contained" onClick={handleEditEquipment}>
               Confirmar
             </Button>
             <Button variant="outlined" onClick={handleClose}>Cancelar</Button>

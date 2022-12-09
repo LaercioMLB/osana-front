@@ -3,10 +3,10 @@ import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
 import Button from "@mui/material/Button";
 import AddIcon from "@mui/icons-material/Add";
-import { TextField } from "@mui/material";
 import { H1 } from "../../../components/Text";
 import api from "../../../services/api";
-import { toast } from "react-toastify";
+import { TextField } from "@mui/material";
+import { toast } from 'react-toastify';
 
 const style = {
   display: "flex",
@@ -22,28 +22,48 @@ const style = {
   width: "100%",
 };
 
-export default function ButtonNewEquipment() {
+export default function ButtonNewEquipment({ createNewEquipment }) {
   const [open, setOpen] = React.useState(false);
-  const [equipment, setEquipment] = React.useState("");
+  const [name, setName] = React.useState("");
   const [model, setModel] = React.useState("");
+
   const handleOpen = () => {
     setOpen(true);
+    setName("");
+    setModel("");
   };
+
   const handleClose = () => {
     setOpen(false);
   };
 
-  async function postEquipment() {
-    await api
-      .post("/equipment", { name: equipment, model: model })
+  const config = {
+    headers: {
+      "Authorization": `Bearer ${localStorage.getItem('token')}`,
+      "Content-Type": "application/json", 
+    },
+  };
+
+  const handleCreateEquipment = async (event) => {
+    event.preventDefault();
+    if (name && model){
+      await api.post('/equipment', {
+            name: name,
+            model: model,
+        }, 
+        config
+      )
       .then((response) => {
-        toast.success(`Equipamento cadastrado`);
+        toast.success("Equipamento Cadastrado com Sucesso")
+        createNewEquipment(response.data)
         setOpen(false);
       })
-      .catch((error) => {
-        toast.error("Algo deu errado !");
-      });
-  }
+      .catch((error) => toast.error(error.response.data)
+      );
+    }else{
+      toast.error("Preencha o Formulário corretamente !")
+    }
+  };
 
   return (
     <div>
@@ -70,35 +90,44 @@ export default function ButtonNewEquipment() {
           }}
         >
           <H1>Equipamento</H1>
-          <TextField
-            sx={{ width: "48%", mt: "10px" }}
-            label="Equipamento"
-            variant="outlined"
-            value={equipment}
-            onChange={(e) => setEquipment(e.target.value)}
-          />
-          <TextField
-            sx={{ width: "48%", mt: "10px" }}
-            label="Modelo"
-            variant="outlined"
-            value={model}
-            onChange={(e) => setModel(e.target.value)}
-          />
           <Box
             sx={{
               display: "flex",
               flexDirection: "row",
-              marginY: "30px",
+              width: "100%",
+              justifyContent: "space-between",
+              marginBottom: "10px",
             }}
           >
-            <Button
-              sx={{ marginRight: "10px" }}
-              variant="contained"
-              onClick={postEquipment}
-            >
+            <TextField
+              sx={{ width: "48%" }}
+              label="Nome do Equipamento"
+              value={name}
+              variant="outlined"
+              required
+              onChange={event => setName(event.target.value)}
+            />
+            <TextField
+              sx={{ width: "48%" }}
+              label="Nome do Modelo"
+              value={model}
+              variant="outlined"
+              required
+              onChange={event => setModel(event.target.value)}
+            />
+          </Box>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "row",
+              marginY: "10px",
+              marginTop: "30px"
+            }}
+          >
+            <Button sx={{ marginRight: "10px" }} variant="contained" onClick={handleCreateEquipment}>
               Confirmar
             </Button>
-            <Button variant="outlined">Cancelar</Button>
+            <Button variant="outlined" onClick={handleClose}>Cancelar</Button>
           </Box>
         </Box>
       </Modal>

@@ -3,10 +3,10 @@ import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
 import Button from "@mui/material/Button";
 import AddIcon from "@mui/icons-material/Add";
-import { TextField } from "@mui/material";
 import { H1 } from "../../../components/Text";
 import api from "../../../services/api";
-import { toast } from "react-toastify";
+import { TextField } from "@mui/material";
+import { toast } from 'react-toastify';
 
 const style = {
   display: "flex",
@@ -22,28 +22,48 @@ const style = {
   width: "100%",
 };
 
-export default function ButtonNewEstoque() {
+export default function ButtonNewEstoque({ createNewInventory }) {
   const [open, setOpen] = React.useState(false);
-  const [equipment, setEquipment] = React.useState("");
-  const [model, setModel] = React.useState("");
+  const [name, setName] = React.useState("");
+  const [quantity, setQuantity] = React.useState(0);
+
   const handleOpen = () => {
     setOpen(true);
+    setName("");
+    setQuantity(0);
   };
+
   const handleClose = () => {
     setOpen(false);
   };
 
-  async function postEquipment() {
-    await api
-      .post("/equipment", { name: equipment, model: model })
+  const config = {
+    headers: {
+      "Authorization": `Bearer ${localStorage.getItem('token')}`,
+      "Content-Type": "application/json", 
+    },
+  };
+
+  const handleCreateInventory = async (event) => {
+    event.preventDefault();
+    if (name && quantity){
+      await api.post('/inventory', {
+            name: name,
+            quantity: quantity,
+        }, 
+        config
+      )
       .then((response) => {
-        toast.success(`Equipamento cadastrado`);
+        toast.success("Produto no Estoque foi Cadastrado com Sucesso")
+        createNewInventory(response.data)
         setOpen(false);
       })
-      .catch((error) => {
-        toast.error("Algo deu errado !");
-      });
-  }
+      .catch((error) => toast.error(error.response.data)
+      );
+    }else{
+      toast.error("Preencha o Formulário corretamente !")
+    }
+  };
 
   return (
     <div>
@@ -53,7 +73,7 @@ export default function ButtonNewEstoque() {
         variant="contained"
         startIcon={<AddIcon />}
       >
-        Adicionar no Esqtoque
+        Adicionar Produto no Estoque
       </Button>
 
       <Modal
@@ -70,36 +90,46 @@ export default function ButtonNewEstoque() {
           }}
         >
           <H1>Estoque</H1>
-          <TextField
-            sx={{ width: "60%", mt: "10px" }}
-            label="Material"
-            variant="outlined"
-            value={equipment}
-            onChange={(e) => setEquipment(e.target.value)}
-          />
-          <TextField
-            sx={{ width: "60%", mt: "30px" }}
-            type="number"
-            label="Quantidade"
-            variant="outlined"
-            value={model}
-            onChange={(e) => setModel(e.target.value)}
-          />
           <Box
             sx={{
               display: "flex",
               flexDirection: "row",
-              marginY: "30px",
+              width: "100%",
+              justifyContent: "space-between",
+              marginBottom: "10px",
             }}
           >
-            <Button
-              sx={{ marginRight: "10px" }}
-              variant="contained"
-              onClick={postEquipment}
-            >
+            <TextField
+              sx={{ width: "48%" }}
+              label="Nome do Produto do Estoque"
+              value={name}
+              variant="outlined"
+              required
+              onChange={event => setName(event.target.value)}
+            />
+            <TextField
+              sx={{ width: "48%" }}
+              label="Quantidade"
+              value={quantity}
+              variant="outlined"
+              required
+              onChange={event => setQuantity(event.target.value)}
+              inputProps={{ inputMode: 'numeric', pattern: '[0-9]*'}}
+              type="number"
+            />
+          </Box>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "row",
+              marginY: "10px",
+              marginTop: "30px"
+            }}
+          >
+            <Button sx={{ marginRight: "10px" }} variant="contained" onClick={handleCreateInventory}>
               Confirmar
             </Button>
-            <Button variant="outlined">Cancelar</Button>
+            <Button variant="outlined" onClick={handleClose}>Cancelar</Button>
           </Box>
         </Box>
       </Modal>
