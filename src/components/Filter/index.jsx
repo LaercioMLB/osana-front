@@ -9,6 +9,13 @@ import {
 } from "@mui/material";
 import { useContext } from "react";
 import FilterContext from "../../context/FilterContext";
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
+import FormControl from '@mui/material/FormControl';
+import FormLabel from '@mui/material/FormLabel';
+import SearchIcon from '@mui/icons-material/Search';
+import IconButton from '@mui/material/IconButton';
+import InputAdornment from '@mui/material/InputAdornment';
 
 export default function Filter() {
   const [filterData, setFilterData] = useContext(FilterContext);
@@ -24,6 +31,11 @@ export default function Filter() {
       const newFilters = filters.filter((el) => el !== prop);
       setFilterData({ tabSelected, filters: newFilters, searchText });
     }
+  };
+
+  const handleChangeRadio = (event) => {
+    let { tabSelected, searchText } = filterData;
+    setFilterData({ tabSelected, filters: event.target.value, searchText });
   };
 
   return (
@@ -42,6 +54,15 @@ export default function Filter() {
         sx={{ width: "150px" }}
       />
       <TextField
+        InputProps={{
+          endAdornment: (
+            <InputAdornment position="end">
+              <IconButton size="large" aria-label="search" color="inherit">
+                <SearchIcon />
+              </IconButton>
+            </InputAdornment>
+          ),
+        }}
         fullWidth
         label="Pesquisar"
         placeholder="O que procura?"
@@ -51,16 +72,19 @@ export default function Filter() {
       />
 
       {filterData.tabSelected === 0 && (
-        <FormGroup>
-          <FormControlLabel
-            control={<Checkbox onChange={handleChangeFilter("true")} />}
-            label="Com contrato"
-          />
-          <FormControlLabel
-            control={<Checkbox onChange={handleChangeFilter("false")} />}
-            label="Sem contrato"
-          />
-        </FormGroup>
+        <FormControl>
+          <FormLabel id="demo-controlled-radio-buttons-group">Contratos</FormLabel>
+          <RadioGroup
+            aria-labelledby="demo-controlled-radio-buttons-group"
+            name="controlled-radio-buttons-group"
+            value={filterData.filters}
+            onChange={handleChangeRadio}
+          >
+            <FormControlLabel value="true" control={<Radio />} label="Com Contrato" />
+            <FormControlLabel value="false" control={<Radio />} label="Sem Contrato" />
+            <FormControlLabel value="all" control={<Radio />} label="Todos" />
+          </RadioGroup>
+        </FormControl>  
       )}
       {filterData.tabSelected === 1 && (
         <FormGroup>

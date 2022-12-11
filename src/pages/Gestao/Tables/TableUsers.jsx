@@ -25,6 +25,10 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import TablePagination from '@mui/material/TablePagination';
 import TableSortLabel from '@mui/material/TableSortLabel';
 import { visuallyHidden } from '@mui/utils';
+import SearchIcon from '@mui/icons-material/Search';
+import IconButton from '@mui/material/IconButton';
+import InputAdornment from '@mui/material/InputAdornment';
+import TextField from '@mui/material/TextField';
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -164,6 +168,7 @@ function TableUsers() {
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [numberOfElements, setNumberOfElements] = useState(0);
   const [rows, setRows] = useState([]);
+  const [textSearch, setTextSearch] = useState("");
 
   const createNewUser = () => {
     getUsers({ size: rowsPerPage, page: page })
@@ -205,6 +210,25 @@ function TableUsers() {
       );
   }
 
+  async function getUsersSearch({ size, page, name }){
+    await api.get(`/users/findByName?size=${size}&page=${page}&name=${name}`, config)
+      .then((response) => {
+        setRows(response.data.content)
+        setNumberOfElements(response.data.totalElements)
+        setPage(response.data.number)
+        setRowsPerPage(size)
+      })
+      .catch((error) => {
+          if (error.response.status === 403){
+            localStorage.clear()
+            navigate("/login")
+          }else{
+            toast.error("Algo deu errado !")
+          }
+        }
+      );
+  }
+
   useEffect(() => {
     if (localStorage.getItem("token")) {
       getUsers({ size: 5, page: 0 });
@@ -226,6 +250,14 @@ function TableUsers() {
     getUsers({ size: parseInt(event.target.value, 10), page: 0 });
   };
 
+  const handleSearch = () => {
+    if (textSearch.length > 0){
+      getUsersSearch({ size: rowsPerPage, page: 0, name: textSearch });
+    }else{
+      getUsers({ size: rowsPerPage, page: 0 });
+    }
+  };
+
   return (
     <>
       <ToastContainer />
@@ -240,6 +272,30 @@ function TableUsers() {
         <H1>Usuários</H1>
         <ButtonNewUser createNewUser={createNewUser} />
       </Box>
+
+      <TextField
+        InputProps={{
+          endAdornment: (
+            <InputAdornment position="end">
+              <IconButton size="large" component={'span'} aria-label="search" color="inherit" onClick={handleSearch}>
+                <SearchIcon />
+              </IconButton>
+            </InputAdornment>
+          ),
+        }}
+        fullWidth
+        label="Pesquisar Pelo Nome"
+        placeholder="Digite o Nome do Usuário"
+        sx={{ marginY: "20px" }}
+        value={textSearch}
+        onChange={event => setTextSearch(event.target.value)}
+        onKeyDown={event => {
+          if(event.key === 'Enter'){
+            handleSearch();
+          }
+        }}
+      />
+
       <Box sx={{ width: '100%' }}>
         <Paper sx={{ width: '100%', mb: 2 }}>
           <TableContainer>

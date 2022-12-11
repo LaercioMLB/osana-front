@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { Box, Tab, Tabs, Typography } from "@mui/material";
 import TableUsers from "./Tables/TableUsers";
 import TableServices from "./Tables/TableServices";
 import TableEquipment from "./Tables/TableEquipment";
 import TableEstoque from "./Tables/TableEstoque";
+import FilterContext from "../../context/FilterContext";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -18,7 +19,7 @@ function TabPanel(props) {
     >
       {value === index && (
         <Box sx={{}}>
-          <Typography>{children}</Typography>
+          <Typography component={'div'}>{children}</Typography>
         </Box>
       )}
     </div>
@@ -34,8 +35,10 @@ function a11yProps(index) {
 
 function Gestao() {
   const [subTab, setSubTab] = useState(0);
+  const [filterData, setFilterData] = useContext(FilterContext);
 
   const handleChange = (event, newValue) => {
+    setFilterData({ ...filterData, searchText: '' });
     setSubTab(newValue);
   };
   return (

@@ -25,6 +25,10 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import TablePagination from '@mui/material/TablePagination';
 import TableSortLabel from '@mui/material/TableSortLabel';
 import { visuallyHidden } from '@mui/utils';
+import SearchIcon from '@mui/icons-material/Search';
+import IconButton from '@mui/material/IconButton';
+import InputAdornment from '@mui/material/InputAdornment';
+import TextField from '@mui/material/TextField';
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -146,6 +150,7 @@ function TableServices() {
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [numberOfElements, setNumberOfElements] = useState(0);
   const [rows, setRows] = useState([]);
+  const [textSearch, setTextSearch] = useState("");
 
   const createNewService = () => {
     getServices({ size: rowsPerPage, page: page })
@@ -187,6 +192,25 @@ function TableServices() {
       );
   }
 
+  async function getServicesSearch({ size, page, services }){
+    await api.get(`/services/findServiceByName?size=${size}&page=${page}&services=${services}`, config)
+      .then((response) => {
+        setRows(response.data.content)
+        setNumberOfElements(response.data.totalElements)
+        setPage(response.data.number)
+        setRowsPerPage(response.data.size)
+      })
+      .catch((error) => {
+          if (error.response.status === 403){
+            localStorage.clear()
+            navigate("/login")
+          }else{
+            toast.error("Algo deu errado !")
+          }
+        }
+      );
+  }
+
   useEffect(() => {
     if (localStorage.getItem("token")) {
       getServices({ size: 5, page: 0 });
@@ -208,6 +232,14 @@ function TableServices() {
     getServices({ size: parseInt(event.target.value, 10), page: 0 });
   };
 
+  const handleSearch = () => {
+    if (textSearch.length > 0){
+      getServicesSearch({ size: rowsPerPage, page: 0, services: textSearch });
+    }else{
+      getServices({ size: rowsPerPage, page: 0 });
+    }
+  };
+
   return (
     <>
       <ToastContainer />
@@ -222,6 +254,30 @@ function TableServices() {
         <H1>Serviços</H1>
         <ButtonNewService createNewService={createNewService} />
       </Box>
+
+      <TextField
+        InputProps={{
+          endAdornment: (
+            <InputAdornment position="end">
+              <IconButton size="large" aria-label="search" color="inherit" onClick={handleSearch}>
+                <SearchIcon />
+              </IconButton>
+            </InputAdornment>
+          ),
+        }}
+        fullWidth
+        label="Pesquisar Pela Descrição"
+        placeholder="Digite a Descrição do Serviço"
+        sx={{ marginY: "20px" }}
+        value={textSearch}
+        onChange={event => setTextSearch(event.target.value)}
+        onKeyDown={event => {
+          if(event.key === 'Enter'){
+            handleSearch();
+          }
+        }}
+      />
+      
       <Box sx={{ width: '100%' }}>
         <Paper sx={{ width: '100%', mb: 2 }}>
           <TableContainer>

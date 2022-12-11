@@ -18,8 +18,8 @@ import Paper from '@mui/material/Paper';
 import api from "../../services/api";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
-// import { useContext } from "react";
-// import FilterContext from "../../context/FilterContext";
+import { useContext } from "react";
+import FilterContext from "../../context/FilterContext";
 import Menu from "@mui/material/Menu";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import TablePagination from '@mui/material/TablePagination';
@@ -163,7 +163,7 @@ EnhancedTableHead.propTypes = {
 
 function Client() {
   const navigate = useNavigate();
-  // const [filterData] = useContext(FilterContext);
+  const [filterData] = useContext(FilterContext);
   const [order, setOrder] = useState('asc');
   const [orderBy, setOrderBy] = useState('firstName');
   const [page, setPage] = useState(0);
@@ -211,12 +211,42 @@ function Client() {
       );
   }
 
+  async function getClientsFilter({ size, page, filter }){
+    await api.get(`/client/clientFindByContract?size=${size}&page=${page}&contract=${filter}`, config)
+      .then((response) => {
+        setRows(response.data.content)
+        setNumberOfElements(response.data.totalElements)
+        setPage(response.data.number)
+        setRowsPerPage(response.data.size)
+      })
+      .catch((error) => {
+          if (error.response.status === 403){
+            localStorage.clear()
+            navigate("/login")
+          }else{
+            toast.error("Algo deu errado !")
+          }
+        }
+      );
+  }
+
   useEffect(() => {
     if (localStorage.getItem("token")) {
       getClients({ size: 5, page: 0 });
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    if(filterData.tabSelected === 0 && filterData.filters.length > 0){
+      if (filterData.filters === "all"){
+        getClients({ size: 5, page: 0 });
+      }else{
+        getClientsFilter({ size: rowsPerPage, page: 0, filter: filterData.filters });
+      }
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filterData]);
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';

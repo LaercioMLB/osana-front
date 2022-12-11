@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   Box,
   Table,
@@ -20,7 +20,7 @@ import TableSortLabel from '@mui/material/TableSortLabel';
 import DeleteOS from "./DeleteOS";
 import ViewOS from "./ViewOS";
 import EditOS from "./EditOS";
-// import FilterContext from "../../context/FilterContext";
+import FilterContext from "../../context/FilterContext";
 import { visuallyHidden } from '@mui/utils';
 import PropTypes from 'prop-types';
 import { useNavigate } from "react-router-dom";
@@ -204,7 +204,7 @@ EnhancedTableHead.propTypes = {
 
 function PersonalServices({ idUsuario }) {
   const navigate = useNavigate();
-  // const [filterData] = useContext(FilterContext);
+  const [filterData] = useContext(FilterContext);
   const [order, setOrder] = useState('asc');
   const [orderBy, setOrderBy] = useState('dateOS');
   const [page, setPage] = useState(0);
@@ -281,6 +281,11 @@ function PersonalServices({ idUsuario }) {
     }
     // eslint-disable-next-line
   }, [])
+
+  useEffect(()=>{
+    console.log(filterData)
+    // eslint-disable-next-line
+  }, [filterData])
 
   return (
     <>
