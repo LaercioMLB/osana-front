@@ -63,9 +63,9 @@ export default function ButtonNewClient({ createNewClient }) {
             firstName: firstName,
             lastName: lastName, 
             email: email, 
-            phone: phone, 
+            phone: phone.replace(/[^0-9]/g,''), 
             contract: currency,
-            cnpj: cpfCnpj,
+            cnpj: cpfCnpj.replace(/[^0-9]/g,''),
         }, 
         config
       )

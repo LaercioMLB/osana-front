@@ -5,7 +5,6 @@ import {
   Divider,
   FormControlLabel,
   FormGroup,
-  TextField,
 } from "@mui/material";
 import { useContext } from "react";
 import FilterContext from "../../context/FilterContext";
@@ -13,9 +12,6 @@ import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControl from '@mui/material/FormControl';
 import FormLabel from '@mui/material/FormLabel';
-import SearchIcon from '@mui/icons-material/Search';
-import IconButton from '@mui/material/IconButton';
-import InputAdornment from '@mui/material/InputAdornment';
 
 export default function Filter() {
   const [filterData, setFilterData] = useContext(FilterContext);
@@ -51,24 +47,7 @@ export default function Filter() {
       <Box
         component="img"
         src="/images/logo-infoclinica.png"
-        sx={{ width: "150px" }}
-      />
-      <TextField
-        InputProps={{
-          endAdornment: (
-            <InputAdornment position="end">
-              <IconButton size="large" aria-label="search" color="inherit">
-                <SearchIcon />
-              </IconButton>
-            </InputAdornment>
-          ),
-        }}
-        fullWidth
-        label="Pesquisar"
-        placeholder="O que procura?"
-        sx={{ marginY: "30px" }}
-        value={filterData.searchText}
-        onChange={event => setFilterData({...filterData, searchText: event.target.value})}
+        sx={{ width: "150px", marginBottom: "60px" }}
       />
 
       {filterData.tabSelected === 0 && (

@@ -25,6 +25,15 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import TablePagination from '@mui/material/TablePagination';
 import TableSortLabel from '@mui/material/TableSortLabel';
 import { visuallyHidden } from '@mui/utils';
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormControl from '@mui/material/FormControl';
+import FormLabel from '@mui/material/FormLabel';
+import SearchIcon from '@mui/icons-material/Search';
+import IconButton from '@mui/material/IconButton';
+import InputAdornment from '@mui/material/InputAdornment';
+import TextField from '@mui/material/TextField';
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -53,13 +62,13 @@ const headCells = [
     id: 'email',
     numeric: false,
     disablePadding: false,
-    label: 'CNPJ/CPF',
+    label: 'E-mail',
   },
   {
     id: 'phone',
     numeric: false,
     disablePadding: false,
-    label: 'CNPJ/CPF',
+    label: 'Contato (Phone)',
   },
   {
     id: 'contract',
@@ -170,6 +179,8 @@ function Client() {
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [numberOfElements, setNumberOfElements] = useState(0);
   const [rows, setRows] = useState([]);
+  const [textSearch, setTextSearch] = useState("");
+  const [radioValue, setRadioValue] = useState("name");
 
   const createNewClient = () => {
     getClients({ size: rowsPerPage, page: page })
@@ -230,6 +241,33 @@ function Client() {
       );
   }
 
+  async function getClientsSearch({ size, page, text }){
+    let url = ""
+
+    if (radioValue === 'cpf'){
+      url = `/client/filterClient?size=${size}&page=${page}&cnpj=${text}`
+    }else if (radioValue === 'name'){
+      url = `/client/filterClient?size=${size}&page=${page}&name=${text}`
+    }
+
+    await api.get(url, config)
+      .then((response) => {
+        setRows(response.data.content)
+        setNumberOfElements(response.data.totalElements)
+        setPage(response.data.number)
+        setRowsPerPage(response.data.size)
+      })
+      .catch((error) => {
+          if (error.response.status === 403){
+            localStorage.clear()
+            navigate("/login")
+          }else{
+            toast.error("Algo deu errado !")
+          }
+        }
+      );
+  }
+
   useEffect(() => {
     if (localStorage.getItem("token")) {
       getClients({ size: 5, page: 0 });
@@ -262,6 +300,18 @@ function Client() {
     getClients({ size: parseInt(event.target.value, 10), page: 0 });
   };
 
+  const handleSearch = () => {
+    if (textSearch.length > 0){
+      getClientsSearch({ size: rowsPerPage, page: 0, text: textSearch });
+    }else{
+      getClients({ size: rowsPerPage, page: 0 });
+    }
+  };
+
+  const handleChangeRadio = (event) => {
+    setRadioValue(event.target.value)
+  };
+
   return (
     <>
       <ToastContainer />
@@ -273,9 +323,44 @@ function Client() {
           alignItems: "center",
         }}
       >
-        <H1>Clientes</H1>
+        <FormControl sx={{ width: '310px' }}>
+          <FormLabel id="demo-row-radio-buttons-group-label">Tipo da Pesquisa</FormLabel>
+          <RadioGroup
+            row
+            aria-labelledby="demo-row-radio-buttons-group-label"
+            name="row-radio-buttons-group"
+            value={radioValue}
+            onChange={handleChangeRadio}
+          >
+            <FormControlLabel value="cpf" control={<Radio />} label="CNPJ/CPF" />
+            <FormControlLabel value="name" control={<Radio />} label="Nome do Cliente" />
+          </RadioGroup>
+          <TextField
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton size="large" aria-label="search" color="inherit" onClick={handleSearch}>
+                    <SearchIcon />
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+            fullWidth
+            label={radioValue === 'name' ? "Pesquisar Pelo Nome do Cliente" : "Pesquisar Pelo CPF ou CNPJ"}
+            placeholder={radioValue === 'name' ? "Digite o Nome do Cliente" : "Digite o CPF ou CNPJ"}
+            sx={{ marginY: "20px" }}
+            value={textSearch}
+            onChange={event => setTextSearch(event.target.value)}
+            onKeyDown={event => {
+              if(event.key === 'Enter'){
+                handleSearch();
+              }
+            }}
+          />
+        </FormControl>
         <ButtonNewClient createNewClient={createNewClient} />
       </Box>
+
       <Box sx={{ width: '100%' }}>
         <Paper sx={{ width: '100%', mb: 2 }}>
           <TableContainer>
