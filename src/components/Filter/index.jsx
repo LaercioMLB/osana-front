@@ -89,28 +89,28 @@ export default function Filter() {
       {filterData.tabSelected === 1 && (
         <FormGroup>
           <FormControlLabel
-            control={<Checkbox onChange={handleChangeFilter("Aberto")} />}
+            control={<Checkbox onChange={handleChangeFilter("status-3")} />}
             label="Aberto"
           />
           <FormControlLabel
-            control={<Checkbox onChange={handleChangeFilter("Andamento")} />}
+            control={<Checkbox onChange={handleChangeFilter("status-1")} />}
             label="Andamento"
           />
           <FormControlLabel
-            control={<Checkbox onChange={handleChangeFilter("Finalizado")} />}
+            control={<Checkbox onChange={handleChangeFilter("status-2")} />}
             label="Finalizado"
           />
           <Divider sx={{ marginY: "10px" }} />
           <FormControlLabel
-            control={<Checkbox onChange={handleChangeFilter("Baixa")} />}
+            control={<Checkbox onChange={handleChangeFilter("priority-2")} />}
             label="Baixa"
           />
           <FormControlLabel
-            control={<Checkbox onChange={handleChangeFilter("Alta")} />}
+            control={<Checkbox onChange={handleChangeFilter("priority-1")} />}
             label="Alta"
           />
           <FormControlLabel
-            control={<Checkbox onChange={handleChangeFilter("Urgente")} />}
+            control={<Checkbox onChange={handleChangeFilter("priority-3")} />}
             label="Urgente"
           />
         </FormGroup>
@@ -118,28 +118,28 @@ export default function Filter() {
       {filterData.tabSelected === 2 && (
         <FormGroup>
           <FormControlLabel
-            control={<Checkbox onChange={handleChangeFilter("Aberto")} />}
+            control={<Checkbox onChange={handleChangeFilter("status-3")} />}
             label="Aberto"
           />
           <FormControlLabel
-            control={<Checkbox onChange={handleChangeFilter("Andamento")} />}
+            control={<Checkbox onChange={handleChangeFilter("status-1")} />}
             label="Andamento"
           />
           <FormControlLabel
-            control={<Checkbox onChange={handleChangeFilter("Finalizado")} />}
+            control={<Checkbox onChange={handleChangeFilter("status-2")} />}
             label="Finalizado"
           />
           <Divider sx={{ marginY: "10px" }} />
           <FormControlLabel
-            control={<Checkbox onChange={handleChangeFilter("Baixa")} />}
+            control={<Checkbox onChange={handleChangeFilter("priority-2")} />}
             label="Baixa"
           />
           <FormControlLabel
-            control={<Checkbox onChange={handleChangeFilter("Alta")} />}
+            control={<Checkbox onChange={handleChangeFilter("priority-1")} />}
             label="Alta"
           />
           <FormControlLabel
-            control={<Checkbox onChange={handleChangeFilter("Urgente")} />}
+            control={<Checkbox onChange={handleChangeFilter("priority-3")} />}
             label="Urgente"
           />
         </FormGroup>

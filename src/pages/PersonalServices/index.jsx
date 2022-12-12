@@ -221,7 +221,7 @@ function PersonalServices({ idUsuario }) {
   }
   
   const editOS = (editedOS) => {
-    const index = rows.findIndex((os) => os.id === editedOS.id)
+    const index = rows.findIndex((os) => os.idOS === editedOS.idOS)
     let newListOs = [...rows]
     newListOs[index] = editedOS
     setRows(newListOs);
@@ -275,15 +275,44 @@ function PersonalServices({ idUsuario }) {
       );
   }
 
-  useEffect(()=>{
-    if (localStorage.getItem('token')){
-      getListMyOs({ size: 5, page: 0 });
+  async function getListMyOsSearch({ size, page, status, priority }){
+    let url = ""
+    let statusValues = status.map((value) => value.split("-")[1])
+    let priorityValues = priority.map((value) => value.split("-")[1])
+
+    if (status.length > 0 && priority.length > 0){
+      url = `/os/filterOs?size=${size}&page=${page}&status=${statusValues}&priority=${priorityValues}`
+    }else if(priority.length > 0){
+      url = `/os/filterOs?size=${size}&page=${page}&priority=${priorityValues}`
+    }else{
+      url = `/os/filterOs?size=${size}&page=${page}&status=${statusValues}`
     }
-    // eslint-disable-next-line
-  }, [])
+    await api.get(url, config)
+      .then((response) => {
+        setRows(response.data.content)
+        setNumberOfElements(response.data.totalElements)
+        setPage(response.data.number)
+        setRowsPerPage(response.data.size)
+      })
+      .catch((error) => {
+          if (error.response.status === 403){
+            localStorage.clear()
+            navigate("/login")
+          }else{
+            toast.error("Algo deu errado !")
+          }
+        }
+      );
+  }
 
   useEffect(()=>{
-    console.log(filterData)
+    if(filterData.tabSelected === 1 && filterData.filters.length > 0){
+      let status = filterData.filters.filter((status) => status.includes("status"))
+      let prioridade = filterData.filters.filter((priority) => priority.includes("priority"))
+      getListMyOsSearch({ size: rowsPerPage, page: 0, status: status, priority: prioridade })
+    }else if (filterData.tabSelected === 1 && filterData.filters.length === 0){
+      getListMyOs({ size: 5, page: 0 });
+    }
     // eslint-disable-next-line
   }, [filterData])
 
