@@ -33,6 +33,7 @@ export default function ButtonNewService({ idUsuario, createNewOS }) {
   const [listPriority, setListPriority] = React.useState([]);
   const [listTypeService, setListTypeService] = React.useState([]);
   const [listEquipment, setListEquipment] = React.useState([]);
+  const [listInventories, setListInventories] = React.useState([]);
 
   const [client, setClient] = React.useState("");
   const [prior, setPrior] = React.useState("");
@@ -40,6 +41,7 @@ export default function ButtonNewService({ idUsuario, createNewOS }) {
   const [motive, setMotive] = React.useState("");
   const [observacoes, setObservacoes] = React.useState("");
   const [equipments, setEquipments] = React.useState([]);
+  const [inventories, setInventories] = React.useState([]);
   const [devolution, setDevolution] = React.useState('');
 
   const handleOpen = () => {
@@ -50,6 +52,7 @@ export default function ButtonNewService({ idUsuario, createNewOS }) {
     setMotive('')
     setObservacoes('')
     setEquipments([])
+    setInventories([])
     setDevolution('')
   };
   const handleClose = () => {
@@ -73,6 +76,12 @@ export default function ButtonNewService({ idUsuario, createNewOS }) {
     setEquipments(value);
   };
 
+  const handleChangeInventories = (result) => {
+    console.log(result)
+    // const value = result.map(el => el.value)
+    setInventories(result);
+  };
+
   const config = {
     headers: {
       Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -82,30 +91,30 @@ export default function ButtonNewService({ idUsuario, createNewOS }) {
 
   const handleCreateOs = async (event) => {
     event.preventDefault();
-    if (client && prior && typeService && motive){
-      await api.post('/os', {
-          idUsuario: idUsuario,
-          idClient: client, 
-          idPriority: prior, 
-          idTypeServices: typeService, 
-          motive: motive,
-          obs: observacoes,
-          devolution: devolution,
-          equipaments: equipments,
-          inventories: [],
-        }, 
-        config
-      )
-      .then(() => {
-        toast.success("Cadastrado com Sucesso")
-        createNewOS()
-        setOpen(false);
-      })
-      .catch((error) => toast.error(error.response.data)
-      );
-    }else{
-      toast.error("Preencha o Formulário corretamente !")
-    }
+    // if (client && prior && typeService && motive){
+    //   await api.post('/os', {
+    //       idUsuario: idUsuario,
+    //       idClient: client, 
+    //       idPriority: prior, 
+    //       idTypeServices: typeService, 
+    //       motive: motive,
+    //       obs: observacoes,
+    //       devolution: devolution,
+    //       equipaments: equipments,
+    //       inventories: inventories,
+    //     }, 
+    //     config
+    //   )
+    //   .then(() => {
+    //     toast.success("Cadastrado com Sucesso")
+    //     createNewOS()
+    //     setOpen(false);
+    //   })
+    //   .catch((error) => toast.error(error.response.data)
+    //   );
+    // }else{
+    //   toast.error("Preencha o Formulário corretamente !")
+    // }
   };
 
   async function getListClientes(){
@@ -144,6 +153,30 @@ export default function ButtonNewService({ idUsuario, createNewOS }) {
       });
   }
 
+  async function getListinventories(){
+    await api.get(`/inventory/findAll`, config)
+      .then((response) => {
+        let arrayList = response.data.map(el => {
+          return {
+            value: el.id,
+            label: `${el.name} - Quantidade: ${el.quantity}`,
+            quantidade: el.quantity,
+            quantity: 0
+          }
+        })
+        setListInventories(arrayList)
+      })
+      .catch((error) => {
+          if (error.response.status === 403){
+            localStorage.clear()
+            navigate("/login")
+          }else{
+            toast.error("Algo deu errado !")
+          }
+        }
+      );
+  }
+
   async function getListServices(){
     await api.get(`/services/findAll`, config)
       .then((response) => {
@@ -164,6 +197,7 @@ export default function ButtonNewService({ idUsuario, createNewOS }) {
       getListClientes();
       getListServices();
       getListEquipments();
+      getListinventories();
       setListPriority(priorityObject)
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -302,6 +336,52 @@ export default function ButtonNewService({ idUsuario, createNewOS }) {
             classNamePrefix="select"
             onChange={handleChangeEquipment}
           />
+
+          <InputLabel sx={{ marginTop: "20px" }} id="inventory-label">Selecione os Produtos do Estoque se Necessário (Optional)</InputLabel>
+          <Select
+            id="inventory-label"
+            isMulti
+            name="inventories"
+            options={listInventories}
+            isSearchable={true}
+            isClearable={true}
+            className="basic-multi-select"
+            classNamePrefix="select"
+            onChange={handleChangeInventories}
+          />
+
+          {inventories.length === 0 ? "" : 
+            inventories.map(produto =>
+              (<Box
+                  component="form"
+                  sx={{
+                    '& .MuiTextField-root': { m: 1, width: '25ch' },
+                  }}
+                  noValidate
+                  autoComplete="off"
+                  key={produto.value}
+                >
+                <TextField
+                  type="number"
+                  helperText={`Quantidade no Estoque: ${produto.quantidade}`} 
+                  inputProps={{ inputMode: 'numeric', pattern: '[0-9]*'}}
+                  label={`${produto.label.split(" - ")[0]}`}
+                  onChange={
+                    event => {
+                      const min = 1;
+                      const max = produto.quantidade;
+                      const value = Math.max(min, Math.min(max, Number(event.target.value)));
+                      // if (quantity <= produto.quantidade){
+                      //   console.log(quantity)
+                      // }
+                      console.log(value)
+                    }
+                  }
+                  required
+                />
+              </Box>)
+            )
+          }
 
           <Box
             sx={{
