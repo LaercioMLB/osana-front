@@ -41,6 +41,7 @@ export default function ButtonNewService({ idUsuario, createNewOS }) {
   const [motive, setMotive] = React.useState("");
   const [observacoes, setObservacoes] = React.useState("");
   const [equipments, setEquipments] = React.useState([]);
+  const [inputInventories, setInputInventories] = React.useState([]);
   const [inventories, setInventories] = React.useState([]);
   const [devolution, setDevolution] = React.useState('');
 
@@ -52,7 +53,7 @@ export default function ButtonNewService({ idUsuario, createNewOS }) {
     setMotive('')
     setObservacoes('')
     setEquipments([])
-    setInventories([])
+    setInputInventories([])
     setDevolution('')
   };
   const handleClose = () => {
@@ -77,9 +78,13 @@ export default function ButtonNewService({ idUsuario, createNewOS }) {
   };
 
   const handleChangeInventories = (result) => {
-    console.log(result)
-    // const value = result.map(el => el.value)
-    setInventories(result);
+    setInputInventories(result);
+  };
+
+  const handlechangeFinalInventories = (id_produto, quantity) => {
+    console.log("inventoriessss", inventories)
+    let newList = inputInventories.filter((produto) => produto.value !== id_produto)
+    setInventories([...newList, {id: id_produto, quantity: quantity}])
   };
 
   const config = {
@@ -91,6 +96,7 @@ export default function ButtonNewService({ idUsuario, createNewOS }) {
 
   const handleCreateOs = async (event) => {
     event.preventDefault();
+    console.log(inventories)
     // if (client && prior && typeService && motive){
     //   await api.post('/os', {
     //       idUsuario: idUsuario,
@@ -164,7 +170,7 @@ export default function ButtonNewService({ idUsuario, createNewOS }) {
             quantity: 0
           }
         })
-        setListInventories(arrayList)
+        setListInventories(arrayList.filter((el) => el.quantidade > 0))
       })
       .catch((error) => {
           if (error.response.status === 403){
@@ -350,8 +356,8 @@ export default function ButtonNewService({ idUsuario, createNewOS }) {
             onChange={handleChangeInventories}
           />
 
-          {inventories.length === 0 ? "" : 
-            inventories.map(produto =>
+          {inputInventories.length === 0 ? "" : 
+            inputInventories.map(produto =>
               (<Box
                   component="form"
                   sx={{
@@ -364,17 +370,18 @@ export default function ButtonNewService({ idUsuario, createNewOS }) {
                 <TextField
                   type="number"
                   helperText={`Quantidade no Estoque: ${produto.quantidade}`} 
-                  inputProps={{ inputMode: 'numeric', pattern: '[0-9]*'}}
+                  inputProps={{ inputMode: 'numeric', pattern: '[0-9]*', min: 0, max: produto.quantidade}}
                   label={`${produto.label.split(" - ")[0]}`}
                   onChange={
                     event => {
                       const min = 1;
                       const max = produto.quantidade;
                       const value = Math.max(min, Math.min(max, Number(event.target.value)));
-                      // if (quantity <= produto.quantidade){
-                      //   console.log(quantity)
-                      // }
-                      console.log(value)
+                      if (event.target.value > produto.quantidade){
+                        event.target.value = value
+                        toast.error(`O máximo do Estoque é ${produto.quantidade}`)
+                      }
+                      handlechangeFinalInventories(produto.value, value)
                     }
                   }
                   required

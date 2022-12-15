@@ -41,6 +41,8 @@ export default function EditOS({ idUsuario, osObj, editOS, handleCloseMenu }) {
   const [motive, setMotive] = React.useState("");
   const [observacoes, setObservacoes] = React.useState("");
   const [equipments, setEquipments] = React.useState([]);
+  const [inputInventories, setInputInventories] = React.useState([]);
+  const [inventories, setInventories] = React.useState([]);
   const [devolution, setDevolution] = React.useState("");
 
   const handleOpen = () => {

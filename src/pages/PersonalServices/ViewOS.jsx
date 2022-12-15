@@ -38,6 +38,7 @@ export default function ViewOS({ osObj, handleCloseMenu }) {
   const [motive, setMotive] = React.useState("");
   const [observacoes, setObservacoes] = React.useState("");
   const [equipments, setEquipments] = React.useState([]);
+  const [inventories, setInventories] = React.useState([]);
   const [devolution, setDevolution] = React.useState("");
 
   const handleOpen = () => {
@@ -63,6 +64,12 @@ export default function ViewOS({ osObj, handleCloseMenu }) {
     setMotive(osObj.motive)
     setObservacoes(osObj.obs === null ? "" : osObj.obs)
     setEquipments(osObj.equipment)
+    setInventories(osObj.outputInventories.map((obj) => {
+      return {
+        inventory: obj.inventory,
+        quantity: obj.quantity,
+      }
+    }))
     setDevolution(osObj.devolution === null ? "" : convertData(osObj.devolution))
   }
 
@@ -186,6 +193,20 @@ export default function ViewOS({ osObj, handleCloseMenu }) {
                   />
                 </ListItem>
               ) : "Não Contem Nenhum Equipamento Cadastrado nesta OS"}
+            </List>
+          </Demo>
+
+          <InputLabel id="inventory-label">Produto do Estoque</InputLabel>
+          <Demo>
+            <List>
+              {inventories.length > 0 ? inventories.map( obj =>
+                <ListItem key={obj.inventory.id}>
+                  <ListItemText
+                    primary={`Nome: ${obj.inventory.name}`}
+                    secondary={`Quantidade: ${obj.quantity}`}
+                  />
+                </ListItem>
+              ) : "Não Contêm Nenhum Produto do Estoque Cadastrado nesta OS"}
             </List>
           </Demo>
 
