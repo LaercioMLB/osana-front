@@ -41,7 +41,6 @@ export default function ButtonNewService({ idUsuario, createNewOS }) {
   const [motive, setMotive] = React.useState("");
   const [observacoes, setObservacoes] = React.useState("");
   const [equipments, setEquipments] = React.useState([]);
-  const [inputInventories, setInputInventories] = React.useState([]);
   const [inventories, setInventories] = React.useState([]);
   const [devolution, setDevolution] = React.useState('');
 
@@ -53,7 +52,7 @@ export default function ButtonNewService({ idUsuario, createNewOS }) {
     setMotive('')
     setObservacoes('')
     setEquipments([])
-    setInputInventories([])
+    setInventories([])
     setDevolution('')
   };
   const handleClose = () => {
@@ -78,13 +77,15 @@ export default function ButtonNewService({ idUsuario, createNewOS }) {
   };
 
   const handleChangeInventories = (result) => {
-    setInputInventories(result);
+    setInventories(result);
   };
 
-  const handlechangeFinalInventories = (id_produto, quantity) => {
-    console.log("inventoriessss", inventories)
-    let newList = inputInventories.filter((produto) => produto.value !== id_produto)
-    setInventories([...newList, {id: id_produto, quantity: quantity}])
+  const handlechangeInputInventories = (id_produto, quantity) => {
+    let newList = [...inventories]
+    const index = newList.findIndex((produto) => produto.value === id_produto)
+    let inventorio = newList[index]
+    inventorio.quantity = quantity
+    setInventories(newList);
   };
 
   const config = {
@@ -96,31 +97,32 @@ export default function ButtonNewService({ idUsuario, createNewOS }) {
 
   const handleCreateOs = async (event) => {
     event.preventDefault();
-    console.log(inventories)
-    // if (client && prior && typeService && motive){
-    //   await api.post('/os', {
-    //       idUsuario: idUsuario,
-    //       idClient: client, 
-    //       idPriority: prior, 
-    //       idTypeServices: typeService, 
-    //       motive: motive,
-    //       obs: observacoes,
-    //       devolution: devolution,
-    //       equipaments: equipments,
-    //       inventories: inventories,
-    //     }, 
-    //     config
-    //   )
-    //   .then(() => {
-    //     toast.success("Cadastrado com Sucesso")
-    //     createNewOS()
-    //     setOpen(false);
-    //   })
-    //   .catch((error) => toast.error(error.response.data)
-    //   );
-    // }else{
-    //   toast.error("Preencha o Formulário corretamente !")
-    // }
+    if (client && prior && typeService && motive){
+      await api.post('/os', {
+          idUsuario: idUsuario,
+          idClient: client, 
+          idPriority: prior, 
+          idTypeServices: typeService, 
+          motive: motive,
+          obs: observacoes,
+          devolution: devolution,
+          equipaments: equipments,
+          inventories: inventories.map((inventory) => {
+            return { id: inventory.value, quantity: inventory.quantity }
+          }),
+        }, 
+        config
+      )
+      .then(() => {
+        toast.success("Cadastrado com Sucesso")
+        createNewOS()
+        setOpen(false);
+      })
+      .catch((error) => toast.error(error.response.data)
+      );
+    }else{
+      toast.error("Preencha o Formulário corretamente !")
+    }
   };
 
   async function getListClientes(){
@@ -166,11 +168,11 @@ export default function ButtonNewService({ idUsuario, createNewOS }) {
           return {
             value: el.id,
             label: `${el.name} - Quantidade: ${el.quantity}`,
-            quantidade: el.quantity,
+            quantidadeTotalEstoque: el.quantity,
             quantity: 0
           }
         })
-        setListInventories(arrayList.filter((el) => el.quantidade > 0))
+        setListInventories(arrayList.filter((el) => el.quantidadeTotalEstoque > 0))
       })
       .catch((error) => {
           if (error.response.status === 403){
@@ -356,8 +358,8 @@ export default function ButtonNewService({ idUsuario, createNewOS }) {
             onChange={handleChangeInventories}
           />
 
-          {inputInventories.length === 0 ? "" : 
-            inputInventories.map(produto =>
+          {inventories.length === 0 ? "" : 
+            inventories.map(produto =>
               (<Box
                   component="form"
                   sx={{
@@ -369,19 +371,19 @@ export default function ButtonNewService({ idUsuario, createNewOS }) {
                 >
                 <TextField
                   type="number"
-                  helperText={`Quantidade no Estoque: ${produto.quantidade}`} 
-                  inputProps={{ inputMode: 'numeric', pattern: '[0-9]*', min: 0, max: produto.quantidade}}
+                  helperText={`Quantidade no Estoque: ${produto.quantidadeTotalEstoque}`} 
+                  inputProps={{ inputMode: 'numeric', pattern: '[0-9]*', min: 1, max: produto.quantidadeTotalEstoque}}
                   label={`${produto.label.split(" - ")[0]}`}
                   onChange={
                     event => {
                       const min = 1;
-                      const max = produto.quantidade;
+                      const max = produto.quantidadeTotalEstoque;
                       const value = Math.max(min, Math.min(max, Number(event.target.value)));
-                      if (event.target.value > produto.quantidade){
+                      if (event.target.value > produto.quantidadeTotalEstoque){
                         event.target.value = value
-                        toast.error(`O máximo do Estoque é ${produto.quantidade}`)
+                        toast.error(`O máximo do Estoque é ${produto.quantidadeTotalEstoque}`)
                       }
-                      handlechangeFinalInventories(produto.value, value)
+                      handlechangeInputInventories(produto.value, value)
                     }
                   }
                   required

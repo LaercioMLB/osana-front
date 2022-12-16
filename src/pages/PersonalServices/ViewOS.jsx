@@ -170,21 +170,22 @@ export default function ViewOS({ osObj, handleCloseMenu }) {
               type="date"
               value={devolution}
               disabled={true}
-              sx={{ marginBottom: "10px", width: "100%" }}
+              sx={{ width: "48%" }}
             />
+
+            <TextField
+              label="Status"
+              value={status}
+              disabled={true}
+              sx={{ width: "48%" }}
+            >
+            </TextField>
           </Box>
 
-          <TextField
-            label="Status"
-            value={status}
-            disabled={true}
-            sx={{ marginBottom: "20px", width: "100%" }}
-          >
-          </TextField>
           
           <InputLabel id="equipments-label">Equipamentos da OS</InputLabel>
           <Demo>
-            <List>
+            <List sx={{ marginBottom: "30px"}}>
               {equipments.length > 0 ? equipments.map( el =>
                 <ListItem key={el.id}>
                   <ListItemText
