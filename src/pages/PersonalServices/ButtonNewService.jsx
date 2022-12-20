@@ -1,6 +1,5 @@
 import * as React from "react";
 import Box from "@mui/material/Box";
-import Modal from "@mui/material/Modal";
 import Button from "@mui/material/Button";
 import AddIcon from "@mui/icons-material/Add";
 import { H1 } from "../../components/Text";
@@ -11,20 +10,10 @@ import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from 'react-toastify';
 import Select from 'react-select'
 import { priorityObject } from "../../services/staticData"
-
-const style = {
-  display: "flex",
-  flexDirection: "column",
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  bgcolor: "background.paper",
-  border: "none",
-  padding: "20px",
-  borderRadius: "6px",
-  width: "95%",
-};
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
 
 export default function ButtonNewService({ idUsuario, createNewOS }) {
   const navigate = useNavigate();
@@ -224,53 +213,18 @@ export default function ButtonNewService({ idUsuario, createNewOS }) {
 
       <ToastContainer />
 
-      <Modal
+      <Dialog
         open={open}
         onClose={handleClose}
-        sx={{
-          maxWidth: "900px",
-          margin: "auto",
-          overflow: 'scroll',
-        }}
+        fullWidth={true}
+        maxWidth="lg"
+        scroll="body"
+        aria-labelledby="scroll-dialog-title"
+        aria-describedby="scroll-dialog-description"
       >
-        <Box
-          sx={{
-            ...style,
-          }}
-        >
-          <H1>Nova OS</H1>
+        <DialogTitle id="scroll-dialog-title"><H1>Nova OS</H1></DialogTitle>
+        <DialogContent>
 
-          <TextField
-            select
-            label="Cliente"
-            onChange={handleChangeClient}
-            sx={{ marginBottom: "10px" }}
-            value={client}
-          >
-            {listClient.map((option) => (
-              <MenuItem key={option.id} value={option.id}>
-                {option.firstName} {option.lastName}
-              </MenuItem>
-            ))}
-          </TextField>
-          <TextField
-            fullWidth
-            label="Motivo"
-            onChange={(event) => setMotive(event.target.value)}
-            multiline
-            rows={6}
-            variant="outlined"
-            sx={{ marginY: "10px" }}
-          />
-          <TextField
-            fullWidth
-            label="Observações"
-            onChange={(event) => setObservacoes(event.target.value)}
-            multiline
-            rows={6}
-            variant="outlined"
-            sx={{ marginY: "10px" }}
-          />
           <Box
             sx={{
               display: "flex",
@@ -278,6 +232,70 @@ export default function ButtonNewService({ idUsuario, createNewOS }) {
               width: "100%",
               justifyContent: "space-between",
               marginY: "10px",
+            }}
+          >
+            <TextField
+              select
+              label="Cliente"
+              onChange={handleChangeClient}
+              sx={{ marginBottom: "10px", width: "100%" }}
+              value={client}
+            >
+              {listClient.map((option) => (
+                <MenuItem key={option.id} value={option.id}>
+                  {option.firstName} {option.lastName}
+                </MenuItem>
+              ))}
+            </TextField>
+          </Box>
+
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "row",
+              width: "100%",
+              justifyContent: "space-between",
+              marginY: "10px",
+            }}
+          >
+            <TextField
+              fullWidth
+              label="Motivo"
+              onChange={(event) => setMotive(event.target.value)}
+              multiline
+              rows={6}
+              variant="outlined"
+              sx={{ marginY: "10px" }}
+            />
+          </Box>
+
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "row",
+              width: "100%",
+              justifyContent: "space-between",
+              marginY: "10px",
+            }}
+          >
+            <TextField
+              fullWidth
+              label="Observações"
+              onChange={(event) => setObservacoes(event.target.value)}
+              multiline
+              rows={6}
+              variant="outlined"
+              sx={{ marginY: "10px" }}
+            />
+          </Box>
+
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "row",
+              width: "100%",
+              justifyContent: "space-between",
+              marginY: "20px",
             }}
           >
             <TextField
@@ -328,7 +346,7 @@ export default function ButtonNewService({ idUsuario, createNewOS }) {
               type="date"
               defaultValue=""
               onChange={(event) => setDevolution(event.target.value)}
-              sx={{ marginBottom: "10px", width: "100%" }}
+              sx={{ marginBottom: "20px", width: "100%" }}
             />
           </Box>
 
@@ -345,7 +363,7 @@ export default function ButtonNewService({ idUsuario, createNewOS }) {
             onChange={handleChangeEquipment}
           />
 
-          <InputLabel sx={{ marginTop: "20px" }} id="inventory-label">Selecione os Produtos do Estoque se Necessário (Optional)</InputLabel>
+          <InputLabel sx={{ marginTop: "30px" }} id="inventory-label">Selecione os Produtos do Estoque se Necessário (Optional)</InputLabel>
           <Select
             id="inventory-label"
             isMulti
@@ -365,7 +383,8 @@ export default function ButtonNewService({ idUsuario, createNewOS }) {
               flexDirection: "row",
               width: "100%",
               justifyContent: "center",
-              marginY: "10px",
+              marginY: "20px",
+              marginBottom: "60px",
             }}
           >
             {inventories.length === 0 ? "" : 
@@ -404,28 +423,20 @@ export default function ButtonNewService({ idUsuario, createNewOS }) {
               )
             }
           </Box>
-
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "row",
-              marginY: "10px",
-              marginTop: "30px"
-            }}
+        </DialogContent>
+        <DialogActions>
+          <Button
+            sx={{ marginRight: "10px" }}
+            variant="contained"
+            onClick={handleCreateOs}
           >
-            <Button
-              sx={{ marginRight: "10px" }}
-              variant="contained"
-              onClick={handleCreateOs}
-            >
-              Confirmar
-            </Button>
-            <Button variant="outlined" onClick={handleClose}>
-              Cancelar
-            </Button>
-          </Box>
-        </Box>
-      </Modal>
+            Confirmar
+          </Button>
+          <Button variant="outlined" onClick={handleClose}>
+            Cancelar
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 }
