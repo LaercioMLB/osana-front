@@ -358,39 +358,52 @@ export default function ButtonNewService({ idUsuario, createNewOS }) {
             onChange={handleChangeInventories}
           />
 
-          {inventories.length === 0 ? "" : 
-            inventories.map(produto =>
-              (<Box
-                  component="form"
-                  sx={{
-                    '& .MuiTextField-root': { m: 1, width: '25ch' },
-                  }}
-                  noValidate
-                  autoComplete="off"
-                  key={produto.value}
-                >
-                <TextField
-                  type="number"
-                  helperText={`Quantidade no Estoque: ${produto.quantidadeTotalEstoque}`} 
-                  inputProps={{ inputMode: 'numeric', pattern: '[0-9]*', min: 1, max: produto.quantidadeTotalEstoque}}
-                  label={`${produto.label.split(" - ")[0]}`}
-                  onChange={
-                    event => {
-                      const min = 1;
-                      const max = produto.quantidadeTotalEstoque;
-                      const value = Math.max(min, Math.min(max, Number(event.target.value)));
-                      if (event.target.value > produto.quantidadeTotalEstoque){
-                        event.target.value = value
-                        toast.error(`O máximo do Estoque é ${produto.quantidadeTotalEstoque}`)
+          <Box
+            sx={{
+              display: "flex",
+              flexWrap: "wrap",
+              flexDirection: "row",
+              width: "100%",
+              justifyContent: "center",
+              marginY: "10px",
+            }}
+          >
+            {inventories.length === 0 ? "" : 
+              inventories.map(produto =>
+                (<Box
+                    component="form"
+                    sx={{
+                      '& .MuiTextField-root': { m: 1, width: '25ch' },
+                      'z-index': 0
+                    }}
+                    noValidate
+                    autoComplete="off"
+                    key={produto.value}
+                  >
+                  <TextField
+                    type="number"
+                    sx={{ marginBottom: "10px", width: "33%" }}
+                    helperText={`Quantidade no Estoque: ${produto.quantidadeTotalEstoque}`} 
+                    inputProps={{ inputMode: 'numeric', pattern: '[0-9]*', min: 1, max: produto.quantidadeTotalEstoque}}
+                    label={`${produto.label.split(" - ")[0]}`}
+                    onChange={
+                      event => {
+                        const min = 1;
+                        const max = produto.quantidadeTotalEstoque;
+                        const value = Math.max(min, Math.min(max, Number(event.target.value)));
+                        if (event.target.value > produto.quantidadeTotalEstoque){
+                          event.target.value = value
+                          toast.error(`O máximo do Estoque é ${produto.quantidadeTotalEstoque}`)
+                        }
+                        handlechangeInputInventories(produto.value, value)
                       }
-                      handlechangeInputInventories(produto.value, value)
                     }
-                  }
-                  required
-                />
-              </Box>)
-            )
-          }
+                    required
+                  />
+                </Box>)
+              )
+            }
+          </Box>
 
           <Box
             sx={{
