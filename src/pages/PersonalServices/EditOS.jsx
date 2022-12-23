@@ -1,6 +1,5 @@
 import * as React from "react";
 import Box from "@mui/material/Box";
-import Modal from "@mui/material/Modal";
 import Button from "@mui/material/Button";
 import InputLabel from '@mui/material/InputLabel';
 import { H1 } from "../../components/Text";
@@ -10,20 +9,10 @@ import { MenuItem, TextField } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import Select from 'react-select'
 import { statusObject, priorityObject } from "../../services/staticData"
-
-const style = {
-  display: "flex",
-  flexDirection: "column",
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  bgcolor: "background.paper",
-  border: "none",
-  padding: "20px",
-  borderRadius: "6px",
-  width: "95%",
-};
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
 
 export default function EditOS({ idUsuario, osObj, editOS, handleCloseMenu }) {
   const navigate = useNavigate();
@@ -32,6 +21,7 @@ export default function EditOS({ idUsuario, osObj, editOS, handleCloseMenu }) {
   const [listPriority, setListPriority] = React.useState([]);
   const [listTypeService, setListTypeService] = React.useState([]);
   const [listEquipment, setListEquipment] = React.useState([]);
+  const [listInventories, setListInventories] = React.useState([]);
   const [listStatus, setListStatus] = React.useState([]);
 
   const [client, setClient] = React.useState(0);
@@ -41,6 +31,7 @@ export default function EditOS({ idUsuario, osObj, editOS, handleCloseMenu }) {
   const [motive, setMotive] = React.useState("");
   const [observacoes, setObservacoes] = React.useState("");
   const [equipments, setEquipments] = React.useState([]);
+  const [inventories, setInventories] = React.useState([]);
   const [devolution, setDevolution] = React.useState("");
 
   const handleOpen = () => {
@@ -72,6 +63,18 @@ export default function EditOS({ idUsuario, osObj, editOS, handleCloseMenu }) {
     setEquipments(value);
   };
 
+  const handleChangeInventories = (result) => {
+    setInventories(result);
+  };
+
+  const handlechangeInputInventories = (id_produto, quantity) => {
+    let newList = [...inventories]
+    const index = newList.findIndex((produto) => produto.value === id_produto)
+    let inventorio = newList[index]
+    inventorio.quantity = quantity
+    setInventories(newList);
+  };
+
   const convertData = (data) => {
     if (data){
       var newData = data.split("T")[0]
@@ -92,6 +95,14 @@ export default function EditOS({ idUsuario, osObj, editOS, handleCloseMenu }) {
         label: `${el.name} - ${el.model}`
       }
     }))
+    handleChangeInventories(osObj.outputInventories.map((obj) => {
+      return {
+        value: obj.inventory.id,
+        label: `${obj.inventory.name} - Quantidade: ${obj.inventory.quantity}`,
+        quantidadeTotalEstoque: obj.inventory.quantity,
+        quantity: obj.quantity
+      }
+    }))
     setDevolution(osObj.devolution === null ? "" : convertData(osObj.devolution))
   }
 
@@ -104,6 +115,9 @@ export default function EditOS({ idUsuario, osObj, editOS, handleCloseMenu }) {
 
   const handleUpdateOs = async (event) => {
     event.preventDefault();
+    console.log(inventories.map((inventory) => {
+      return { id: inventory.value, quantity: inventory.quantity }
+    }))
     if (client && prior && typeService && motive){
       await api.put(`/os/${osObj.idOS}`, {
           idUsuario: idUsuario,
@@ -115,7 +129,9 @@ export default function EditOS({ idUsuario, osObj, editOS, handleCloseMenu }) {
           obs: observacoes,
           devolution: devolution,
           equipaments: equipments,
-          inventories: [],
+          inventories: inventories.map((inventory) => {
+            return { id: inventory.value, quantity: inventory.quantity }
+          }),
         }, 
         config
       )
@@ -169,6 +185,30 @@ export default function EditOS({ idUsuario, osObj, editOS, handleCloseMenu }) {
       );
   }
 
+  async function getListinventories(){
+    await api.get(`/inventory/findAll`, config)
+      .then((response) => {
+        let arrayList = response.data.map(el => {
+          return {
+            value: el.id,
+            label: `${el.name} - Quantidade: ${el.quantity}`,
+            quantidadeTotalEstoque: el.quantity,
+            quantity: 0
+          }
+        })
+        setListInventories(arrayList.filter((el) => el.quantidadeTotalEstoque > 0))
+      })
+      .catch((error) => {
+          if (error.response.status === 403){
+            localStorage.clear()
+            navigate("/login")
+          }else{
+            toast.error("Algo deu errado !")
+          }
+        }
+      );
+  }
+
   async function getListServices(){
     await api.get(`/services/findAll`, config)
       .then((response) => {
@@ -190,6 +230,7 @@ export default function EditOS({ idUsuario, osObj, editOS, handleCloseMenu }) {
       getListClientes();
       getListServices();
       getListEquipments();
+      getListinventories();
       setListPriority(priorityObject)
       setListStatus(statusObject)
       setValues();
@@ -201,28 +242,23 @@ export default function EditOS({ idUsuario, osObj, editOS, handleCloseMenu }) {
     <Box>
       <MenuItem onClick={handleOpen}>Editar OS</MenuItem>
 
-      <Modal
+      <Dialog
         open={open}
         onClose={handleClose}
-        sx={{
-          maxWidth: "900px",
-          margin: "auto",
-          overflow: 'scroll',
-        }}
-        disableScrollLock={true}
+        fullWidth={true}
+        maxWidth="lg"
+        scroll="body"
+        aria-labelledby="scroll-dialog-title"
+        aria-describedby="scroll-dialog-description"
       >
-        <Box
-          sx={{
-            ...style,
-          }}
-        >
-          <H1>Editar OS</H1>
+        <DialogTitle id="scroll-dialog-title"><H1>Editar OS</H1></DialogTitle>
+        <DialogContent>
 
           <TextField
             select
             label="Cliente"
             onChange={handleChangeClient}
-            sx={{ marginBottom: "10px" }}
+            sx={{ marginY: "20px", width: "100%" }}
             value={client}
           >
             {listClient.map((option) => (
@@ -239,7 +275,7 @@ export default function EditOS({ idUsuario, osObj, editOS, handleCloseMenu }) {
             value={motive}
             rows={6}
             variant="outlined"
-            sx={{ marginY: "10px" }}
+            sx={{ marginY: "20px" }}
           />
           <TextField
             fullWidth
@@ -249,7 +285,7 @@ export default function EditOS({ idUsuario, osObj, editOS, handleCloseMenu }) {
             value={observacoes}
             rows={6}
             variant="outlined"
-            sx={{ marginY: "10px" }}
+            sx={{ marginY: "20px" }}
           />
           <Box
             sx={{
@@ -257,7 +293,7 @@ export default function EditOS({ idUsuario, osObj, editOS, handleCloseMenu }) {
               flexDirection: "row",
               width: "100%",
               justifyContent: "space-between",
-              marginY: "10px",
+              marginY: "20px",
             }}
           >
             <TextField
@@ -295,7 +331,7 @@ export default function EditOS({ idUsuario, osObj, editOS, handleCloseMenu }) {
               flexDirection: "row",
               width: "100%",
               justifyContent: "space-between",
-              marginY: "10px",
+              marginY: "20px",
             }}
           >
             <TextField
@@ -305,25 +341,25 @@ export default function EditOS({ idUsuario, osObj, editOS, handleCloseMenu }) {
               type="date"
               value={devolution}
               onChange={event => setDevolution(event.target.value)}
-              sx={{ marginBottom: "10px", width: "100%" }}
+              sx={{ marginBottom: "10px", width: "48%" }}
             />
+            <TextField
+              select
+              label="Status"
+              value={status}
+              onChange={handleChangStatus}
+              sx={{ marginBottom: "10px", width: "48%" }}
+            >
+              {listStatus.map((option) => (
+                <MenuItem key={option.id} value={option.id}>
+                  {option.name}
+                </MenuItem>
+              ))}
+            </TextField>
           </Box>
 
-          <TextField
-            select
-            label="Status"
-            value={status}
-            onChange={handleChangStatus}
-            sx={{ marginBottom: "20px", width: "100%" }}
-          >
-            {listStatus.map((option) => (
-              <MenuItem key={option.id} value={option.id}>
-                {option.name}
-              </MenuItem>
-            ))}
-          </TextField>
           
-          <InputLabel id="equipments-label">Selecione os Equipamentos (Optional)</InputLabel>
+          <InputLabel sx={{ marginTop: "30px" }} id="equipments-label">Selecione os Equipamentos (Optional)</InputLabel>
           <Select
             id="equipments-label"
             isMulti
@@ -342,21 +378,82 @@ export default function EditOS({ idUsuario, osObj, editOS, handleCloseMenu }) {
             onChange={handleChangeEquipment}
           />
 
+          <InputLabel sx={{ marginTop: "30px" }} id="inventory-label">Selecione os Produtos do Estoque se Necessário (Optional)</InputLabel>
+          <Select
+            id="inventory-label"
+            isMulti
+            name="inventories"
+            defaultValue={osObj.outputInventories.map((obj) => {
+              return {
+                value: obj.inventory.id,
+                label: `${obj.inventory.name} - Quantidade: ${obj.inventory.quantity}`,
+                quantidadeTotalEstoque: obj.inventory.quantity,
+                quantityInitial: obj.quantity,
+                quantity: obj.quantity
+              }
+            })}
+            options={listInventories}
+            isSearchable={true}
+            isClearable={true}
+            className="basic-multi-select"
+            classNamePrefix="select"
+            onChange={handleChangeInventories}
+          />
+
           <Box
             sx={{
               display: "flex",
+              flexWrap: "wrap",
               flexDirection: "row",
-              marginY: "10px",
-              marginTop: "30px"
+              width: "100%",
+              justifyContent: "center",
+              marginY: "30px",
+              marginBottom: "60px",
             }}
           >
-            <Button sx={{ marginRight: "10px" }} variant="contained" onClick={handleUpdateOs}>
-              Confirmar
-            </Button>
-            <Button variant="outlined" onClick={handleClose}>Cancelar</Button>
+            {inventories.length === 0 ? "" : 
+              inventories.map(produto =>
+                (<Box
+                    component="form"
+                    sx={{
+                      '& .MuiTextField-root': { m: 1, width: '25ch' },
+                    }}
+                    noValidate
+                    autoComplete="off"
+                    key={produto.value}
+                  >
+                  <TextField
+                    type="number"
+                    helperText={`Quantidade no Estoque: ${produto.quantidadeTotalEstoque}`} 
+                    inputProps={{ inputMode: 'numeric', pattern: '[0-9]*', min: 1, max: produto.quantidadeTotalEstoque}}
+                    label={`${produto.label.split(" - ")[0]}`}
+                    defaultValue={produto.quantity}
+                    onChange={
+                      event => {
+                        const min = 1;
+                        const max = produto.quantidadeTotalEstoque;
+                        const value = Math.max(min, Math.min(max, Number(event.target.value)));
+                        if (event.target.value > produto.quantidadeTotalEstoque && event.target.value > produto.quantityInitial){
+                          event.target.value = value
+                          toast.error(`O máximo do Estoque é ${produto.quantidadeTotalEstoque}`)
+                        }
+                        handlechangeInputInventories(produto.value, Number(event.target.value))
+                      }
+                    }
+                    required
+                  />
+                </Box>)
+              )
+            }
           </Box>
-        </Box>
-      </Modal>
+        </DialogContent>
+        <DialogActions>
+          <Button sx={{ marginRight: "10px" }} variant="contained" onClick={handleUpdateOs}>
+            Confirmar
+          </Button>
+          <Button variant="outlined" onClick={handleClose}>Cancelar</Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 }

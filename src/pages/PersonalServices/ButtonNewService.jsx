@@ -1,6 +1,5 @@
 import * as React from "react";
 import Box from "@mui/material/Box";
-import Modal from "@mui/material/Modal";
 import Button from "@mui/material/Button";
 import AddIcon from "@mui/icons-material/Add";
 import { H1 } from "../../components/Text";
@@ -11,20 +10,10 @@ import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from 'react-toastify';
 import Select from 'react-select'
 import { priorityObject } from "../../services/staticData"
-
-const style = {
-  display: "flex",
-  flexDirection: "column",
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  bgcolor: "background.paper",
-  border: "none",
-  padding: "20px",
-  borderRadius: "6px",
-  width: "95%",
-};
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
 
 export default function ButtonNewService({ idUsuario, createNewOS }) {
   const navigate = useNavigate();
@@ -33,6 +22,7 @@ export default function ButtonNewService({ idUsuario, createNewOS }) {
   const [listPriority, setListPriority] = React.useState([]);
   const [listTypeService, setListTypeService] = React.useState([]);
   const [listEquipment, setListEquipment] = React.useState([]);
+  const [listInventories, setListInventories] = React.useState([]);
 
   const [client, setClient] = React.useState("");
   const [prior, setPrior] = React.useState("");
@@ -40,6 +30,7 @@ export default function ButtonNewService({ idUsuario, createNewOS }) {
   const [motive, setMotive] = React.useState("");
   const [observacoes, setObservacoes] = React.useState("");
   const [equipments, setEquipments] = React.useState([]);
+  const [inventories, setInventories] = React.useState([]);
   const [devolution, setDevolution] = React.useState('');
 
   const handleOpen = () => {
@@ -50,6 +41,7 @@ export default function ButtonNewService({ idUsuario, createNewOS }) {
     setMotive('')
     setObservacoes('')
     setEquipments([])
+    setInventories([])
     setDevolution('')
   };
   const handleClose = () => {
@@ -73,6 +65,18 @@ export default function ButtonNewService({ idUsuario, createNewOS }) {
     setEquipments(value);
   };
 
+  const handleChangeInventories = (result) => {
+    setInventories(result);
+  };
+
+  const handlechangeInputInventories = (id_produto, quantity) => {
+    let newList = [...inventories]
+    const index = newList.findIndex((produto) => produto.value === id_produto)
+    let inventorio = newList[index]
+    inventorio.quantity = quantity
+    setInventories(newList);
+  };
+
   const config = {
     headers: {
       Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -92,7 +96,9 @@ export default function ButtonNewService({ idUsuario, createNewOS }) {
           obs: observacoes,
           devolution: devolution,
           equipaments: equipments,
-          inventories: [],
+          inventories: inventories.map((inventory) => {
+            return { id: inventory.value, quantity: inventory.quantity }
+          }),
         }, 
         config
       )
@@ -144,6 +150,30 @@ export default function ButtonNewService({ idUsuario, createNewOS }) {
       });
   }
 
+  async function getListinventories(){
+    await api.get(`/inventory/findAll`, config)
+      .then((response) => {
+        let arrayList = response.data.map(el => {
+          return {
+            value: el.id,
+            label: `${el.name} - Quantidade: ${el.quantity}`,
+            quantidadeTotalEstoque: el.quantity,
+            quantity: 0
+          }
+        })
+        setListInventories(arrayList.filter((el) => el.quantidadeTotalEstoque > 0))
+      })
+      .catch((error) => {
+          if (error.response.status === 403){
+            localStorage.clear()
+            navigate("/login")
+          }else{
+            toast.error("Algo deu errado !")
+          }
+        }
+      );
+  }
+
   async function getListServices(){
     await api.get(`/services/findAll`, config)
       .then((response) => {
@@ -164,6 +194,7 @@ export default function ButtonNewService({ idUsuario, createNewOS }) {
       getListClientes();
       getListServices();
       getListEquipments();
+      getListinventories();
       setListPriority(priorityObject)
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -182,53 +213,18 @@ export default function ButtonNewService({ idUsuario, createNewOS }) {
 
       <ToastContainer />
 
-      <Modal
+      <Dialog
         open={open}
         onClose={handleClose}
-        sx={{
-          maxWidth: "900px",
-          margin: "auto",
-          overflow: 'scroll',
-        }}
+        fullWidth={true}
+        maxWidth="lg"
+        scroll="body"
+        aria-labelledby="scroll-dialog-title"
+        aria-describedby="scroll-dialog-description"
       >
-        <Box
-          sx={{
-            ...style,
-          }}
-        >
-          <H1>Nova OS</H1>
+        <DialogTitle id="scroll-dialog-title"><H1>Nova OS</H1></DialogTitle>
+        <DialogContent>
 
-          <TextField
-            select
-            label="Cliente"
-            onChange={handleChangeClient}
-            sx={{ marginBottom: "10px" }}
-            value={client}
-          >
-            {listClient.map((option) => (
-              <MenuItem key={option.id} value={option.id}>
-                {option.firstName} {option.lastName}
-              </MenuItem>
-            ))}
-          </TextField>
-          <TextField
-            fullWidth
-            label="Motivo"
-            onChange={(event) => setMotive(event.target.value)}
-            multiline
-            rows={6}
-            variant="outlined"
-            sx={{ marginY: "10px" }}
-          />
-          <TextField
-            fullWidth
-            label="Observações"
-            onChange={(event) => setObservacoes(event.target.value)}
-            multiline
-            rows={6}
-            variant="outlined"
-            sx={{ marginY: "10px" }}
-          />
           <Box
             sx={{
               display: "flex",
@@ -236,6 +232,70 @@ export default function ButtonNewService({ idUsuario, createNewOS }) {
               width: "100%",
               justifyContent: "space-between",
               marginY: "10px",
+            }}
+          >
+            <TextField
+              select
+              label="Cliente"
+              onChange={handleChangeClient}
+              sx={{ marginBottom: "10px", width: "100%" }}
+              value={client}
+            >
+              {listClient.map((option) => (
+                <MenuItem key={option.id} value={option.id}>
+                  {option.firstName} {option.lastName}
+                </MenuItem>
+              ))}
+            </TextField>
+          </Box>
+
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "row",
+              width: "100%",
+              justifyContent: "space-between",
+              marginY: "10px",
+            }}
+          >
+            <TextField
+              fullWidth
+              label="Motivo"
+              onChange={(event) => setMotive(event.target.value)}
+              multiline
+              rows={6}
+              variant="outlined"
+              sx={{ marginY: "10px" }}
+            />
+          </Box>
+
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "row",
+              width: "100%",
+              justifyContent: "space-between",
+              marginY: "10px",
+            }}
+          >
+            <TextField
+              fullWidth
+              label="Observações"
+              onChange={(event) => setObservacoes(event.target.value)}
+              multiline
+              rows={6}
+              variant="outlined"
+              sx={{ marginY: "10px" }}
+            />
+          </Box>
+
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "row",
+              width: "100%",
+              justifyContent: "space-between",
+              marginY: "20px",
             }}
           >
             <TextField
@@ -286,7 +346,7 @@ export default function ButtonNewService({ idUsuario, createNewOS }) {
               type="date"
               defaultValue=""
               onChange={(event) => setDevolution(event.target.value)}
-              sx={{ marginBottom: "10px", width: "100%" }}
+              sx={{ marginBottom: "20px", width: "100%" }}
             />
           </Box>
 
@@ -303,27 +363,80 @@ export default function ButtonNewService({ idUsuario, createNewOS }) {
             onChange={handleChangeEquipment}
           />
 
+          <InputLabel sx={{ marginTop: "30px" }} id="inventory-label">Selecione os Produtos do Estoque se Necessário (Optional)</InputLabel>
+          <Select
+            id="inventory-label"
+            isMulti
+            name="inventories"
+            options={listInventories}
+            isSearchable={true}
+            isClearable={true}
+            className="basic-multi-select"
+            classNamePrefix="select"
+            onChange={handleChangeInventories}
+          />
+
           <Box
             sx={{
               display: "flex",
+              flexWrap: "wrap",
               flexDirection: "row",
-              marginY: "10px",
-              marginTop: "30px"
+              width: "100%",
+              justifyContent: "center",
+              marginY: "20px",
+              marginBottom: "60px",
             }}
           >
-            <Button
-              sx={{ marginRight: "10px" }}
-              variant="contained"
-              onClick={handleCreateOs}
-            >
-              Confirmar
-            </Button>
-            <Button variant="outlined" onClick={handleClose}>
-              Cancelar
-            </Button>
+            {inventories.length === 0 ? "" : 
+              inventories.map(produto =>
+                (<Box
+                    component="form"
+                    sx={{
+                      '& .MuiTextField-root': { m: 1, width: '25ch' },
+                      'z-index': 0
+                    }}
+                    noValidate
+                    autoComplete="off"
+                    key={produto.value}
+                  >
+                  <TextField
+                    type="number"
+                    sx={{ marginBottom: "10px", width: "33%" }}
+                    helperText={`Quantidade no Estoque: ${produto.quantidadeTotalEstoque}`} 
+                    inputProps={{ inputMode: 'numeric', pattern: '[0-9]*', min: 1, max: produto.quantidadeTotalEstoque}}
+                    label={`${produto.label.split(" - ")[0]}`}
+                    onChange={
+                      event => {
+                        const min = 1;
+                        const max = produto.quantidadeTotalEstoque;
+                        const value = Math.max(min, Math.min(max, Number(event.target.value)));
+                        if (event.target.value > produto.quantidadeTotalEstoque){
+                          event.target.value = value
+                          toast.error(`O máximo do Estoque é ${produto.quantidadeTotalEstoque}`)
+                        }
+                        handlechangeInputInventories(produto.value, value)
+                      }
+                    }
+                    required
+                  />
+                </Box>)
+              )
+            }
           </Box>
-        </Box>
-      </Modal>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            sx={{ marginRight: "10px" }}
+            variant="contained"
+            onClick={handleCreateOs}
+          >
+            Confirmar
+          </Button>
+          <Button variant="outlined" onClick={handleClose}>
+            Cancelar
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 }
