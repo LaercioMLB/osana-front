@@ -9,27 +9,22 @@ import {
   TableRow,
 } from "@mui/material";
 import PropTypes from 'prop-types';
-import { H1 } from "../../components/Text";
-import ButtonNewClient from "./ButtonNewClient";
-import DeleteClient from "./DeleteClient";
-import EditClient from "./EditClient";
-import ViewClient from "./ViewClient";
+import { H1 } from "../../../components/Text";
+import ButtonNewEquipment from "../Buttons/ButtonNewEquipment";
+import DeleteEquipment from "../Modals/Equipments/DeleteEquipment";
+import EditEquipment from "../Modals/Equipments/EditEquipment";
+import ViewEquipment from "../Modals/Equipments/ViewEquipment";
 import Paper from '@mui/material/Paper';
-import api from "../../services/api";
+import api from "../../../services/api";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
-import { useContext } from "react";
-import FilterContext from "../../context/FilterContext";
+// import { useContext } from "react";
+// import FilterContext from "../../context/FilterContext";
 import Menu from "@mui/material/Menu";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import TablePagination from '@mui/material/TablePagination';
 import TableSortLabel from '@mui/material/TableSortLabel';
 import { visuallyHidden } from '@mui/utils';
-import Radio from '@mui/material/Radio';
-import RadioGroup from '@mui/material/RadioGroup';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import FormControl from '@mui/material/FormControl';
-import FormLabel from '@mui/material/FormLabel';
 import SearchIcon from '@mui/icons-material/Search';
 import IconButton from '@mui/material/IconButton';
 import InputAdornment from '@mui/material/InputAdornment';
@@ -53,34 +48,16 @@ function getComparator(order, orderBy) {
 
 const headCells = [
   {
-    id: 'firstName',
+    id: 'name',
     numeric: false,
     disablePadding: false,
-    label: 'Nome',
+    label: 'Nome do Equipamento',
   },
   {
-    id: 'email',
+    id: 'model',
     numeric: false,
     disablePadding: false,
-    label: 'E-mail',
-  },
-  {
-    id: 'phone',
-    numeric: false,
-    disablePadding: false,
-    label: 'Contato (Phone)',
-  },
-  {
-    id: 'contract',
-    numeric: false,
-    disablePadding: false,
-    label: 'Contrato',
-  },
-  {
-    id: 'cnpj',
-    numeric: false,
-    disablePadding: false,
-    label: 'CNPJ/CPF',
+    label: 'Modelo do Equipamento',
   },
   {
     id: 'actions',
@@ -90,7 +67,7 @@ const headCells = [
   },
 ];
 
-function PositionedMenu({ row, deleteClient, editClient }) {
+function PositionedMenu({ row, deleteEquipment, editEquipment }) {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
@@ -120,9 +97,9 @@ function PositionedMenu({ row, deleteClient, editClient }) {
           "aria-labelledby": "basic-button",
         }}
       >
-        <ViewClient client={row} handleCloseMenu={handleClose}/>
-        <EditClient client={row} editClient={editClient} handleCloseMenu={handleClose}/>
-        <DeleteClient idClient={row.id} nameCliente={row.firstName} deleteClient={deleteClient} handleCloseMenu={handleClose}/>
+        <ViewEquipment equipment={row} handleCloseMenu={handleClose}/>
+        <EditEquipment equipment={row} editEquipment={editEquipment} handleCloseMenu={handleClose}/>
+        <DeleteEquipment idEquipment={row.id} nameEquipment={row.name} deleteEquipment={deleteEquipment} handleCloseMenu={handleClose}/>
       </Menu>
     </div>
   );
@@ -170,31 +147,30 @@ EnhancedTableHead.propTypes = {
   orderBy: PropTypes.string.isRequired,
 };
 
-function Client() {
+function TableServices() {
   const navigate = useNavigate();
-  const [filterData] = useContext(FilterContext);
+  // const [filterData] = useContext(FilterContext);
   const [order, setOrder] = useState('asc');
-  const [orderBy, setOrderBy] = useState('firstName');
+  const [orderBy, setOrderBy] = useState('name');
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [numberOfElements, setNumberOfElements] = useState(0);
   const [rows, setRows] = useState([]);
   const [textSearch, setTextSearch] = useState("");
-  const [radioValue, setRadioValue] = useState("name");
 
-  const createNewClient = () => {
-    getClients({ size: rowsPerPage, page: page })
+  const createNewEquipment = () => {
+    getEquipments({ size: rowsPerPage, page: page })
   }
 
-  const deleteClient = () => {
-    getClients({ size: rowsPerPage, page: page })
+  const deleteEquipment = () => {
+    getEquipments({ size: rowsPerPage, page: page })
   }
 
-  const editClient = (editedClient) => {
-    const index = rows.findIndex((cliente) => cliente.id === editedClient.id)
-    let newListClients = [...rows]
-    newListClients[index] = editedClient
-    setRows(newListClients);
+  const editEquipment = (editedEquipment) => {
+    const index = rows.findIndex((equipment) => equipment.id === editedEquipment.id)
+    let newListEquipments = [...rows]
+    newListEquipments[index] = editedEquipment
+    setRows(newListEquipments);
   }
 
   const config = {
@@ -203,8 +179,8 @@ function Client() {
     },
   };
 
-  async function getClients({ size, page }){
-    await api.get(`/client?size=${size}&page=${page}`, config)
+  async function getEquipments({ size, page }){
+    await api.get(`/equipment?size=${size}&page=${page}`, config)
       .then((response) => {
         setRows(response.data.content)
         setNumberOfElements(response.data.totalElements)
@@ -222,35 +198,8 @@ function Client() {
       );
   }
 
-  async function getClientsFilter({ size, page, filter }){
-    await api.get(`/client/clientFindByContract?size=${size}&page=${page}&contract=${filter}`, config)
-      .then((response) => {
-        setRows(response.data.content)
-        setNumberOfElements(response.data.totalElements)
-        setPage(response.data.number)
-        setRowsPerPage(response.data.size)
-      })
-      .catch((error) => {
-          if (error.response.status === 403){
-            localStorage.clear()
-            navigate("/login")
-          }else{
-            toast.error("Algo deu errado !")
-          }
-        }
-      );
-  }
-
-  async function getClientsSearch({ size, page, text }){
-    let url = ""
-
-    if (radioValue === 'cpf'){
-      url = `/client/filterClient?size=${size}&page=${page}&cnpj=${text}`
-    }else if (radioValue === 'name'){
-      url = `/client/filterClient?size=${size}&page=${page}&name=${text}`
-    }
-
-    await api.get(url, config)
+  async function getEquipmentsSearch({ size, page, name }){
+    await api.get(`/equipment/findEquipmentByName?size=${size}&page=${page}&name=${name}`, config)
       .then((response) => {
         setRows(response.data.content)
         setNumberOfElements(response.data.totalElements)
@@ -270,21 +219,10 @@ function Client() {
 
   useEffect(() => {
     if (localStorage.getItem("token")) {
-      getClients({ size: 5, page: 0 });
+      getEquipments({ size: 5, page: 0 });
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  useEffect(() => {
-    if(filterData.tabSelected === 0 && filterData.filters.length > 0){
-      if (filterData.filters === "all"){
-        getClients({ size: 5, page: 0 });
-      }else{
-        getClientsFilter({ size: rowsPerPage, page: 0, filter: filterData.filters });
-      }
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filterData]);
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -293,23 +231,19 @@ function Client() {
   };
 
   const handleChangePage = (event, newPage) => {
-    getClients({ size: rowsPerPage, page: newPage });
+    getEquipments({ size: rowsPerPage, page: newPage });
   };
 
   const handleChangeRowsPerPage = (event) => {
-    getClients({ size: parseInt(event.target.value, 10), page: 0 });
+    getEquipments({ size: parseInt(event.target.value, 10), page: 0 });
   };
 
   const handleSearch = () => {
     if (textSearch.length > 0){
-      getClientsSearch({ size: rowsPerPage, page: 0, text: textSearch });
+      getEquipmentsSearch({ size: rowsPerPage, page: 0, name: textSearch });
     }else{
-      getClients({ size: rowsPerPage, page: 0 });
+      getEquipments({ size: rowsPerPage, page: 0 });
     }
-  };
-
-  const handleChangeRadio = (event) => {
-    setRadioValue(event.target.value)
   };
 
   return (
@@ -323,43 +257,32 @@ function Client() {
           alignItems: "center",
         }}
       >
-        <FormControl sx={{ width: '310px' }}>
-          <FormLabel id="demo-row-radio-buttons-group-label">Tipo da Pesquisa</FormLabel>
-          <RadioGroup
-            row
-            aria-labelledby="demo-row-radio-buttons-group-label"
-            name="row-radio-buttons-group"
-            value={radioValue}
-            onChange={handleChangeRadio}
-          >
-            <FormControlLabel value="cpf" control={<Radio />} label="CNPJ/CPF" />
-            <FormControlLabel value="name" control={<Radio />} label="Nome do Cliente" />
-          </RadioGroup>
-          <TextField
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton size="large" aria-label="search" color="inherit" onClick={handleSearch}>
-                    <SearchIcon />
-                  </IconButton>
-                </InputAdornment>
-              ),
-            }}
-            fullWidth
-            label={radioValue === 'name' ? "Pesquisar Pelo Nome do Cliente" : "Pesquisar Pelo CPF ou CNPJ"}
-            placeholder={radioValue === 'name' ? "Digite o Nome do Cliente" : "Digite o CPF ou CNPJ"}
-            sx={{ marginY: "20px" }}
-            value={textSearch}
-            onChange={event => setTextSearch(event.target.value)}
-            onKeyDown={event => {
-              if(event.key === 'Enter'){
-                handleSearch();
-              }
-            }}
-          />
-        </FormControl>
-        <ButtonNewClient createNewClient={createNewClient} />
+        <H1>Equipamentos</H1>
+        <ButtonNewEquipment createNewEquipment={createNewEquipment} />
       </Box>
+      
+      <TextField
+        InputProps={{
+          endAdornment: (
+            <InputAdornment position="end">
+              <IconButton size="large" aria-label="search" color="inherit" onClick={handleSearch}>
+                <SearchIcon />
+              </IconButton>
+            </InputAdornment>
+          ),
+        }}
+        fullWidth
+        label="Pesquisar Pelo Nome"
+        placeholder="Digite o Nome do Equipamento"
+        sx={{ marginY: "20px" }}
+        value={textSearch}
+        onChange={event => setTextSearch(event.target.value)}
+        onKeyDown={event => {
+          if(event.key === 'Enter'){
+            handleSearch();
+          }
+        }}
+      />
 
       <Box sx={{ width: '100%' }}>
         <Paper sx={{ width: '100%', mb: 2 }}>
@@ -390,14 +313,13 @@ function Client() {
                           id={labelId}
                           scope="row"
                         >
-                          {row.firstName} {row.lastName}
+                          {row.name}
                         </TableCell>
-                        <TableCell align="left">{row.email}</TableCell>
-                        <TableCell align="left">{row.phone}</TableCell>
-                        <TableCell align="left">{row.contract === 'true' ? "Tem Contrato" : "Não Tem Contrato"}</TableCell>
-                        <TableCell align="left">{row.cnpj}</TableCell>
                         <TableCell align="left">
-                          <PositionedMenu row={row} deleteClient={deleteClient} editClient={editClient}/>
+                          {row.model}
+                        </TableCell>
+                        <TableCell align="left">
+                          <PositionedMenu row={row} deleteEquipment={deleteEquipment} editEquipment={editEquipment}/>
                         </TableCell>
                       </TableRow>
                     );
@@ -420,4 +342,4 @@ function Client() {
   );
 }
 
-export default Client;
+export default TableServices;

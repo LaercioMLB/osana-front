@@ -5,10 +5,13 @@ import {
   Divider,
   FormControlLabel,
   FormGroup,
-  TextField,
 } from "@mui/material";
 import { useContext } from "react";
 import FilterContext from "../../context/FilterContext";
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
+import FormControl from '@mui/material/FormControl';
+import FormLabel from '@mui/material/FormLabel';
 
 export default function Filter() {
   const [filterData, setFilterData] = useContext(FilterContext);
@@ -26,6 +29,11 @@ export default function Filter() {
     }
   };
 
+  const handleChangeRadio = (event) => {
+    let { tabSelected, searchText } = filterData;
+    setFilterData({ tabSelected, filters: event.target.value, searchText });
+  };
+
   return (
     <Box
       sx={{
@@ -39,54 +47,49 @@ export default function Filter() {
       <Box
         component="img"
         src="/images/logo-infoclinica.png"
-        sx={{ width: "150px" }}
-      />
-      <TextField
-        fullWidth
-        label="Pesquisar"
-        placeholder="O que procura?"
-        value={filterData.searchText}
-        onChange={event => setFilterData({...filterData, searchText: event.target.value})}
-        sx={{ marginY: "30px" }}
+        sx={{ width: "150px", marginBottom: "60px" }}
       />
 
       {filterData.tabSelected === 0 && (
-        <FormGroup>
-          <FormControlLabel
-            control={<Checkbox onChange={handleChangeFilter("true")} />}
-            label="Com contrato"
-          />
-          <FormControlLabel
-            control={<Checkbox onChange={handleChangeFilter("false")} />}
-            label="Sem contrato"
-          />
-        </FormGroup>
+        <FormControl>
+          <FormLabel id="demo-controlled-radio-buttons-group">Contratos</FormLabel>
+          <RadioGroup
+            aria-labelledby="demo-controlled-radio-buttons-group"
+            name="controlled-radio-buttons-group"
+            value={filterData.filters}
+            onChange={handleChangeRadio}
+          >
+            <FormControlLabel value="true" control={<Radio />} label="Com Contrato" />
+            <FormControlLabel value="false" control={<Radio />} label="Sem Contrato" />
+            <FormControlLabel value="all" control={<Radio />} label="Todos" />
+          </RadioGroup>
+        </FormControl>  
       )}
       {filterData.tabSelected === 1 && (
         <FormGroup>
           <FormControlLabel
-            control={<Checkbox onChange={handleChangeFilter("Aberto")} />}
+            control={<Checkbox onChange={handleChangeFilter("status-3")} />}
             label="Aberto"
           />
           <FormControlLabel
-            control={<Checkbox onChange={handleChangeFilter("Andamento")} />}
+            control={<Checkbox onChange={handleChangeFilter("status-1")} />}
             label="Andamento"
           />
           <FormControlLabel
-            control={<Checkbox onChange={handleChangeFilter("Finalizado")} />}
+            control={<Checkbox onChange={handleChangeFilter("status-2")} />}
             label="Finalizado"
           />
           <Divider sx={{ marginY: "10px" }} />
           <FormControlLabel
-            control={<Checkbox onChange={handleChangeFilter("Baixa")} />}
+            control={<Checkbox onChange={handleChangeFilter("priority-2")} />}
             label="Baixa"
           />
           <FormControlLabel
-            control={<Checkbox onChange={handleChangeFilter("Alta")} />}
+            control={<Checkbox onChange={handleChangeFilter("priority-1")} />}
             label="Alta"
           />
           <FormControlLabel
-            control={<Checkbox onChange={handleChangeFilter("Urgente")} />}
+            control={<Checkbox onChange={handleChangeFilter("priority-3")} />}
             label="Urgente"
           />
         </FormGroup>
@@ -94,28 +97,28 @@ export default function Filter() {
       {filterData.tabSelected === 2 && (
         <FormGroup>
           <FormControlLabel
-            control={<Checkbox onChange={handleChangeFilter("Aberto")} />}
+            control={<Checkbox onChange={handleChangeFilter("status-3")} />}
             label="Aberto"
           />
           <FormControlLabel
-            control={<Checkbox onChange={handleChangeFilter("Andamento")} />}
+            control={<Checkbox onChange={handleChangeFilter("status-1")} />}
             label="Andamento"
           />
           <FormControlLabel
-            control={<Checkbox onChange={handleChangeFilter("Finalizado")} />}
+            control={<Checkbox onChange={handleChangeFilter("status-2")} />}
             label="Finalizado"
           />
           <Divider sx={{ marginY: "10px" }} />
           <FormControlLabel
-            control={<Checkbox onChange={handleChangeFilter("Baixa")} />}
+            control={<Checkbox onChange={handleChangeFilter("priority-2")} />}
             label="Baixa"
           />
           <FormControlLabel
-            control={<Checkbox onChange={handleChangeFilter("Alta")} />}
+            control={<Checkbox onChange={handleChangeFilter("priority-1")} />}
             label="Alta"
           />
           <FormControlLabel
-            control={<Checkbox onChange={handleChangeFilter("Urgente")} />}
+            control={<Checkbox onChange={handleChangeFilter("priority-3")} />}
             label="Urgente"
           />
         </FormGroup>

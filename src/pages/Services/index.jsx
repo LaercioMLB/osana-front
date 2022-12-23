@@ -20,6 +20,7 @@ import DeleteOS from "../PersonalServices/DeleteOS";
 import EditOS from "../PersonalServices/EditOS";
 import ViewOS from "../PersonalServices/ViewOS";
 import { StatusCell, PrioridadeCell } from "./styles";
+import FilterContext from "../../context/FilterContext";
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -176,18 +177,18 @@ export default function Services({ idUsuario }) {
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [numberOfElements, setNumberOfElements] = React.useState(0);
   const [rows, setRows] = React.useState([]);
+  const [filterData] = React.useContext(FilterContext);
 
-  const deleteOS = (deletedOSId) => {
-    setRows(rows.filter((os) => os.idOS !== deletedOSId))
-    let number = numberOfElements - 1;
-    setNumberOfElements(number)
+  const deleteOS = () => {
+    getListOs({ size: rowsPerPage, page: page })
   }
   
   const editOS = (editedOS) => {
-    const newListOs = rows.filter((os) => os.idOS !== editedOS.idOS)
-    setRows([...newListOs, editedOS])
+    const index = rows.findIndex((os) => os.idOS === editedOS.idOS)
+    let newListOs = [...rows]
+    newListOs[index] = editedOS
+    setRows(newListOs);
   }
-
   const config = {
     headers: {
       "Authorization": `Bearer ${localStorage.getItem('token')}`,
@@ -213,11 +214,46 @@ export default function Services({ idUsuario }) {
       );
   }
 
-  React.useEffect(() => {
-    if (localStorage.getItem('token')){
+  async function getListOsSearch({ size, page, status, priority }){
+    let url = ""
+    let statusValues = status.map((value) => value.split("-")[1])
+    let priorityValues = priority.map((value) => value.split("-")[1])
+
+    if (status.length > 0 && priority.length > 0){
+      url = `/os/filterOs?size=${size}&page=${page}&status=${statusValues}&priority=${priorityValues}`
+    }else if(priority.length > 0){
+      url = `/os/filterOs?size=${size}&page=${page}&priority=${priorityValues}`
+    }else{
+      url = `/os/filterOs?size=${size}&page=${page}&status=${statusValues}`
+    }
+    await api.get(url, config)
+      .then((response) => {
+        setRows(response.data.content)
+        setNumberOfElements(response.data.totalElements)
+        setPage(response.data.number)
+        setRowsPerPage(response.data.size)
+      })
+      .catch((error) => {
+          if (error.response.status === 403){
+            localStorage.clear()
+            navigate("/login")
+          }else{
+            toast.error("Algo deu errado !")
+          }
+        }
+      );
+  }
+
+  React.useEffect(()=>{
+    if(filterData.tabSelected === 2 && filterData.filters.length > 0){
+      let status = filterData.filters.filter((status) => status.includes("status"))
+      let prioridade = filterData.filters.filter((priority) => priority.includes("priority"))
+      getListOsSearch({ size: rowsPerPage, page: 0, status: status, priority: prioridade })
+    }else if (filterData.tabSelected === 2 && filterData.filters.length === 0){
       getListOs({ size: 5, page: 0 });
     }
-  }, [])
+    // eslint-disable-next-line
+  }, [filterData])
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -316,6 +352,7 @@ export default function Services({ idUsuario }) {
                         </PrioridadeCell>
                       </TableCell>
                       <TableCell align="left">{row.typeServices.services}</TableCell>
+
                       <TableCell align="left">{row.client.firstName}</TableCell>
                       <TableCell align="left">
                         <PositionedMenu row={row} idUsuario={idUsuario} deleteOS={deleteOS} editOS={editOS}/>

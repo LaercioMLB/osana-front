@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   Box,
   Table,
@@ -9,6 +9,7 @@ import {
   TableRow,
 } from "@mui/material";
 import { H1 } from "../../components/Text";
+
 import { StatusCell, PrioridadeCell } from "./styles";
 import ButtonNewService from "./ButtonNewService";
 import api from "../../services/api";
@@ -19,7 +20,7 @@ import TableSortLabel from '@mui/material/TableSortLabel';
 import DeleteOS from "./DeleteOS";
 import ViewOS from "./ViewOS";
 import EditOS from "./EditOS";
-// import FilterContext from "../../context/FilterContext";
+import FilterContext from "../../context/FilterContext";
 import { visuallyHidden } from '@mui/utils';
 import PropTypes from 'prop-types';
 import { useNavigate } from "react-router-dom";
@@ -203,7 +204,7 @@ EnhancedTableHead.propTypes = {
 
 function PersonalServices({ idUsuario }) {
   const navigate = useNavigate();
-  // const [filterData] = useContext(FilterContext);
+  const [filterData] = useContext(FilterContext);
   const [order, setOrder] = useState('asc');
   const [orderBy, setOrderBy] = useState('dateOS');
   const [page, setPage] = useState(0);
@@ -211,22 +212,21 @@ function PersonalServices({ idUsuario }) {
   const [numberOfElements, setNumberOfElements] = useState(0);
   const [rows, setRows] = useState([]);
 
-  const createNewOS = (newOSData) => {
-    setRows([...rows, newOSData])
-    let number = numberOfElements + 1;
-    setNumberOfElements(number)
+  const createNewOS = () => {
+    getListMyOs({ size: rowsPerPage, page: page })
   }
 
-  const deleteOS = (deletedOSId) => {
-    setRows(rows.filter((os) => os.idOS !== deletedOSId))
-    let number = numberOfElements - 1;
-    setNumberOfElements(number)
+  const deleteOS = () => {
+    getListMyOs({ size: rowsPerPage, page: page })
   }
   
   const editOS = (editedOS) => {
-    const newListOs = rows.filter((os) => os.idOS !== editedOS.idOS)
-    setRows([...newListOs, editedOS])
+    const index = rows.findIndex((os) => os.idOS === editedOS.idOS)
+    let newListOs = [...rows]
+    newListOs[index] = editedOS
+    setRows(newListOs);
   }
+
 
   const convertData = (data) => {
     if (data){
@@ -275,12 +275,46 @@ function PersonalServices({ idUsuario }) {
       );
   }
 
+  async function getListMyOsSearch({ size, page, status, priority }){
+    let url = ""
+    let statusValues = status.map((value) => value.split("-")[1])
+    let priorityValues = priority.map((value) => value.split("-")[1])
+
+    if (status.length > 0 && priority.length > 0){
+      url = `/os/filterOs?size=${size}&page=${page}&status=${statusValues}&priority=${priorityValues}`
+    }else if(priority.length > 0){
+      url = `/os/filterOs?size=${size}&page=${page}&priority=${priorityValues}`
+    }else{
+      url = `/os/filterOs?size=${size}&page=${page}&status=${statusValues}`
+    }
+    await api.get(url, config)
+      .then((response) => {
+        setRows(response.data.content)
+        setNumberOfElements(response.data.totalElements)
+        setPage(response.data.number)
+        setRowsPerPage(response.data.size)
+      })
+      .catch((error) => {
+          if (error.response.status === 403){
+            localStorage.clear()
+            navigate("/login")
+          }else{
+            toast.error("Algo deu errado !")
+          }
+        }
+      );
+  }
+
   useEffect(()=>{
-    if (localStorage.getItem('token')){
+    if(filterData.tabSelected === 1 && filterData.filters.length > 0){
+      let status = filterData.filters.filter((status) => status.includes("status"))
+      let prioridade = filterData.filters.filter((priority) => priority.includes("priority"))
+      getListMyOsSearch({ size: rowsPerPage, page: 0, status: status, priority: prioridade })
+    }else if (filterData.tabSelected === 1 && filterData.filters.length === 0){
       getListMyOs({ size: 5, page: 0 });
     }
     // eslint-disable-next-line
-  }, [])
+  }, [filterData])
 
   return (
     <>

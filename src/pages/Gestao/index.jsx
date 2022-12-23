@@ -1,109 +1,66 @@
-import React from "react";
-import {
-  Box,
-  Button,
-  Divider,
-  FormControl,
-  IconButton,
-  InputAdornment,
-  InputLabel,
-  OutlinedInput,
-  TextField,
-} from "@mui/material";
-import { H1 } from "../../components/Text";
-import Visibility from "@mui/icons-material/Visibility";
-import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import { useState } from "react";
+import React, { useState, useContext } from "react";
+import { Box, Tab, Tabs, Typography } from "@mui/material";
+import TableUsers from "./Tables/TableUsers";
+import TableServices from "./Tables/TableServices";
+import TableEquipment from "./Tables/TableEquipment";
+import TableEstoque from "./Tables/TableEstoque";
+import FilterContext from "../../context/FilterContext";
+
+function TabPanel(props) {
+  const { children, value, index, ...other } = props;
+
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`simple-tabpanel-${index}`}
+      aria-labelledby={`simple-tab-${index}`}
+      {...other}
+    >
+      {value === index && (
+        <Box sx={{}}>
+          <Typography component={'div'}>{children}</Typography>
+        </Box>
+      )}
+    </div>
+  );
+}
+
+function a11yProps(index) {
+  return {
+    id: `simple-tab-${index}`,
+    "aria-controls": `simple-tabpanel-${index}`,
+  };
+}
 
 function Gestao() {
-  const [values, setValues] = useState({
-    amount: "",
-    username: "",
-    password: "",
-    weight: "",
-    weightRange: "",
-    showPassword: false,
-  });
+  const [subTab, setSubTab] = useState(0);
+  const [filterData, setFilterData] = useContext(FilterContext);
 
-  const handleChange = (prop) => (event) => {
-    setValues({ ...values, [prop]: event.target.value });
-  };
-
-  const handleClickShowPassword = () => {
-    setValues({
-      ...values,
-      showPassword: !values.showPassword,
-    });
-  };
-
-  const handleMouseDownPassword = (event) => {
-    event.preventDefault();
+  const handleChange = (event, newValue) => {
+    setFilterData({ ...filterData, searchText: '' });
+    setSubTab(newValue);
   };
   return (
     <Box sx={{ display: "flex", flexDirection: "column" }}>
-      <H1>Criar usuario</H1>
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "row",
-          width: "100%",
-          justifyContent: "space-between",
-          marginBottom: "10px",
-        }}
-      >
-        <TextField
-          sx={{ width: "48%" }}
-          label="Primeiro Nome"
-          variant="outlined"
-        />
-        <FormControl sx={{ width: "48%" }} variant="outlined">
-          <InputLabel htmlFor="outlined-adornment-password">
-            Password
-          </InputLabel>
-          <OutlinedInput
-            id="outlined-adornment-password"
-            type={values.showPassword ? "text" : "password"}
-            value={values.password}
-            onChange={handleChange("password")}
-            endAdornment={
-              <InputAdornment position="end">
-                <IconButton
-                  aria-label="toggle password visibility"
-                  onClick={handleClickShowPassword}
-                  onMouseDown={handleMouseDownPassword}
-                  edge="end"
-                >
-                  {values.showPassword ? <Visibility /> : <VisibilityOff />}
-                </IconButton>
-              </InputAdornment>
-            }
-            label="Password"
-          />
-        </FormControl>
-      </Box>
-      <TextField
-        sx={{ width: "48%", mt: "10px" }}
-        label="Email"
-        variant="outlined"
-      />
-      <Box>
-        <Button sx={{ marginY: "30px" }} variant="contained">
-          Salvar
-        </Button>
-      </Box>
-
-      <Divider />
-      <H1>Adicionar tipo de serviço</H1>
-      <TextField
-        sx={{ width: "48%" }}
-        label="Tipo de serviço"
-        variant="outlined"
-      />
-      <Box>
-        <Button sx={{ marginY: "30px" }} variant="contained">
-          Salvar
-        </Button>
-      </Box>
+      <Tabs value={subTab} onChange={handleChange} aria-label="basic tabs">
+        <Tab label="Usuarios" {...a11yProps(0)} />
+        <Tab label="Serviços" {...a11yProps(1)} />
+        <Tab label="Equipamentos" {...a11yProps(2)} />
+        <Tab label="Estoque" {...a11yProps(3)} />
+      </Tabs>
+      <TabPanel value={subTab} index={0}>
+        <TableUsers />
+      </TabPanel>
+      <TabPanel value={subTab} index={1}>
+        <TableServices />
+      </TabPanel>
+      <TabPanel value={subTab} index={2}>
+        <TableEquipment />
+      </TabPanel>
+      <TabPanel value={subTab} index={3}>
+        <TableEstoque />
+      </TabPanel>
     </Box>
   );
 }

@@ -20,6 +20,7 @@ const PrioridadeCell = styled(Box)(({ theme }) => ({
   justifyContent: "center",
   alignItems: "center",
   paddingX: "5px",
+  color: "#FFF",
   paddingY: "2px",
   borderRadius: "10px",
   width: "60px",

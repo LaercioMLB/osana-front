@@ -30,6 +30,7 @@ export default function ButtonNewClient({ createNewClient }) {
   const [lastName, setLastName] = React.useState("");
   const [email, setEmail] = React.useState("");
   const [phone, setPhone] = React.useState("");
+
   const handleOpen = () => {
     setOpen(true);
     setCpfCnpj("")
@@ -62,15 +63,15 @@ export default function ButtonNewClient({ createNewClient }) {
             firstName: firstName,
             lastName: lastName, 
             email: email, 
-            phone: phone, 
+            phone: phone.replace(/[^0-9]/g,''), 
             contract: currency,
-            cnpj: cpfCnpj,
+            cnpj: cpfCnpj.replace(/[^0-9]/g,''),
         }, 
         config
       )
-      .then((response) => {
+      .then(() => {
         toast.success("Cliente Cadastrado com Sucesso")
-        createNewClient(response.data)
+        createNewClient()
         setOpen(false);
       })
       .catch((error) => toast.error(error.response.data)
@@ -195,7 +196,7 @@ export default function ButtonNewClient({ createNewClient }) {
             <Button sx={{ marginRight: "10px" }} variant="contained" onClick={handleCreateClient}>
               Confirmar
             </Button>
-            <Button variant="outlined">Cancelar</Button>
+            <Button variant="outlined" onClick={handleClose}>Cancelar</Button>
           </Box>
         </Box>
       </Modal>

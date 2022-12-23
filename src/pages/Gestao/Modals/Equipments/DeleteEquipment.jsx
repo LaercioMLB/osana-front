@@ -2,8 +2,8 @@ import * as React from "react";
 import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
 import Button from "@mui/material/Button";
-import { H1 } from "../../components/Text";
-import api from "../../services/api";
+import { H1 } from "../../../../components/Text";
+import api from "../../../../services/api";
 import { toast } from 'react-toastify';
 import { MenuItem } from "@mui/material";
 
@@ -18,10 +18,10 @@ const style = {
   border: "none",
   padding: "20px",
   borderRadius: "6px",
-  width: "50%",
+  width: "70%",
 };
 
-export default function DeleteOS({ idOS, deleteOS, handleCloseMenu }) {
+export default function DeleteEquipment({ idEquipment, nameEquipment, deleteEquipment, handleCloseMenu }) {
   const [open, setOpen] = React.useState(false);
 
   const handleClose = () => {
@@ -40,12 +40,12 @@ export default function DeleteOS({ idOS, deleteOS, handleCloseMenu }) {
     },
   };
 
-  const handleDeleteClient = async (event) => {
+  const handleDeleteEquipment= async (event) => {
     event.preventDefault();
-    await api.delete(`/os/${idOS}`, config)
+    await api.delete(`/equipment/${idEquipment}`, config)
     .then(() => {
-      toast.success("OS Deletada com Sucesso")
-      deleteOS()
+      toast.success("Equipamento Deletado com Sucesso")
+      deleteEquipment()
       handleClose();
     })
     .catch((error) => toast.error(error.response.data)
@@ -53,7 +53,7 @@ export default function DeleteOS({ idOS, deleteOS, handleCloseMenu }) {
   };
 
   return (
-    <Box>
+    <div>
       <MenuItem onClick={handleOpen}>Excluir</MenuItem>
 
       <Modal
@@ -69,7 +69,7 @@ export default function DeleteOS({ idOS, deleteOS, handleCloseMenu }) {
             ...style,
           }}
         >
-          <H1>Tem certeza que deseja deletar esta OS ?</H1>
+          <H1>Tem certeza que deseja deletar o Equipamento: {nameEquipment.toUpperCase()} ?</H1>
           <Box
             sx={{
               display: "flex",
@@ -79,7 +79,7 @@ export default function DeleteOS({ idOS, deleteOS, handleCloseMenu }) {
             }}
           >
             <Button
-              onClick={handleDeleteClient}
+              onClick={handleDeleteEquipment}
               sx={{ marginRight: "10px" }}
               variant="contained"
             >
@@ -91,7 +91,7 @@ export default function DeleteOS({ idOS, deleteOS, handleCloseMenu }) {
           </Box>
         </Box>
       </Modal>
-    </Box>
+    </div>
   );
 }
 

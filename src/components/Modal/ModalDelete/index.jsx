@@ -3,6 +3,7 @@ import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
 import Button from "@mui/material/Button";
 import { H1 } from "../../Text";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 const style = {
   display: "flex",
@@ -18,7 +19,7 @@ const style = {
   width: "300px",
 };
 
-export default function ModalDelete(handleSubmit) {
+export default function ModalDelete({ enableIcon }) {
   const [open, setOpen] = React.useState(false);
 
   const handleClose = () => {
@@ -31,7 +32,11 @@ export default function ModalDelete(handleSubmit) {
 
   return (
     <Box>
-      <Box onClick={handleOpen}>Excluir</Box>
+      {enableIcon === true ? (
+        <DeleteIcon sx={{ cursor: "pointer" }} onClick={handleOpen} />
+      ) : (
+        <Box onClick={handleOpen}>Excluir</Box>
+      )}
 
       <Modal
         open={open}
