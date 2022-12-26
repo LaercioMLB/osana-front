@@ -48,15 +48,17 @@ Agradecemos às seguintes pessoas que contribuíram para este projeto:
         <img src="https://user-images.githubusercontent.com/49946934/190514490-1bc75bcc-f694-4dfa-b10f-747a67b891d2.png" width="100px;" alt="Foto do Laercio Bubiak no GitHub"/><br>
         <sub>
           <b>Laércio Bubiak</b>
+          <br>
           <b>Gestor e Design</b>
         </sub>
       </a>
     </td>
     <td align="center">
       <a href="#">
-        <img src="![317096516_1221733258408051_5596849555311739830_n](https://user-images.githubusercontent.com/49946934/209573515-b88af91e-e766-4701-8a68-869a3ec1f3a9.png)" width="100px;" alt="Foto do Dionei Bianchati no Github"/><br>
+        <img src="https://user-images.githubusercontent.com/49946934/209573515-b88af91e-e766-4701-8a68-869a3ec1f3a9.png" width="100px;" alt="Foto do Dionei Bianchati no Github"/><br>
         <sub>
           <b>Dionei Bianchati</b>
+          <br>
           <b> Dev Front </b>
         </sub>
       </a>
@@ -66,6 +68,8 @@ Agradecemos às seguintes pessoas que contribuíram para este projeto:
         <img src="https://user-images.githubusercontent.com/49946934/190516870-508349b5-69b5-4d9e-854e-f2227a1d7ada.jpeg" width="100px;" alt="Foto do Willian Thiago no GitHub"/><br>
         <sub>
           <b>Willian Thiago</b>
+          <br>
+          <b> Dev Back e integração </b>
         </sub>
       </a>
     </td>
