@@ -5,7 +5,7 @@
   <img src="https://img.shields.io/badge/ReactJS-blue"/>
   <img src="https://img.shields.io/badge/npm-8.5-yellow"/>
   <img src="https://img.shields.io/badge/Node-16.14.2-yellowgreen"/>
-  <img src="https://img.shields.io/badge/STATUS-Desenvolvimento-yellow"/>
+  <img src="https://img.shields.io/badge/STATUS-BETA1.0-yellow"/>
 </div>
 
 ## 📖 Sobre
@@ -48,22 +48,16 @@ Agradecemos às seguintes pessoas que contribuíram para este projeto:
         <img src="https://user-images.githubusercontent.com/49946934/190514490-1bc75bcc-f694-4dfa-b10f-747a67b891d2.png" width="100px;" alt="Foto do Laercio Bubiak no GitHub"/><br>
         <sub>
           <b>Laércio Bubiak</b>
+          <b>Gestor e Design</b>
         </sub>
       </a>
     </td>
     <td align="center">
       <a href="#">
-        <img src="https://user-images.githubusercontent.com/49946934/190514937-904e2248-6e6e-4dd9-a92b-76b46ce9efd4.png" width="100px;" alt="Foto do João Paulo no Github"/><br>
+        <img src="![317096516_1221733258408051_5596849555311739830_n](https://user-images.githubusercontent.com/49946934/209573515-b88af91e-e766-4701-8a68-869a3ec1f3a9.png)" width="100px;" alt="Foto do Dionei Bianchati no Github"/><br>
         <sub>
-          <b>João Paulo</b>
-        </sub>
-      </a>
-    </td>
-    <td align="center">
-      <a href="#">
-        <img src="https://user-images.githubusercontent.com/49946934/190514820-38f39be3-ef06-42c9-ab4f-1e7ac0520ce1.png" width="100px;" alt="Foto da Ana França no Github"/><br>
-        <sub>
-          <b>Ana França</b>
+          <b>Dionei Bianchati</b>
+          <b> Dev Front </b>
         </sub>
       </a>
     </td>
@@ -72,22 +66,6 @@ Agradecemos às seguintes pessoas que contribuíram para este projeto:
         <img src="https://user-images.githubusercontent.com/49946934/190516870-508349b5-69b5-4d9e-854e-f2227a1d7ada.jpeg" width="100px;" alt="Foto do Willian Thiago no GitHub"/><br>
         <sub>
           <b>Willian Thiago</b>
-        </sub>
-      </a>
-    </td>
-    <td align="center">
-      <a href="#">
-        <img src="https://user-images.githubusercontent.com/49946934/190514615-9911dbc4-8524-4a49-bc17-347fae7f5ca9.png" width="100px;" alt="Foto do Eric Sacardo no GitHub"/><br>
-        <sub>
-          <b>Eric Sacardo</b>
-        </sub>
-      </a>
-    </td>
-    <td align="center">
-      <a href="#">
-        <img src="https://user-images.githubusercontent.com/49946934/190515914-9b9a11dd-93a8-4df7-857e-1d7458738686.png" width="100px;" alt="Foto do Bruno Douglas no GitHub"/><br>
-        <sub>
-          <b>Bruno Douglas</b>
         </sub>
       </a>
     </td>
